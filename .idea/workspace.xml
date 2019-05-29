@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5d26880c-b3e4-4f18-90ee-564ad5d0c853" name="Default Changelist" comment="" />
+    <list default="true" id="5d26880c-b3e4-4f18-90ee-564ad5d0c853" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,14 +31,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/forecasting/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="261">
-              <caret line="325" column="9" lean-forward="true" selection-start-line="325" selection-start-column="9" selection-end-line="325" selection-end-column="9" />
+            <state relative-caret-position="210">
+              <caret line="70" column="29" selection-start-line="70" selection-start-column="13" selection-end-line="70" selection-end-column="29" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-617">
+              <caret line="83" column="5" selection-start-line="83" selection-start-column="5" selection-end-line="83" selection-end-column="5" />
+              <folding>
+                <element signature="e#22#41#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="70" column="99" selection-start-line="70" selection-start-column="99" selection-end-line="70" selection-end-column="99" />
             </state>
           </provider>
         </entry>
@@ -59,6 +84,9 @@
       <find>Demanda real</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -79,7 +107,6 @@
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_item.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/consumo_detail.html" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/consumo_list.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_list_item.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/info_smartmeters.html" />
@@ -96,6 +123,7 @@
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/info_factura.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_modelopred_item.html" />
         <option value="$PROJECT_DIR$/forecasting/models.py" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html" />
       </list>
     </option>
   </component>
@@ -105,6 +133,7 @@
     <option name="width" value="1248" />
     <option name="height" value="731" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -131,6 +160,13 @@
             <path>
               <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
               <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
+              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
               <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -148,6 +184,7 @@
   <component name="PropertiesComponent">
     <property name="DatabaseDriversLRU" value="sqlite" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -255,21 +292,24 @@
       <workItem from="1559030375905" duration="754000" />
       <workItem from="1559033242157" duration="500000" />
       <workItem from="1559062435358" duration="1540000" />
+      <workItem from="1559117913609" duration="767000" />
+      <workItem from="1559149573570" duration="1900000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="174449000" />
+    <option name="totallyTimeSpent" value="177116000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="46" y="46" width="1248" height="731" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2550505" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26346803" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3277592" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49579126" weight="0.39297658" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49579126" visible="true" weight="0.39297658" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.47658864" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -588,13 +628,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="29" column="121" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="121" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/consumo_detail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -627,16 +660,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1411">
-          <caret line="83" column="5" selection-start-line="83" selection-start-column="5" selection-end-line="83" selection-end-column="5" />
-          <folding>
-            <element signature="e#22#41#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -681,13 +704,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-617">
+          <caret line="83" column="5" selection-start-line="83" selection-start-column="5" selection-end-line="83" selection-end-column="5" />
+          <folding>
+            <element signature="e#22#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="325" column="9" lean-forward="true" selection-start-line="325" selection-start-column="9" selection-end-line="325" selection-end-column="9" />
+        <state relative-caret-position="210">
+          <caret line="70" column="29" selection-start-line="70" selection-start-column="13" selection-end-line="70" selection-end-column="29" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="70" column="99" selection-start-line="70" selection-start-column="99" selection-end-line="70" selection-end-column="99" />
         </state>
       </provider>
     </entry>
