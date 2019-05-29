@@ -1,0 +1,113 @@
+{% extends "forecasting/pvpc_base.html" %}
+
+
+{% block pre_pvpc %}
+
+    <!-- jQuery -->
+
+    <!-- Fengyuan Chen's Datepicker -->
+
+
+
+    <h1>Gráfica de precios para PVPC</h1>
+    <p>Poner un calendario para seleccionar fechas. Probablemente haya que ponerlo dentro de un form.</p>
+
+    <!-- <input id="datepicker"> -->
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block pvpc_content %}
+    <div>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+        <!-- <button id="ver_pvpc_button" name="ver_pvpc" type="button" class="btn btn-primary">Ver PVPC</button> -->
+        <!-- <h3>{{ grafico_precio }}</h3> -->
+
+        <input id="fechaPrecio" type="date">
+        <button id="ver_precioFecha_button" name="ver_precioFecha" type="button" class="btn btn-primary">Consultar
+            precios
+        </button>
+
+        <div class="col-md-12">{{ grafico_precio|safe }}</div>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+        $("#ver_precioFecha_button").click(function (e) {
+            var valor = document.getElementById("fechaPrecio").value
+            bruto = valor.split("-");
+            date = bruto[0] + '/' + bruto[1] + '/' + bruto[2]
+            alert(date)
+            $.ajax({
+                url: "http://127.0.0.1:8000/forecasting/pvpc/" + date,
+                success: function (data, status, xhr) {
+                    //alert(data)
+                }
+            })
+        });
+    </script>
+
+
+    <!-- AQUÍ ABAJO VAN EL RESTO DE PRUEBAS -->
+
+    <!--
+    <script>
+        $("#ver_precioFecha_button").click(function (e) {
+            alert($('#fechaPrecio').value())
+            //var fex = ($('#fechaPrecio').val()).split("/");
+            //var date = fex[2] + '/' + fex[0] + '/' + fex[1] + '/2019/05/02'
+            var date= ($('#fechaPrecio').value())
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/forecasting/pvpc/" + date,
+                success: function (data, status, xhr) {
+                    //alert(data)
+                }
+            })
+        });
+    </script>
+-->
+    <!--
+        <script>
+
+            $("#datepicker").datepicker({
+                onSelect: function () {
+                    var dateObject = $(this).datepicker('getDate');
+                    alert(dateObject);
+                }
+            });
+        </script>
+        -->
+
+    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script> -->
+    <!--
+    <script>
+        $("#ver_pvpc_button").click(function (e) {
+            alert($('#datepicker').val())
+            var fex = ($('#datepicker').val()).split("/");
+
+            var date = fex[2] + '/' + fex[0] + '/' + fex[1] + '/2019/05/02'
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/forecasting/pvpc/" + date,
+                success: function (data, status, xhr) {
+                    //alert(data)
+                }
+            })
+        });
+
+    </script>
+-->
+
+    <!-- HASTA AQUÍ LLEGAN LAS PRUEBAS -->
+
+{% endblock %}
+
+{% block post_pvpc %}
+{% endblock %}

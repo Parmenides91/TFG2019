@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- <h1>Welcome to T F G</h1> -->
+
+
+
+    <div class="container">
+
+        <!-- Presentación -->
+        <section class="contenedor-main row my-5">
+            <main class="col-md-8">
+                <h1 class="display-5 font-italic">Optimización de la factura de la luz mediante la lectura de los Smart
+                    Meters</h1>
+                <!-- <p class="lead my-3">Parrafada.</p> -->
+
+                <p><a href="#" class="text-success">Saber más...</a></p>
+            </main>
+            <aside class="col-md-4 align-self-center text-right">
+                <h3>Tutores:</h3>
+                <p>Fernando de la Prieta</p>
+                <p>Javierto Prieto</p>
+
+                <h4 class="mt-5">Alumno:</h4>
+                <p>Roberto Benéitez Vaquero</p>
+            </aside>
+        </section>
+
+
+        <!-- Caja anuncio acceso al PVPC -->
+        <div class="card border-success text-center">
+            <div class="card-header">
+                <h3>PVPC</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Precio Voluntario Pequeño Consumidor</h5>
+                <p class="card-text">Consulta el precio de la tarifa PVPC y conoce la predicción del próximo día</p>
+                <a href="{% url 'forecasting:pvpc_precios' %}" class="btn btn-success">Consultar PVPC</a>
+            </div>
+            <div class="card-footer text-muted">
+                Actualizado a: {{ index_fecha }}
+            </div>
+        </div>
+
+
+        <!-- Cajas información -->
+        <div class="row my-3">
+
+            <div class="col">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h3 class="card-title">Smart Meters</h3>
+                        <p class="card-text">¿Cómo funcionan los Smart Meters?</p>
+                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-dark">Ir</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h3 class="card-title">Factura de la luz</h3>
+                        <p class="card-text">Aprende cómo se desglosa la factura de la luz.</p>
+                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-dark">Ir</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h3 class="card-title">La energía en España</h3>
+                        <p class="card-text">Conoce la regulación eléctrica al detalle.</p>
+                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-dark">Ir</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    <!-- Cajas información intento 2 -->
+        <!--
+        <div class="row my-3 justify-content-around">
+
+<div class="card-deck">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h3 class="card-title">Smart Meters</h3>
+                        <p class="card-text">¿Cómo funcionan los Smart Meters?</p>
+                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-danger">Ir</a>
+                    </div>
+                </div>
+
+
+
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h3 class="card-title">Factura de la luz</h3>
+                        <p class="card-text">Aprende cómo se desglosa la factura de la luz.</p>
+                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-warning">Ir</a>
+                    </div>
+                </div>
+
+
+
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h3 class="card-title">La energía en España</h3>
+                        <p class="card-text">Conoce la regulación eléctrica al detalle.</p>
+                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-info">Ir</a>
+                    </div>
+                </div>
+</div>
+        </div> -->
+
+
+    </div>
+
+
+{% endblock %}

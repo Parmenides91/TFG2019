@@ -1,0 +1,20 @@
+/* principal */
+body {
+	padding-top: 62px;
+}
+
+
+/* header*/
+
+
+
+/* footer */
+.colFooter {
+	text-align: center;
+	color: white;
+	padding: 10px;
+}
+
+.rFooter {
+	background-color: #343a40;
+}

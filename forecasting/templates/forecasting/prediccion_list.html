@@ -1,0 +1,22 @@
+{% extends "forecasting/modelo_base.html" %}
+{% load humanize %}
+
+
+{% block prediccion_content %}
+<div class="col-md-8">
+	{% for prediccion in prediccion_list %}
+  	{% include "forecasting/_prediccion.html" %}
+	{% endfor %}
+</div>
+
+
+<div class="container">
+	<div class="col-md-8">
+		<ul class="list-unstyled">
+		{% for prediccion in prediccion_list %}
+  		{% include "forecasting/_prediccion_list_item.html" %}
+		{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endblock %}

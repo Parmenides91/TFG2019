@@ -1,0 +1,23 @@
+{% extends "forecasting/modelo_base.html" %}
+
+{% block premodelo %}
+{% endblock %}
+
+
+{% block modelo_content %}
+
+    <!-- <div class="jumbotron mt-4"> -->
+    <div class="mt-4">
+
+        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
+        <h3 class="display-4 mb-5">Listado completo de los Modelos de Predicción</h3>
+
+        <ul class="list-unstyled row justify-content-between">
+            {% for modelopred in modelopred_list %}
+                {% include "forecasting/_modelopred_item_list.html" %}
+            {% endfor %}
+        </ul>
+
+    </div>
+
+{% endblock %}

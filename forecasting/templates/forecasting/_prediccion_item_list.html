@@ -1,0 +1,9 @@
+{% load static %}
+<li class="media col-4 mt-2 mb-2">
+  <img class="mr-3" src="{% static 'icon/predfile02.png' %}" alt="CSV file icon">
+  <div class="media-body">
+    <h5 class="mt-0 mb-1">{{ prediccion.titulo }}</h5>
+    <h6 class="mt-0 mb-1 text-muted">Creado: {{ prediccion.created_at }}</h6>
+    <a href="{% url 'forecasting:single_PP' username=prediccion.created_by pk=prediccion.pk %}" class="card-link">Info Predicción</a>
+  </div>
+</li>

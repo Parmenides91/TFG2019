@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row col-md-12">
+                <h2 class="display-3 font-italic">La factura de la luz en España</h2>
+                <p class="lead">Actualmente en España un usuario puede elegir entre un mercado regulado, donde el
+                    gobierno
+                    impone el precio de la luz, y un mercado libre, donde cada compañía marca oferta tarifas a distintos
+                    precios.</p>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <div class="row justify-content-between mt-5">
+
+                <div class="col-md-6">
+
+                    <div class="card border-success">
+                        <img src="{% static 'img/fact01.png' %}" class="card-img-top img-fluid"
+                             alt="factura_luz_mr">
+                        <div class="card-body">
+                            <h3 class="card-title display-4">Factura de la Luz</h3>
+                            <p class="card-subtitle text-muted h3 mb-5">Mercado Regulado</p>
+                            <p class="mb-2"><strong>Energía</strong></p>
+                            <p class="card-text">Then out spake brave Horatius,
+                                The Captain of the Gate:
+                                "To every man upon this earth
+                                Death cometh soon or late.
+                                And how can man die better
+                                Than facing fearful odds,
+                                For the ashes of his fathers,
+                                And the temples of his Gods."
+                            <hr>
+                            <p class="mb-2"><strong>Servicios y otros conceptos</strong></p>
+                            <p>Then out spake brave Horatius,
+                                The Captain of the Gate:
+                                "To every man upon this earth
+                                Death cometh soon or late.
+                                And how can man die better
+                                Than facing fearful odds,
+                                For the ashes of his fathers,
+                                And the temples of his Gods."
+                            </p>
+                            <hr>
+                            <p class="mb-2"><strong>Importe total</strong></p>
+                            <p>Then out spake brave Horatius,
+                                The Captain of the Gate:
+                                "To every man upon this earth
+                                Death cometh soon or late.
+                                And how can man die better
+                                Than facing fearful odds,
+                                For the ashes of his fathers,
+                                And the temples of his Gods."</p>
+                            <hr>
+                            <a href="https://www.iberdrola.es/informacion/facturas/factura-luz" class="card-link">Fuente
+                                #1</a>
+                            <a href="https://www.endesaclientes.com/factura-luz-ml.html" class="card-link">Fuente
+                                #2</a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="card border-success">
+                        <img src="{% static 'img/fact01.png' %}" class="card-img-top img-fluid"
+                             alt="factura_luz_ml">
+                        <div class="card-body">
+                            <h3 class="card-title display-4">Factura de la Luz</h3>
+                            <p class="card-subtitle text-muted h3 mb-5">Mercado Libre</p>
+                            <p class="mb-2"><strong>Energía</strong></p>
+                            <p class="card-text">En este primer apartado se aprecian la
+                                <mark>Potencia facturada</mark>
+                                ,
+                                la
+                                <span>Energía facturada</span>
+                                y el
+                                <mark>Impuesto sobre electricidad.</mark>
+                            </p>
+                            <p>La potencia facturada contiene el
+                                <mark>Término de potencia</mark>
+                                , que se cobra a un
+                                determinado
+                                precio en base a lo contratado.
+                            </p>
+                            <p>La energía facturada contiene el
+                                <mark>Término de potencia</mark>
+                                donde se apreciam los
+                                kilovatios
+                                consumidos y a qué precio se cobran (en función de la tarifa contratada)
+                            </p>
+                            <p>El impuesto sobre la electricidad se aplica a la suma de las dos partidas
+                                anteriores</p>
+                            <hr>
+                            <p class="mb-2"><strong>Servicios y otros conceptos</strong></p>
+                            <p>El
+                                <mark>Alquiler equipos de medida</mark>
+                                corresponde al pago de los contadores, que
+                                pertenecen
+                                a
+                                las empresas distribuidoras de electricidad (no a la comercializadora)
+                            </p>
+                            <p>El
+                                <mark>Servicio Urgencias Eléctricas</mark>
+                                es una prestación opcional, junto con
+                                otras, que se
+                                pueden contratar.
+                            </p>
+                            <hr>
+                            <p class="mb-2"><strong>Importe total</strong></p>
+                            <p>Al total de las dos secciones anteriores, se le aplica un IVA del 21%. El resultado
+                                final
+                                es el
+                                precio a pagar por los usuarios.</p>
+                            <hr>
+                            <a href="https://www.iberdrola.es/informacion/facturas/factura-luz-comercializacion"
+                               class="card-link">Fuente
+                                #1</a>
+                            <a href="https://www.endesaclientes.com/factura-luz-mr.html" class="card-link">Fuente
+                                #2</a>
+                            <a href="https://www.ocu.org/vivienda-y-energia/gas-luz/consejos/como-descifrar-la-factura-de-la-luz"
+                               class="card-link">Más (ambas)</a>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

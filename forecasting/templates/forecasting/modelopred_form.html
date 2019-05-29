@@ -1,0 +1,35 @@
+{% extends "forecasting/modelo_base.html" %}
+
+{% load bootstrap4 %}
+{% load static %}
+
+{% block modelo_content %}
+
+<h4>CREAR NUEVO MODELO</h4>
+<form method="POST" action="{% url 'forecasting:create_MP' %}" id="modeloForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+		<button type="submit" class="btn btn-primary btn-large" id="crea_fichero_modelopred_button" name="crea_fichero_modelopred"">Crear Modelo</button>
+	{% endbuttons %}
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $("#crea_fichero_modelopred_button").bind('click', function(){
+            $.post(
+                url:"/crear_fic_mod/",
+                dataType:"html",
+                success:function(data, status, xhr){
+                    //Do something with your data
+            }
+            );
+            return false;
+        });
+        }
+    );
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "forecasting/prediccion_base.html" %}
+
+{% load bootstrap4 %}
+
+{% block prediccion_content %}
+
+<h4>CREAR NUEVA PREDICCIÓN</h4>
+<form method="POST" action="{% url 'forecasting:create_PP' %}" id="prediccionForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+		<button type="submit" class="btn btn-primary btn-large" ">Crear Predicción</button>
+	{% endbuttons %}
+</form>
+
+{% endblock %}

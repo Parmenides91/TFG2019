@@ -1,0 +1,125 @@
+{% load humanize %}
+
+<div class="card mt-5 mb-5">
+    <!--<div class="card-header">UsuarioTest</div>-->
+    <div class="card-body pb-4">
+        <h3 class="card-title"><small>Título:</small> <span class="font-italic">{{ consumo.titulo }}</span></h3>
+        <h6 class="text-muted"><small>Creado:</small> <span class="font-italic">{{ consumo.created_at|naturalday }}</span></h6>
+        <hr class="mb-3">
+        <p class="card-text"><u>Descripción</u>: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+            dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+            deserunt mollit anim id est laborum.</p>
+
+        <a href="#" class="btn btn-primary">Usar para modelo</a>
+        <a href="{% url 'forecasting:for_user' username=user.username %}" class="btn btn-secondary">Volver al
+            listado</a>
+        {% if user.is_authenticated and consumo.user == user and not hide_delete %}
+            <a href="{% url 'forecasting:delete' pk=consumo.pk %}" title="delete" class="btn btn-simple">
+                <span class="fa fa-remove text-danger" aria-hidden="true"></span>
+                <span class="btn btn-danger">Eliminar</span>
+            </a>
+        {% endif %}
+
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <div class="col-md-12">{{ consumo.analisis_consumo.grafica_consumo|safe }}</div>
+
+    </div>
+    <div class="card-footer">
+        <h6 class="mt-0 mb-1 text-muted text-right">Fichero: <span class="font-italic">{{ consumo.filename }}</span></h6>
+    </div>
+</div>
+
+
+<style type="text/css">
+    .vericaltext {
+        width: 2px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+</style>
+
+<!-- <div class="container"> -->
+    <div class="jumbotron">
+        <h2 class="display-1">Comparador de tarifas</h2>
+        <p class="lead mb-4">La siguiente tabla muestra los costes del consumo que ha subido el usuario para cada nua de las tarifas y/u ofertas que se ofrecen actualmente en el mercado. Aparece tanto una comparativa con los precios del <mark>Mercado Regulado</mark> como las tarifas del <mark>Mercado Libre</mark>.</p>
+
+        <div class="row my-3 justify-content-around">
+            <div class="card-deck">
+
+                <div class="card border-info bg-info col-1">
+                    <div class="card-block bg-info align-middle my-auto align-self-center">
+                        <p class="text-white text-center vericaltext font-weight-bold text-uppercase">Mercado
+                            regulado</p>
+                    </div>
+                </div>
+
+                <div class="card border-info bg-info col-11">
+                    <div class="card border-dark my-3">
+                        <div class="row justify-content-around">
+                            <div class="card-body text-center col-md-4">
+                                <p class="display-4"><em><strong>Tarifa por defecto</strong></em></p>
+                                <hr>
+                                <p class="text-muted mb-0">
+                                    <small>PVPC - Mercado Regulado</small>
+                                </p>
+                            </div>
+                            <div class="card-body border-right border-dark col-md-6">
+                                <p class="lead">Coste del consumo del usuario:</p>
+                                <p class="display-3">162.84€</p>
+                            </div>
+                            <div class="card-body col-md-2">
+                                <p>Relacionado:</p>
+                                <a class="info-link" href="https://www.esios.ree.es/es/pvpc">Consultar el precio</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PVPC - Tarifa por defecto -->
+                    <div class="card border-info my-3">
+                        <div class="row justify-content-around">
+                            <div class="card-body text-center col-md-4">
+                                <p class="display-4"><em><strong>Eficiencia dos periodos</strong></em></p>
+                                <hr>
+                                <p class="text-muted mb-0">
+                                    <small>PVPC - Mercado Regulado</small>
+                                </p>
+                            </div>
+                            <div class="card-body border-right border-dark col-md-6">
+                                <p class="lead">Coste del consumo del usuario:</p>
+                                <p class="display-3">162.84€</p>
+                            </div>
+                            <div class="card-body col-md-2">
+                                <p>Relacionado:</p>
+                                <a class="info-link" href="https://www.esios.ree.es/es/pvpc">Consultar el precio</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PVPC - Vehículo eléctrico -->
+                    <div class="card border-info my-3">
+                        <div class="row justify-content-around">
+                            <div class="card-body text-center col-md-4">
+                                <p class="display-4"><em><strong>Vehículo eléctrico</strong></em></p>
+                                <hr>
+                                <p class="text-muted mb-0">
+                                    <small>PVPC - Mercado Regulado</small>
+                                </p>
+                            </div>
+                            <div class="card-body border-right border-dark col-md-6">
+                                <p class="lead">Coste del consumo del usuario:</p>
+                                <p class="display-3">162.84€</p>
+                            </div>
+                            <div class="card-body col-md-2">
+                                <p>Relacionado:</p>
+                                <a class="info-link" href="https://www.esios.ree.es/es/pvpc">Consultar el precio</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+<!-- </div> -->

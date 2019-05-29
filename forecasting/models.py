@@ -1,0 +1,335 @@
+from django.db import models
+from django.conf import settings
+from django.urls import reverse
+
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.statespace.sarimax import SARIMAXResults
+
+import numpy as np
+import pandas as pd
+import plotly.plotly as py
+import plotly.graph_objs as go
+from plotly.offline import plot
+from datetime import datetime, timedelta
+
+from . import func_analisis_consumo
+
+import os
+
+# pip install misaka
+import misaka
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+# Create your models here.
+class Consumo(models.Model):
+    user = models.ForeignKey(User, related_name = "consumos", on_delete = models.CASCADE)
+    created_at = models.DateTimeField(auto_now = True)
+    titulo = models.CharField(max_length = 255, unique = True)
+    fichero_consumo = models.FileField(upload_to='consumos', blank = False)
+    coste_tarifa_PPP = models.DecimalField(default=0, max_digits=8, decimal_places=4)
+    coste_tarifa_EDP = models.DecimalField(default=0, max_digits=8, decimal_places=4)
+    coste_tarifa_VE = models.DecimalField(default=0, max_digits=8, decimal_places=4)
+
+    def __str__(self):
+        return self.titulo
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse(
+            "forecasting:single",
+            kwargs={
+                "username": self.user.username,
+                "pk": self.pk
+                }
+            )
+
+    def filename(self):
+        return os.path.basename(self.fichero_consumo.name)
+
+
+
+    # Método unificado para abrir el fichero y repartir el dataframe??
+    @property
+    def analisis_consumo(self):
+        df = pd.read_csv(self.fichero_consumo, delimiter=';', decimal=',')
+
+        info_consumo = {}
+
+        # Gráfica del Consumo
+        """
+        info_consumo = {'grafica_consumo':func_analisis_consumo.consumo_chart(df),
+                        'PVPCprecioPPP':func_analisis_consumo.peaje_por_defecto(df)}
+        self.coste_tarifa_PPP = info_consumo.get('PVPCprecioPPP')
+        """
+        info_consumo = {'grafica_consumo': func_analisis_consumo.consumo_chart(df),
+                        'PVPCprecios': func_analisis_consumo.obtener_precios_mercado_regulado(df)}
+
+        self.coste_tarifa_PPP = info_consumo.get('PVPCprecios').get('PPD')
+        self.coste_tarifa_EDP = info_consumo.get('PVPCprecios').get('EDP')
+        self.coste_tarifa_VE = info_consumo.get('PVPCprecios').get('VE')
+
+        return info_consumo
+
+
+    """
+    @property
+    def consumo_chart(self):
+        df = pd.read_csv(self.fichero_consumo, delimiter = ';', decimal=',')
+        df = df.drop(["CUPS", "Metodo_obtencion"], axis=1)
+        ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H') #secuencia de horas
+        #df['Hora'] = df['Hora'].astype(str) + ':00'
+        #df['Fecha'] = df['Fecha'] + ' ' + df['Hora']
+        df['Fecha'] = ristra
+        df = df.drop(["Hora"], axis=1)
+        df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%Y %H:%M')
+
+        n_leyenda = 'Consumo de ' + self.user.username
+
+        trace1 = go.Scatter(
+            x=df['Fecha'],
+            y=df['Consumo_kWh'],
+            mode='lines+markers',
+            name=n_leyenda,
+            marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
+
+        data = [trace1, ]
+
+        layout = go.Layout(
+            title='Consumo',
+            showlegend=True,
+            # width = 800,
+            # height = 700,
+            hovermode='closest',
+            bargap=0,
+            legend=dict(
+                # orientation='h',
+                x=0.2, y=1.1,
+                traceorder='normal',
+                font=dict(
+                    family='sans-serif',
+                    size=12,
+                    color='#000',
+                ),
+                bgcolor='#E2E2E2',
+                bordercolor='#FFFFFF',
+                borderwidth=2,
+            ),
+            margin=dict(
+                autoexpand=False,
+                l=100,
+                r=20,
+                t=110,
+            ),
+            xaxis=dict(
+                title='',
+                showline=True,
+                showgrid=True,
+                showticklabels=True,
+                linecolor='rgb(204, 204, 204)',
+                linewidth=2,
+                ticks='outside',
+                tickcolor='rgb(204, 204, 204)',
+                tickwidth=2,
+                ticklen=2,
+                tickfont=dict(
+                    family='Arial',
+                    size=12,
+                    color='rgb(82, 82, 82)',
+                ),
+            ),
+            yaxis=dict(
+                title='kW/h',
+                showgrid=True,
+                zeroline=False,
+                showline=True,
+                showticklabels=True,
+            )
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+        return plot_div
+    """
+
+    """
+    @property
+    def contra_peaje_por_defecto(self):
+        if self.coste_tarifa_PPP == 0:
+            #data = pd.read_csv(self.fichero_consumo, delimiter = ';', decimal=',')
+            #self.coste_tarifa_PPP = func_tarifas.peaje_por_defecto(data)
+            self.coste_tarifa_PPP = func_tarifas.peaje_por_defecto(self.fichero_consumo)
+            return self.coste_tarifa_PPP
+        else:
+            return self.coste_tarifa_PPP
+    """
+
+class ModeloPred(models.Model):
+    consumo_origen = models.ForeignKey(Consumo, on_delete = models.CASCADE)
+    created_by = models.ForeignKey(User, related_name = "modelosPred", on_delete = models.CASCADE)
+    created_at = models.DateTimeField(auto_now = True)
+    titulo = models.CharField(max_length = 255, unique = True)
+    fichero_modeloPred = models.FileField(upload_to='modelos', blank = True)
+    raizECM = models.DecimalField(default=0, max_digits=11, decimal_places=10)
+    media = models.DecimalField(default=0, max_digits=11, decimal_places=10)
+
+    def __str__(self):
+        return self.titulo
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse(
+            "forecasting:single_MP",
+            kwargs={
+                "username": self.user.username,
+                "pk": self.pk,
+                }
+            )
+
+    def filename(self):
+        return os.path.basename(self.fichero_modeloPred.name)
+
+    # Creo el modelo que necesito y sus estadísitcas
+    @property
+    def creacion_modelo(self):
+        if not (self.consumo_origen):
+            df = pd.read_csv(self.consumo_origen, delimiter=';', decimal=',')
+            ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')
+            df['Fecha'] = ristra
+            df = df.drop(['CUPS', 'Hora', 'Metodo_obtencion'], axis=1)
+            df.index = pd.to_datetime(df['Fecha'])
+            df = df.drop(['Fecha'], axis=1)
+            df.index.freq = 'h'
+
+            return True
+        else:
+            return False
+
+
+
+class Prediccion(models.Model):
+    modelopred_origen = models.ForeignKey(ModeloPred, on_delete = models.CASCADE)
+    created_by = models.ForeignKey(User, related_name = "predicciones", on_delete = models.CASCADE)
+    created_at = models.DateTimeField(auto_now = True)
+    titulo = models.CharField(max_length = 255, unique = True)
+    fichero_prediccion = models.FileField(upload_to='predicciones', blank = True)
+
+    def __str__(self):
+        return self.titulo
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse(
+            "forecasting:single_PP",
+            kwargs={
+                "username": self.user.username,
+                "pk": self.pk,
+                }
+            )
+
+    # Predicción forzada del día de mañana
+    """
+    @property
+    def prediccion_datos(self):
+        # Fecha de inicio de la predicción
+        inicioYear = datetime.now().__format__('%Y')
+        inicioMonth = datetime.now().__format__('%m')
+        inicioDay = datetime.now().__format__('%d')
+        inicio = datetime(int(inicioYear), int(inicioMonth), int(inicioDay), 0, 0, 0)
+        inicio += timedelta(days=1)
+        iniPred = inicio
+        # Fecha fin de predicción
+        finalYear = datetime.now().__format__('%Y')
+        finalMonth = datetime.now().__format__('%m')
+        finalDay = datetime.now().__format__('%d')
+        final = datetime(int(finalYear), int(finalMonth), int(finalDay), 23, 0, 0)
+        for i in range(0):
+            final += timedelta(days=1)
+        final += timedelta(days=1)
+        finPred = final
+
+        if False:
+            #Modelo creado a partir del consumo subido del usuario
+            #modeloPrediccion = SARIMAXResults.load('model01.pkl')
+            pass
+        else:
+            #Modelo genérico
+            modeloPrediccion = SARIMAXResults.load('model01.pkl')
+
+        predictions = modeloPrediccion.predict(start=iniPred, end=finPred, dynamic=False, typ='levels').rename('SARIMA(1,1,1)(2,0,3,24) Predictions')
+
+        n_leyenda = 'Predicciones'
+        trace1 = go.Scatter(
+            x=predictions.index,
+            y=predictions.values,
+            mode='lines+markers',
+            name=n_leyenda,
+            marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
+
+        data = [trace1, ]
+
+        layout = go.Layout(
+            title='Consumo',
+            showlegend=True,
+            hovermode='closest',
+            bargap=0,
+            legend=dict(
+                # orientation='h',
+                x=0.2, y=1.1,
+                traceorder='normal',
+                font=dict(
+                    family='sans-serif',
+                    size=12,
+                    color='#000',
+                ),
+                bgcolor='#E2E2E2',
+                bordercolor='#FFFFFF',
+                borderwidth=2,
+            ),
+            margin=dict(
+                autoexpand=False,
+                l=100,
+                r=20,
+                t=110,
+            ),
+            xaxis=dict(
+                title='',
+                showline=True,
+                showgrid=True,
+                showticklabels=True,
+                linecolor='rgb(204, 204, 204)',
+                linewidth=2,
+                ticks='outside',
+                tickcolor='rgb(204, 204, 204)',
+                tickwidth=2,
+                ticklen=2,
+                tickfont=dict(
+                    family='Arial',
+                    size=12,
+                    color='rgb(82, 82, 82)',
+                ),
+            ),
+            yaxis=dict(
+                title='kW/h',
+                showgrid=True,
+                zeroline=False,
+                showline=True,
+                showticklabels=True,
+            )
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+
+        pred_dict = {'grafica_prediccion': plot_div}
+
+        return pred_dict
+        """
+

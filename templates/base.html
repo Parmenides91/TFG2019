@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+{% load static %}
+{% load staticfiles %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>T F G</title>
+
+    <!-- Bootstrap4 -->
+    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+
+    <!-- Mi css principal -->
+    <link rel="stylesheet" href="{% static "css/master.css" %}">
+
+
+    <!-- jQuery DatePicker -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    <!-- Fengyuan Chen's Datepicker -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.css"
+          integrity="sha256-b88RdwbRJEzRx95nCuuva+hO5ExvXXnpX+78h8DjyOE=" crossorigin="anonymous"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.js"
+            integrity="sha256-/7FLTdzP6CfC1VBAj/rsp3Rinuuu9leMRGd354hvk0k=" crossorigin="anonymous"></script>
+
+    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+
+</head>
+<body>
+
+
+<!-- Menú -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <!-- .container nos permite centrar el contenido de nuestro menu, esta clase es opcional y podemos encerrar el menu <nav> o incluir el contenedor dentro del <nav> -->
+    <div class="container">
+        <!-- Nos sirve para agregar un logotipo al menu -->
+        <a href="#" class="navbar-brand">
+            <img src="{% static 'img/inf_escudo01.gif' %}" alt="escudo ii" width="35px" height="35px">
+        </a>
+
+        <!-- Nos permite usar el componente collapse para dispositivos moviles -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
+                aria-expanded="false" aria-label="Menu de Navegacion">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav mr-auto">
+                <!-- Home -->
+                <li class="nav-item active">
+                    <a class="navbar-brand mynav" href="{% url 'home' %}">Inicio<span
+                            class="sr-only">(Actual)</span></a>
+                </li>
+
+
+                {% if user.is_authenticated %}
+                    <!-- Consumos del Usuario -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-consumo" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Consumo
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-consumo">
+                            <a href="{% url 'forecasting:all' %}" class="dropdown-item">Mis Consumos</a>
+                            <a href="{% url 'forecasting:for_user' username=user.username %}" class="dropdown-item">Mis
+                                Consumos (usuario)</a>
+                            <a href="{% url 'forecasting:create' %}" class="dropdown-item">Añadir consumo</a>
+                        </div>
+                    </li>
+
+                    <!-- Modelos de Consumo -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-modelo" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Modelos
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-modelo">
+                            <a href="{% url 'forecasting:all_MP' %}" class="dropdown-item">Mis Modelos</a>
+                            <a href="{% url 'forecasting:for_user_MP' username=user.username %}" class="dropdown-item">Mis
+                                Modelos (usuario)</a>
+                            <a href="{% url 'forecasting:create_MP' %}" class="dropdown-item">Crear Modelo</a>
+                        </div>
+                    </li>
+
+                    <!-- Predicciones -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-prediccion" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Predicciones
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-prediccion">
+                            <a href="{% url 'forecasting:all_PP' %}" class="dropdown-item">Mis Predicciones</a>
+                            <a href="{% url 'forecasting:for_user_PP' username=user.username %}" class="dropdown-item">Mis
+                                Predicciones (usuario)</a>
+                            <a href="{% url 'forecasting:create_PP' %}" class="dropdown-item">Crear Predicción</a>
+                        </div>
+                    </li>
+
+                    <!-- Cerrar sesión -->
+                    <a class="nav-item nav-link" href="{% url 'accounts:logout' %}" class="btn btn-simple">Log out</a>
+
+                {% else %}
+                    <!-- Sesiones -->
+                    <li class="nav-item">
+                        <a href="{% url 'accounts:login' %}" class="nav-link">Log in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'accounts:signup' %}" class="nav-link">Sign up</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
+                    </li>
+                    <!--
+              <a class="nav-item nav-link" href="{% url 'accounts:login' %}" class="btn btn-simple">Log in</a>
+              <a class="nav-item nav-link" href="{% url 'accounts:signup' %}" class="btn btn-simple">Sign up</a>
+              <a class="nav-item nav-link" href="{% url 'admin:index' %}" class="btn btn-simple">Admin</a>
+              -->
+                {% endif %}
+
+                <!-- Tarifas -->
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" id="menu-tarifas" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        Tarifas
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="menu-tarifas">
+                        <a href="{% url 'forecasting:pvpc_precios' %}" class="dropdown-item">PVPC (crawler)</a>
+                        <a href="#" class="dropdown-item">Ofertas distribuidoras</a>
+                    </div>
+                </li>
+
+                <!-- Información Adicional -->
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" id="menu-infoadd" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        +Info
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="menu-infoadd">
+                        <a href="{% url 'forecasting:infoS' %}" class="dropdown-item">Smart Meters</a>
+                        <a href="{% url 'forecasting:infoF' %}" class="dropdown-item">Explicación factura</a>
+                        <a href="{% url 'forecasting:infoES' %}" class="dropdown-item">Energía en España</a>
+                    </div>
+                </li>
+
+            </ul>
+
+
+        </div>
+    </div>
+</nav>
+
+
+
+
+{% block content %}
+
+{% endblock %}
+
+
+<footer>
+    <div class="container-fluid">
+        <div class="row justify-content-between rFooter">
+            <div class="colFooter col-4">
+                Facultad de Ciencias
+            </div>
+            <div class="colFooter col-4">
+                <!-- <img src="{% static 'img/usal_escudo01.png' %}" alt="escudo usal" width="35px" height="35px"> -->
+            </div>
+            <div class="colFooter col-4">
+                Universidad de Salamanca
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<script src="{% static 'bootstrap/js/jquery-3.4.0.min.js' %}"></script>
+<!-- <script src="{% static 'bootstrap/js/popper.min.js' %}"></script> -->
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

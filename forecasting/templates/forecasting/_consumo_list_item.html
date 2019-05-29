@@ -1,0 +1,11 @@
+{% load static %}
+
+
+<li class="media col-4 my-3">
+  <img class="mr-3" src="{% static 'icon/csvfile02.png' %}" alt="CSV file icon">
+  <div class="media-body">
+    <h5 class="mt-0 mb-1 font-italics">{{ consumo.titulo }}</h5>
+    <h6 class="mt-0 mb-1 text-muted"><small>Creado: {{ consumo.created_at }}</small></h6>
+    <a href="{% url 'forecasting:single' username=consumo.user.username pk=consumo.pk %}" class="card-link">Ver</a>
+  </div>
+</li>

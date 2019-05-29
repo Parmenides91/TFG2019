@@ -1,0 +1,41 @@
+
+<div class="card mt-5 mb-5">
+  <!--<div class="card-header">UsuarioTest</div>-->
+  <div class="card-body pb-4">
+    <h3 class="card-title">{{ prediccion.titulo }}</h3>
+    <h6 class="text-muted mb-5">{{ prediccion.created_at }}</h6>
+    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+
+    <div class="list-group">
+      <a href="{% url 'forecasting:single_MP' username=prediccion.created_by pk=prediccion.modelopred_origen.pk %}" class="list-group-item">Modelo de Predicción origen: {{ prediccion.modelopred_origen }}</a>
+      <a href="{% url 'forecasting:single' username=prediccion.created_by pk=prediccion.modelopred_origen.consumo_origen.pk %}" class="list-group-item">Consumo origen: {{ prediccion.modelopred_origen.consumo_origen }}</a>
+    </div>
+
+    <!--
+    <p>Creado desde:</p>
+    <p>Creado a partir de (modelo de predicción): {{ prediccion.modelopred_origen }}</p>
+    <p>Creado a partir de (consumo): {{ prediccion.modelopred_origen.consumo_origen }}</p>
+    -->
+
+    <a href="#" class="btn btn-primary">Ver Predicción</a>
+    <a href="{% url 'forecasting:single_MP' username=prediccion.created_by pk=prediccion.modelopred_origen.pk %}" class="btn btn-secondary">Ir al Modelo</a>
+    <a href="{% url 'forecasting:single' username=prediccion.created_by pk=prediccion.modelopred_origen.consumo_origen.pk %}" class="btn btn-secondary">Ir al Consumo</a>
+    <a href="{% url 'forecasting:for_user_PP' username=user.username %}" class="btn btn-secondary">Volver al listado</a>
+    {% if user.is_authenticated and prediccion.created_by == user and not hide_delete %}
+      <a href="{% url 'forecasting:delete_PP' pk=prediccion.pk %}" title="delete" class="btn btn-simple">
+        <span class="fa fa-remove text-danger" aria-hidden="true"></span>
+        <span class="btn btn-danger">Eliminar</span>
+      </a>
+    {% endif %}
+  </div>
+  <div class="card-footer">
+    <h6 class="mt-0 mb-1 text-muted text-right">FILENAME</h6>
+  </div>
+</div>
+
+
+<div class="container">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <div class="col-md-12">{{ prediccion.prediccion_datos.grafica_prediccion|safe }}</div>
+</div>
