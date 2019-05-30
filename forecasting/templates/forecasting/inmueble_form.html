@@ -1,0 +1,15 @@
+{% extends "forecasting/inmueble_base.html" %}
+
+{% load bootstrap4 %}
+
+
+{% block content_inmueble %}
+<h4>CREAR NUEVO INMUEBLE</h4>
+<form method="POST" action="{% url 'forecasting:create_inmueble' username=user.username %}" id="inmuebleForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+		<button type="submit" class="btn btn-primary btn-large">Crear inmueble</button>
+	{% endbuttons %}
+</form>
+{% endblock %}

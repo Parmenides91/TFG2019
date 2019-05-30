@@ -1,0 +1,18 @@
+{% extends "forecasting/inmueble_base.html" %}
+
+
+{% block content_inmueble %}
+
+    <div class="mt-4">
+        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
+        <h3 class="display-4 mb-5">Estos son los inmuebles que has añadido</h3>
+
+        <ul class="list-unstyled row justify-content-between">
+            {% for inmueble in inmueble_list %}
+                {% include "forecasting/_inmueble_list_item.html" %}
+            {% endfor %}
+        </ul>
+
+    </div>
+
+{% endblock %}

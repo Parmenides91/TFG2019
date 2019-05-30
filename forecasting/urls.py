@@ -27,4 +27,13 @@ urlpatterns = [
     path('informacion_smartmeters/', views.InformacionSmartMeters.as_view(), name="infoS"),
     path('informacion_factura/', views.InformacionFactura.as_view(), name="infoF"),
     path('informacion_energia/', views.InformacionEnergiaSpain.as_view(), name="infoES"),
+    #direcciones para inmuebles
+    path('by/<username>/inmueble/', views.UserInmuebles.as_view(), name='for_user_inmuebles'),
+    path('by/<username>/inmueble/new/', views.CreateInmueble.as_view(), name='create_inmueble'),
+    #path('inmueble/new/', views.CreateInmueble.as_view(), name='create_inmueble'),
+    #path('by/<username>/inmueble/new/', views.CreateInmueble.as_view(), name='create_INMUEBLE'),
+    #path('newIN/', views.CreateInmueble.as_view(), name='create_IN'),
+    path('by/<username>/inmueble/<int:pk>/', views.InmuebleDetail.as_view(), name='single_inmueble'),
+    path('by/<username>/inmueble/edit/<int:pk>/', views.InmuebleUpdateView.as_view(), name='edit_inmueble'),
+    path('by/<username>/inmueble/delete/<int:pk>/', views.DeleteInmueble.as_view(), name="delete_inmueble"),
 ]

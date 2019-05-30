@@ -54,6 +54,20 @@
 
 
                 {% if user.is_authenticated %}
+
+                    <!-- Inmuebles del Usuario -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-inmueble" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Inmueble
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-consumo">
+                            <a href="{% url 'forecasting:for_user_inmuebles' username=user.username %}" class="dropdown-item">Mis
+                                Inmuebles (usuario)</a>
+                            <a href="{% url 'forecasting:create_inmueble' username=user.username %}" class="dropdown-item">Añadir inmueble</a>
+                        </div>
+                    </li>
+
                     <!-- Consumos del Usuario -->
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" id="menu-consumo" data-toggle="dropdown"

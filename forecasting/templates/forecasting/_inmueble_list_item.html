@@ -1,0 +1,16 @@
+{% load static %}
+
+<!--
+    Esta sección requiere atención:
+    - Un icono acorde para mostrar en la lista
+    - Un nuevo diseño
+-->
+
+<li class="media col-4 mt-2 mb-2">
+  <img class="mr-3" src="{% static 'icon/predfile02.png' %}" alt="inmueble icon">
+  <div class="media-body">
+    <h5 class="mt-0 mb-1">{{ inmueble.nombre }}</h5>
+    <h6 class="mt-0 mb-1 text-muted">Creado: {{ inmueble.created_at }}</h6>
+    <a href="{% url 'forecasting:single_inmueble' username=inmueble.user.username pk=inmueble.pk %}" class="card-link">Ver Inmueble</a>
+  </div>
+</li>

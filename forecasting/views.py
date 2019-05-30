@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.http import Http404, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views import generic
-from django.views.generic import DeleteView, TemplateView
+from django.views.generic import DeleteView, TemplateView, UpdateView
 
 from datetime import datetime, timedelta
 import numpy as np
@@ -13,6 +13,7 @@ import pandas as pd
 from braces.views import SelectRelatedMixin
 
 from . import forms
+from .forms import InmuebleForm
 from . import models
 from . import plots
 
@@ -29,6 +30,67 @@ User = get_user_model()
 
 
 # Create your views here.
+
+# INMUEBLES
+#listado de los inmuebles, en general (probablemente me lo puedo cargar, porque sólo quiero listar por usuario)
+class InmuebleList(SelectRelatedMixin, generic.ListView):
+    model=models.Inmueble
+    select_related = ("user", )
+
+#listado de los inmuebles de un usuario en concreto
+# (aquí creo que va la comprobación de si el usuario que está en el contexto de la página es el que está tratando de acceder a ver el listado de inmuebles)
+class UserInmuebles(generic.ListView):
+    model=models.Inmueble
+    template_name = "forecasting/user_inmueble_list.html"
+
+    def get_queryset(self):
+        try:
+            self.inmueble_user=User.objects.get(username__iexact=self.kwargs.get("username"))
+        except User.DoesNotExist:
+            raise Http404
+        else:
+            return self.inmueble_user.inmuebles.all()
+
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        context["inmueble_user"]=self.inmueble_user
+        return context
+
+#muestra un inmueble individual
+class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
+    model = models.Inmueble
+    select_related = ("user",)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user__username__iexact = self.kwargs.get("username"))
+
+#crear un nuevo inmueble
+class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    fields = ('nombre', 'descripcion',)
+    model = models.Inmueble
+
+    def form_valid(self, form):
+        self.object = form.save(commit = False)
+        self.object.user = self.request.user
+        #form.instance.created_by = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+#modificar un inmueble ya creado
+class InmuebleUpdateView(LoginRequiredMixin, UpdateView):
+    #Si estalla al modificar lo mismo es por este login que no etá bien puesto. O por el redirect ese
+    #login_url = '/login/'
+    #redirect_field_name = 'blog/post_detail.html'
+    redirect_field_name='forecasting/inmueble_detail.html'
+    form_class = InmuebleForm
+    model = models.Inmueble
+
+#eliminar un inmueble
+class DeleteInmueble(LoginRequiredMixin, DeleteView):
+    model = models.Inmueble
+    success_url = reverse_lazy('forecasting:all_inmuebles')
+
 # CONSUMOS
 class ConsumoList(SelectRelatedMixin, generic.ListView):
     model = models.Consumo

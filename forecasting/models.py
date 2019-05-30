@@ -23,6 +23,23 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 # Create your models here.
+class Inmueble(models.Model):
+    user=models.ForeignKey(User, related_name="inmuebles", on_delete=models.CASCADE)
+    nombre=models.CharField(max_length=30, unique=True)
+    descripcion=models.CharField(max_length=255, blank=True)
+    created_at=models.DateTimeField(auto_now=True)
+    consumo_inmueble=models.FileField(upload_to='consumosInmuebles', blank = False)
+
+    def __str__(self):
+        return self.nombre
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("forecasting:single_inmueble", kwargs={"username":self.user.username, "pk":self.pk})
+
+
 class Consumo(models.Model):
     user = models.ForeignKey(User, related_name = "consumos", on_delete = models.CASCADE)
     created_at = models.DateTimeField(auto_now = True)

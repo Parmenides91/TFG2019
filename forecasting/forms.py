@@ -1,6 +1,20 @@
 from django import forms
 from . import models
 
+
+#formulario para la creación de un nuevo inmueble
+class InmuebleForm(forms.ModelForm):
+    class Meta():
+        fields=('nombre','descripcion')
+
+    def __init__(self, *args, **kwargs):
+        user=kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+
+
+
+
 class ConsumoForm(forms.ModelForm):
     class Meta():
         fields = ("titulo", "fichero_consumo")
