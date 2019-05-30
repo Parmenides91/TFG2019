@@ -12,6 +12,7 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 from datetime import datetime, timedelta
 
+from . import func_inmueble
 from . import func_analisis_consumo
 
 import os
@@ -29,6 +30,7 @@ class Inmueble(models.Model):
     descripcion=models.CharField(max_length=255, blank=True)
     created_at=models.DateTimeField(auto_now=True)
     consumo_inmueble=models.FileField(upload_to='consumosInmuebles', blank = False)
+    consumo_inmueble_parcial=models.FileField(upload_to='consumosInmuebles', blank = True)
 
     def __str__(self):
         return self.nombre
@@ -38,6 +40,56 @@ class Inmueble(models.Model):
 
     def get_absolute_url(self):
         return reverse("forecasting:single_inmueble", kwargs={"username":self.user.username, "pk":self.pk})
+
+    def filename1(self):
+        return os.path.basename(self.consumo_inmueble.name)
+
+    def filename2(self):
+        return os.path.basename(self.consumo_inmueble_parcial.name)
+
+    # Unificar los consumos que tenga esta casa
+    @property
+    def unificar_consumos(self):
+        """
+        if self.consumo_inmueble==None and self.consumo_inmueble_parcial:
+            self.consumo_inmueble=self.consumo_inmueble_parcial
+            self.consumo_inmueble.save()
+            self.consumo_inmueble_parcial.delete()
+        elif self.consumo_inmueble and self.consumo_inmueble_parcial:
+            pass
+        else:
+            pass
+        """
+
+
+
+        df = pd.read_csv(self.consumo_inmueble, delimiter=';', decimal=',')
+        #df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
+        """
+        try:
+            df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
+        except:
+            pass
+        """
+
+        info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),}
+
+        return info_inmueble
+
+
+class ConsumoParcial(models.Model):
+    user=models.ForeignKey(User, related_name="consumosparciales", on_delete=models.CASCADE)
+    inmueble_asociado=models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    fichero_consumo_parcial=models.FileField(upload_to='consumosParciales', blank = False)
+
+    def __str__(self):
+        return self.inmueble_asociado_id
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('forecasting:single_inmueble', kwargs={"username":self.user.username, "pk":self.inmueble_asociado.pk})
 
 
 class Consumo(models.Model):

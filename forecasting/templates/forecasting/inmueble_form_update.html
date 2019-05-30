@@ -1,0 +1,15 @@
+{% extends "forecasting/inmueble_base.html" %}
+
+{% load bootstrap4 %}
+
+
+{% block content_inmueble %}
+<h4>MODIFICA UN INMUEBLE</h4>
+<form method="POST" id="inmuebleForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+		<button type="submit" value="update" class="btn btn-primary btn-large">Modificar</button>
+	{% endbuttons %}
+</form>
+{% endblock %}

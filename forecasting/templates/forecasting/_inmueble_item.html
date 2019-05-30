@@ -7,6 +7,20 @@
     <p class="display-1">{{ inmueble.nombre }}</p>
     <hr>
     <p class="display-3">{{ inmueble.descripcion }}</p>
+    <hr>
+    <p class="h5">Consumo Inmueble: {{ inmueble.filename1 }}</p>
+    <hr>
+    <p class="h5">Consumo Inmueble Parcial: {{ inmueble.filename2 }}</p>
+    <hr>
+    <p class="h5">Vienen: {{ inmueble.consumosparciales.user }}</p>
+    {% for parcial in parcial_list %}
+        {{ inmueble.consumosparciales.inmueble_asociado }}
+    {% endfor %}
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <div class="col-md-12">{{ inmueble.unificar_consumos.grafica_inmueble|safe }}</div>
+
+
 
     {% if user.is_authenticated %}
         <a class="btn btn-primary"

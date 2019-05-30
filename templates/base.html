@@ -64,7 +64,8 @@
                         <div class="dropdown-menu" aria-labelledby="menu-consumo">
                             <a href="{% url 'forecasting:for_user_inmuebles' username=user.username %}" class="dropdown-item">Mis
                                 Inmuebles (usuario)</a>
-                            <a href="{% url 'forecasting:create_inmueble' username=user.username %}" class="dropdown-item">Añadir inmueble</a>
+                            <a href="{% url 'forecasting:create_inmueble' username=user.username %}" class="dropdown-item">Añadir Inmueble</a>
+                            <a href="{% url 'forecasting:create_consumoparcial' username=user.username %}" class="dropdown-item">Añadir Consumo Parcial</a>
                         </div>
                     </li>
 

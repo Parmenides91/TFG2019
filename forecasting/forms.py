@@ -5,7 +5,7 @@ from . import models
 #formulario para la creación de un nuevo inmueble
 class InmuebleForm(forms.ModelForm):
     class Meta():
-        fields=('nombre','descripcion')
+        fields=('nombre','descripcion','consumo_inmueble')
         model=models.Inmueble
 
     def __init__(self, *args, **kwargs):
@@ -13,6 +13,15 @@ class InmuebleForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
 
+#formulario para crear un consumo parcial de un inmueble
+class ConsumoParcialForm(forms.ModelForm):
+    class Meta():
+        fields=('inmueble_asociado','fichero_consumo_parcial')
+        model=models.ConsumoParcial
+
+    def __init__(self, *args, **kwargs):
+        user=kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
 
 
 

@@ -1,0 +1,18 @@
+{% extends "forecasting/consumoparcial_base.html" %}
+
+{% load bootstrap4 %}
+{% load static %}
+
+
+{% block content_consumoparcial %}
+
+<h4>CREAR NUEVO CONSUMO PARCIAL</h4>
+<form method="POST" action="{% url 'forecasting:create_consumoparcial' username=user.username %}" id="consumoparcialForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+        <button type="submit" class="btn btn-primary btn-large">Subir Consumo Parcial</button>
+	{% endbuttons %}
+</form>
+
+{% endblock %}

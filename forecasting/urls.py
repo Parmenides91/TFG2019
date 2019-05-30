@@ -33,4 +33,6 @@ urlpatterns = [
     path('by/<username>/inmueble/<int:pk>/', views.InmuebleDetail.as_view(), name='single_inmueble'),
     path('by/<username>/inmueble/edit/<int:pk>/', views.InmuebleUpdateView.as_view(), name='edit_inmueble'),
     path('by/<username>/inmueble/delete/<int:pk>/', views.DeleteInmueble.as_view(), name="delete_inmueble"),
+    #direcciones para consumos parciales
+    path('by/<username>/inmueble/new_consumo_parcial/', views.CreateConsumoParcial.as_view(), name='create_consumoparcial'),
 ]

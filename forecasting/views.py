@@ -65,9 +65,20 @@ class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
         queryset = super().get_queryset()
         return queryset.filter(user__username__iexact = self.kwargs.get("username"))
 
+    def get(self, request, *args, **kwargs):
+        try:
+            consumosparciales = models.ConsumoParcial.objects.filter(
+                user=self.request.user,
+                inmueble_asociado=self.inmueble_asociado.pk
+            ).get()
+        except:
+            pass
+
+        return super().get(request, *args, **kwargs)
+
 #crear un nuevo inmueble
 class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
-    fields = ('nombre', 'descripcion',)
+    fields = ('nombre', 'descripcion', 'consumo_inmueble')
     model = models.Inmueble
 
     def form_valid(self, form):
@@ -78,17 +89,11 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
         return super().form_valid(form)
 
 #modificar un inmueble ya creado
-"""
-    Atención:
-    - La edición no funciona, crea un nuevo Inmueble en lugar de modificar el seleccionado
-"""
 class InmuebleUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Inmueble
-    form_class = InmuebleForm
-    #Si estalla al modificar lo mismo es por este login que no etá bien puesto. O por el redirect ese
-    login_url = '/login/'
-    #redirect_field_name = 'blog/post_detail.html'
-    redirect_field_name='forecasting/inmueble_detail.html'
+    fields=['nombre','descripcion']
+    template_name_suffix = '_form_update'
+
 
 #eliminar un inmueble
 """
@@ -98,6 +103,20 @@ class InmuebleUpdateView(LoginRequiredMixin, UpdateView):
 class DeleteInmueble(LoginRequiredMixin, DeleteView):
     model = models.Inmueble
     success_url = reverse_lazy('home')
+    #success_url = reverse_lazy('forecasting:create_inmueble', kwargs={"username": self.user.username})
+
+
+# CONSUMOS PARCIALES
+#crear un nuevo consumo parcial
+class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    fields = ('inmueble_asociado', 'fichero_consumo_parcial',)
+    model = models.ConsumoParcial
+
+    def form_valid(self, form):
+        self.object = form.save(commit = False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 
 # CONSUMOS
