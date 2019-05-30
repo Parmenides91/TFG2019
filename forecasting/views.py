@@ -78,18 +78,27 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
         return super().form_valid(form)
 
 #modificar un inmueble ya creado
+"""
+    Atención:
+    - La edición no funciona, crea un nuevo Inmueble en lugar de modificar el seleccionado
+"""
 class InmuebleUpdateView(LoginRequiredMixin, UpdateView):
+    model = models.Inmueble
+    form_class = InmuebleForm
     #Si estalla al modificar lo mismo es por este login que no etá bien puesto. O por el redirect ese
-    #login_url = '/login/'
+    login_url = '/login/'
     #redirect_field_name = 'blog/post_detail.html'
     redirect_field_name='forecasting/inmueble_detail.html'
-    form_class = InmuebleForm
-    model = models.Inmueble
 
 #eliminar un inmueble
+"""
+    Esta vista requiere atención:
+    - Debería redirigir al listado de los inmuebles que tenga el usuario. Hay que pasarle por argumento el username
+"""
 class DeleteInmueble(LoginRequiredMixin, DeleteView):
     model = models.Inmueble
-    success_url = reverse_lazy('forecasting:all_inmuebles')
+    success_url = reverse_lazy('home')
+
 
 # CONSUMOS
 class ConsumoList(SelectRelatedMixin, generic.ListView):

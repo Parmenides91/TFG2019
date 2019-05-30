@@ -6,6 +6,7 @@ from . import models
 class InmuebleForm(forms.ModelForm):
     class Meta():
         fields=('nombre','descripcion')
+        model=models.Inmueble
 
     def __init__(self, *args, **kwargs):
         user=kwargs.pop('user', None)

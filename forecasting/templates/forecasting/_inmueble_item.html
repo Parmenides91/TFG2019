@@ -1,4 +1,3 @@
-
 <!--
     Esta página requiere atención:
     - Un diseño propio
@@ -10,8 +9,14 @@
     <p class="display-3">{{ inmueble.descripcion }}</p>
 
     {% if user.is_authenticated %}
-          <a class="btn btn-primary" href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar inmueble</a>
-          <a class="btn btn-primary" href="{% url 'forecasting:delete_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Eliminar inmueble</a>
-      {% endif %}
+        <a class="btn btn-primary"
+           href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar
+            inmueble</a>
+        <a class="btn btn-primary"
+           href="{% url 'forecasting:delete_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Eliminar
+            inmueble</a>
+        <a class="btn btn-secondary"
+           href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al listado</a>
+    {% endif %}
 
 </div>
