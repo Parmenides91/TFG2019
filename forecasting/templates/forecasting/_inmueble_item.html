@@ -13,8 +13,29 @@
     <p class="h5">Consumo Inmueble Parcial: {{ inmueble.filename2 }}</p>
     <hr>
     <p class="h5">Vienen: {{ inmueble.consumosparciales.user }}</p>
-    {% for parcial in parcial_list %}
+    {% for consumoparcial in consumoparcial_list %}
         {{ inmueble.consumosparciales.inmueble_asociado }}
+        {{ inmueble.consumosparciales.user }}
+        {{ inmueble.inmueble_asociado }}
+        {{ inmueble.user }}
+        {{ inmueble.consumosparciales.fichero_consumo_parcial }}
+        {{ inmueble.fichero_consumo_parcial }}
+        {{ consumoparcial.inmueble_asociado }}
+        {{ consumoparcial.user }}
+        {{ consumoparcial.fichero_consumo_parcial }}
+        {{ consumoparcial.inmueble_asociado }}
+    {% endfor %}
+    {% for consumoparcial in object_list %}
+        {{ inmueble.consumosparciales.inmueble_asociado }}
+        {{ inmueble.consumosparciales.user }}
+        {{ inmueble.inmueble_asociado }}
+        {{ inmueble.user }}
+        {{ inmueble.consumosparciales.fichero_consumo_parcial }}
+        {{ inmueble.fichero_consumo_parcial }}
+        {{ consumoparcial.inmueble_asociado }}
+        {{ consumoparcial.user }}
+        {{ consumoparcial.fichero_consumo_parcial }}
+        {{ consumoparcial.inmueble_asociado }}
     {% endfor %}
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
