@@ -78,8 +78,8 @@ class Inmueble(models.Model):
 
 
 class ConsumoParcial(models.Model):
-    user=models.ForeignKey(User, related_name="consumosparciales", on_delete=models.CASCADE)
-    inmueble_asociado=models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    inmueble_asociado=models.ForeignKey(Inmueble, related_name="consumosparciales", on_delete=models.CASCADE)
     fichero_consumo_parcial=models.FileField(upload_to='consumosParciales', blank = False)
 
     def __str__(self):

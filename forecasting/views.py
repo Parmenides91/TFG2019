@@ -19,6 +19,7 @@ from . import plots
 
 from . models import ModeloPred
 from . import func_datos_modelo
+from . import func_parciales
 
 import csv
 
@@ -61,10 +62,22 @@ class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
     model = models.Inmueble
     select_related = ("user",)
 
+    """
+    def pintarParcial(self):
+        parciales=self.inmueble.consumosparciales.all()
+        for parcial in parciales:
+            df=pd.read_csv(parcial, delimiter=';', decimal=',')
+        return df
+    """
+
+    def get_ConsumoParcial(self, model, select_related):
+        func_parciales.obtener_consumos_asociados(model.pk, select_related)
+
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(user__username__iexact = self.kwargs.get("username"))
 
+    """
     def get(self, request, *args, **kwargs):
         try:
             consumosparciales = models.ConsumoParcial.objects.filter(
@@ -75,6 +88,7 @@ class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
             pass
 
         return super().get(request, *args, **kwargs)
+    """
 
 #crear un nuevo inmueble
 class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
