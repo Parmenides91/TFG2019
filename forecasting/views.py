@@ -71,7 +71,7 @@ class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
     """
 
     def get_ConsumoParcial(self, model, select_related):
-        func_parciales.obtener_consumos_asociados(model.pk, select_related)
+        func_parciales.obtener_consumos_asociados(select_related, model.pk)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -129,6 +129,16 @@ class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.Creat
     def form_valid(self, form):
         self.object = form.save(commit = False)
         self.object.user = self.request.user
+
+        fichero_parcial = self.object.fichero_consumo_parcial
+        df_parcial=pd.read_csv(fichero_parcial, delimiter=';', decimal=',')
+        ristra = pd.date_range(df_parcial['Fecha'][0], periods=len(df_parcial), freq='H')
+        df_parcial['Fecha'] = ristra
+        df_parcial.drop(["Hora"], axis=1, inplace=True)
+        df_parcial['Fecha'] = pd.to_datetime(df_parcial['Fecha'], format='%d/%m/%Y %H:%M')
+        #to_csv y guardo
+        self.object.fichero_consumo_parcial=fichero_parcial
+
         self.object.save()
         return super().form_valid(form)
 

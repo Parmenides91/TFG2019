@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d26880c-b3e4-4f18-90ee-564ad5d0c853" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProyectoTFG/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTFG/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/func_parciales.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/func_parciales.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,14 +32,59 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="64" selection-start-line="10" selection-start-column="64" selection-end-line="10" selection-end-column="64" />
+            <state relative-caret-position="238">
+              <caret line="14" column="24" lean-forward="true" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="24" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/forecasting/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="87">
+              <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="234">
+              <caret line="64" column="87" selection-start-line="64" selection-start-column="87" selection-end-line="64" selection-end-column="87" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/forecasting/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="244">
+              <caret line="290" column="54" lean-forward="true" selection-start-line="290" selection-start-column="54" selection-end-line="290" selection-end-column="54" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/forecasting/func_parciales.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="42" lean-forward="true" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="42" />
+              <folding>
+                <element signature="e#0#20#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -130,14 +177,14 @@
         <option value="$PROJECT_DIR$/forecasting/func_inmueble.py" />
         <option value="$PROJECT_DIR$/forecasting/forms.py" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/inmueble_form_update.html" />
-        <option value="$PROJECT_DIR$/forecasting/models.py" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" />
-        <option value="$PROJECT_DIR$/forecasting/func_parciales.py" />
-        <option value="$PROJECT_DIR$/forecasting/views.py" />
         <option value="$PROJECT_DIR$/forecasting/func_cron.py" />
         <option value="$PROJECT_DIR$/ProyectoTFG/func_cron.py" />
         <option value="$PROJECT_DIR$/ProyectoTFG/settings.py" />
+        <option value="$PROJECT_DIR$/forecasting/func_parciales.py" />
+        <option value="$PROJECT_DIR$/forecasting/views.py" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" />
         <option value="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" />
+        <option value="$PROJECT_DIR$/forecasting/models.py" />
       </list>
     </option>
   </component>
@@ -170,13 +217,6 @@
               <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
               <item name="forecasting" type="462c0819:PsiDirectoryNode" />
               <item name="jobs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
-              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
-              <item name="jobs" type="462c0819:PsiDirectoryNode" />
-              <item name="minutely" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
@@ -322,28 +362,29 @@
       <workItem from="1559332125116" duration="2563000" />
       <workItem from="1559344088012" duration="1400000" />
       <workItem from="1559348611432" duration="4506000" />
+      <workItem from="1559375498427" duration="10331000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="235750000" />
+    <option name="totallyTimeSpent" value="246081000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="55" y="91" width="1133" height="690" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27027026" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2749301" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32718894" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49579126" weight="0.26032317" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.47619048" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49579126" weight="0.34254992" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.42396313" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="manage.py@ProyectoTFG" order="9" sideWeight="0.498366" weight="0.42190304" />
+      <window_info anchor="bottom" id="manage.py@ProyectoTFG" order="9" sideWeight="0.498366" weight="0.42089093" />
       <window_info anchor="bottom" id="Database Changes" order="10" weight="0.32941177" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50420874" side_tool="true" weight="0.40635452" />
       <window_info anchor="bottom" id="Terminal" order="12" weight="0.32854578" />
@@ -352,57 +393,83 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.32924837" />
-      <window_info anchor="right" id="SciView" order="4" weight="0.32924837" />
-      <window_info anchor="right" x="0" y="0" width="271" height="528" id="Documentation" order="5" side_tool="true" weight="0.30568498" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.32857144" />
+      <window_info anchor="right" x="0" y="0" width="271" height="528" id="Documentation" order="5" side_tool="true" weight="0.30555555" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/forecasting/views.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/forecasting/views.py</url>
+          <line>132</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/forecasting/views.py</url>
+          <line>129</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/forecasting/func_parciales.py</url>
+          <line>28</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>predictions.index</expression-string>
+        <expression-string>models.ConsumoParcial.objects.filter(inmueble_asociado_id=inmueble.id)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>predictions.values</expression-string>
+        <expression-string>consumo_parcial.fichero_consumo_parcial</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>predictions['SARIMA(1,1,1)(2,0,3,24) Predictions']</expression-string>
+        <expression-string>models.ConsumoParcial.objects.filter(inmueble_asociado_id=inmueble.id)[0].fichero_consumo_parcial.url</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>precios_MR[0]</expression-string>
+        <expression-string>models.ConsumoParcial.objects.filter(inmueble_asociado_id=inmueble.id)[0].fichero_consumo_parcial</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>row.get('Consumo_kWh')</expression-string>
+        <expression-string>models.ConsumoParcial.objects.filter(inmueble_asociado_id=inmueble.id)[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>row['Consumo_kWh']</expression-string>
+        <expression-string>ConsumoParcial.objects.all()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>row[4]</expression-string>
+        <expression-string>ConsumoParcial.objects.all</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>row[3]</expression-string>
+        <expression-string>models.ConsumoParcial.objects.all()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>row[2]</expression-string>
+        <expression-string>models.ConsumoParcial.objects.filter(inmueble_asociado=inmueble)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -617,13 +684,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/consumoparcial_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="36" lean-forward="true" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -669,13 +729,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/inmueble_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/func_inmueble.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
@@ -703,51 +756,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="62" lean-forward="true" selection-start-line="62" selection-end-line="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_list_item.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="42" selection-start-line="6" selection-start-column="42" selection-end-line="6" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="30" selection-start-line="4" selection-start-column="30" selection-end-line="4" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_parciales.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="82" column="90" selection-start-line="82" selection-start-column="90" selection-end-line="82" selection-end-column="90" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="76" selection-start-line="76" selection-end-line="76" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -759,17 +771,78 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/inmueble_detail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/consumoparcial_form.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="22" lean-forward="true" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
+          <folding>
+            <element signature="e#22#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ProyectoTFG/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="147" selection-start-line="147" selection-end-line="147" />
+        <state relative-caret-position="204">
+          <caret line="42" column="24" lean-forward="true" selection-start-line="42" selection-start-column="24" selection-end-line="42" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="64" column="87" selection-start-line="64" selection-start-column="87" selection-end-line="64" selection-end-column="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_parciales.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="42" lean-forward="true" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="290" column="54" lean-forward="true" selection-start-line="290" selection-start-column="54" selection-end-line="290" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="64" selection-start-line="10" selection-start-column="64" selection-end-line="10" selection-end-column="64" />
+        <state relative-caret-position="238">
+          <caret line="14" column="24" lean-forward="true" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="24" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>

@@ -12,6 +12,7 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 from datetime import datetime, timedelta
 
+from . import func_parciales
 from . import func_inmueble
 from . import func_analisis_consumo
 
@@ -73,6 +74,9 @@ class Inmueble(models.Model):
         """
 
         info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),}
+
+        #organizar consumos parciales
+        func_parciales.obtener_consumos_asociados(self.user_id, self.pk)
 
         return info_inmueble
 
@@ -287,6 +291,7 @@ class Prediccion(models.Model):
     created_at = models.DateTimeField(auto_now = True)
     titulo = models.CharField(max_length = 255, unique = True)
     fichero_prediccion = models.FileField(upload_to='predicciones', blank = True)
+    #enviado=false
 
     def __str__(self):
         return self.titulo
