@@ -240,6 +240,26 @@ class Consumo(models.Model):
             return self.coste_tarifa_PPP
     """
 
+class ModeloConsumo(models.Model):
+    inmueble_origen=models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    fichero_modelo_inmueble = models.FileField(upload_to='modelos', blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
+class PrediccionConsumo(models.Model):
+    modelo_consumo_origen=models.ForeignKey(ModeloConsumo, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    fichero_prediccion_consumo = models.FileField(upload_to='predicciones', blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
+
 class ModeloPred(models.Model):
     consumo_origen = models.ForeignKey(Consumo, on_delete = models.CASCADE)
     created_by = models.ForeignKey(User, related_name = "modelosPred", on_delete = models.CASCADE)

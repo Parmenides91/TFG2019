@@ -6,6 +6,7 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 import numpy as np
 import pandas as pd
+import csv
 
 # Load specific forecasting tools
 from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -46,9 +47,17 @@ def creacion_modelo(consumo):
     train = df.iloc[:tam_train]
     test = df.iloc[tam_test:]
 
-    model = SARIMAX(train['Consumo_kWh'], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24))
-    results = model.fit()
+    # model = SARIMAX(train['Consumo_kWh'], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24))
+    # results = model.fit()
 
-    datos = {'RECM':0.15,'M':0.7}
+    csvData = [['Person', 'Age'], ['Peter', '22'], ['Jasmine', '21'], ['Sam', '24']]
+    with open('personNN.csv', 'w') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerows(csvData)
+    csvFile.close()
 
-    return datos
+    # datos = {'RECM':0.15,'M':0.7}
+    # return datos
+
+    #return results
+    return True

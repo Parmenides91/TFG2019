@@ -23,6 +23,16 @@ class ConsumoParcialForm(forms.ModelForm):
         user=kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
+#formulario para crear un modelo a partir del consumo de un inmueble
+class ModeloConsumoForm(forms.ModelForm):
+    class Meta():
+        fields=('inmueble_origen','fichero_modelo_inmueble')
+        model=models.ModeloConsumo
+
+    def __init__(self, *args, **kwargs):
+        user=kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
 
 
 class ConsumoForm(forms.ModelForm):
