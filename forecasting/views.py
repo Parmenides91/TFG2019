@@ -20,6 +20,7 @@ from . import plots
 from . models import ModeloPred
 from . import func_datos_modelo
 from . import func_parciales
+from .funciones_basicas import limpiarCSV
 
 import csv
 
@@ -99,6 +100,10 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
         self.object = form.save(commit = False)
         self.object.user = self.request.user
         #form.instance.created_by = self.request.user
+
+        # df_inmueble=pd.read_csv(self.object.consumo_inmueble, delimiter=';', decimal=',')
+        # df_inmueble=limpiarCSV(df_inmueble)
+
         self.object.save()
         return super().form_valid(form)
 

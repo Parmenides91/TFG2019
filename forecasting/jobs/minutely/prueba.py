@@ -11,9 +11,9 @@ class Job(BaseJob):
     def execute(self):
         # executing empty sample job
         print('VAMOS A PROBAR A MANDAR UN CORREO. PRÓXIMAMENTE')
-        inmueble = models.Inmueble.objects.get.all()
-        inmueble.consumo
-        pred = models.Prediccion.objects.get
+        # inmueble = models.Inmueble.objects.get.all()
+        # inmueble.consumo
+        # pred = models.Prediccion.objects.get
 
         send_mail(
             'Subject here',

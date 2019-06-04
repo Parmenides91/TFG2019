@@ -75,8 +75,8 @@ class Inmueble(models.Model):
 
         info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),}
 
-        #organizar consumos parciales
-        func_parciales.obtener_consumos_asociados(self.user_id, self.pk)
+        # #organizar consumos parciales
+        # func_parciales.obtener_consumos_asociados(self.user_id, self.pk)
 
         return info_inmueble
 

@@ -2,13 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d26880c-b3e4-4f18-90ee-564ad5d0c853" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/forecasting/migrations/0015_modeloconsumo_prediccionconsumo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forecasting/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forecasting/func_datos_modelo.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/func_datos_modelo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/func_parciales.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/func_parciales.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/funciones_basicas.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/funciones_basicas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forecasting/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +37,20 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#53#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -46,7 +62,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>bootstrap</find>
       <find>get_user</find>
       <find>ModeloPred</find>
       <find>parsing</find>
@@ -73,6 +88,10 @@
       <find>person</find>
       <find>commit</find>
       <find>commite</find>
+      <find>high</find>
+      <find>.FileFiel</find>
+      <find>File</find>
+      <find>vamos</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -81,7 +100,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ProyectoTFG/views.py" />
         <option value="$PROJECT_DIR$/forecasting/func_tarifas.py" />
         <option value="$PROJECT_DIR$/forecasting/func_analisis_consumo.py" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/info_energia_spain.html" />
@@ -124,14 +142,15 @@
         <option value="$PROJECT_DIR$/forecasting/func_cron.py" />
         <option value="$PROJECT_DIR$/ProyectoTFG/func_cron.py" />
         <option value="$PROJECT_DIR$/ProyectoTFG/settings.py" />
+        <option value="$PROJECT_DIR$/forecasting/func_parciales.py" />
+        <option value="$PROJECT_DIR$/forecasting/funciones_basicas.py" />
         <option value="$PROJECT_DIR$/forecasting/views.py" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" />
-        <option value="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" />
-        <option value="$PROJECT_DIR$/forecasting/models.py" />
-        <option value="$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py" />
         <option value="$PROJECT_DIR$/forecasting/forms.py" />
+        <option value="$PROJECT_DIR$/forecasting/models.py" />
+        <option value="$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py" />
+        <option value="$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py" />
         <option value="$PROJECT_DIR$/forecasting/func_datos_modelo.py" />
-        <option value="$PROJECT_DIR$/forecasting/func_parciales.py" />
       </list>
     </option>
   </component>
@@ -147,6 +166,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -175,6 +195,13 @@
             <path>
               <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
               <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
+              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
+              <item name="jobs" type="462c0819:PsiDirectoryNode" />
+              <item name="minutely" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
               <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -186,7 +213,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -345,16 +371,18 @@
       <workItem from="1559348611432" duration="4506000" />
       <workItem from="1559375498427" duration="10331000" />
       <workItem from="1559400246775" duration="11862000" />
+      <workItem from="1559427887276" duration="1253000" />
+      <workItem from="1559638153026" duration="10745000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="257943000" />
+    <option name="totallyTimeSpent" value="269941000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="54" y="-8" width="1320" height="784" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20555556" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20238096" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -366,7 +394,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="manage.py@ProyectoTFG" order="9" sideWeight="0.498366" weight="0.562212" />
+      <window_info anchor="bottom" id="manage.py@ProyectoTFG" order="9" sideWeight="0.498366" weight="0.6359447" />
       <window_info anchor="bottom" id="Database Changes" order="10" weight="0.32941177" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50420874" side_tool="true" weight="0.40635452" />
       <window_info anchor="bottom" id="Terminal" order="12" weight="0.32854578" />
@@ -376,7 +404,7 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.32924837" />
       <window_info anchor="right" id="SciView" order="4" weight="0.32857144" />
-      <window_info anchor="right" x="0" y="0" width="271" height="528" id="Documentation" order="5" side_tool="true" weight="0.30475304" />
+      <window_info anchor="right" x="0" y="0" width="271" height="528" id="Documentation" order="5" side_tool="true" weight="0.30396825" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -435,13 +463,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_modelopred_item_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="26" lean-forward="true" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_list_item.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
@@ -644,16 +665,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_inmueble.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="10" column="19" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="19" />
-          <folding>
-            <element signature="e#22#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -693,27 +704,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="22" lean-forward="true" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-          <folding>
-            <element signature="e#22#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ProyectoTFG/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="42" column="24" lean-forward="true" selection-start-line="42" selection-start-column="24" selection-end-line="42" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="60" column="32" lean-forward="true" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -737,82 +731,116 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/jobs/sample.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/jobs/daily/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py">
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="204">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/forms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
+        <state relative-caret-position="187">
+          <caret line="14" column="22" lean-forward="true" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_parciales.py">
+    <entry file="file://$PROJECT_DIR$/forecasting/funciones_basicas.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="29" column="21" lean-forward="true" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="136">
+          <caret line="8" column="19" lean-forward="true" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py">
+    <entry file="file://$PROJECT_DIR$/forecasting/jobs/sample.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="19" lean-forward="true" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_datos_modelo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
-          <folding>
-            <element signature="e#22#41#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="85">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="245" column="45" selection-start-line="245" selection-start-column="36" selection-end-line="245" selection-end-column="45" />
+        <state relative-caret-position="3094">
+          <caret line="197" column="22" selection-start-line="197" selection-start-column="22" selection-end-line="197" selection-end-column="22" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#22#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_inmueble.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="16" column="34" lean-forward="true" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
+          <folding>
+            <element signature="e#22#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="96" selection-start-line="96" selection-end-line="96" />
+        <state relative-caret-position="1615">
+          <caret line="104" column="45" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_parciales.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="38" column="27" selection-start-line="38" selection-start-column="27" selection-end-line="38" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/func_datos_modelo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="48" column="32" selection-start-line="48" selection-start-column="32" selection-end-line="48" selection-end-column="32" />
+          <folding>
+            <element signature="e#22#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="26" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#53#0" expanded="true" />
           </folding>
         </state>
       </provider>

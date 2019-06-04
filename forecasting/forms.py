@@ -1,12 +1,21 @@
 from django import forms
 from . import models
 
+import pandas as pd
+from .funciones_basicas import limpiarCSV
+
 
 #formulario para la creación de un nuevo inmueble
 class InmuebleForm(forms.ModelForm):
     class Meta():
         fields=('nombre','descripcion','consumo_inmueble')
         model=models.Inmueble
+        filename = forms.FileField
+
+    # def clean(self):
+    #     cleaned_data=pd.read_csv(self.cleaned_data.get('filename').file, delimiter=';', decimal=',')
+    #     cleaned_data=limpiarCSV(cleaned_data)
+    #     return cleaned_data
 
     def __init__(self, *args, **kwargs):
         user=kwargs.pop('user', None)

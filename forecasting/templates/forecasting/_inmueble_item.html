@@ -12,54 +12,6 @@
     <hr>
     <p class="h5">Consumo Inmueble Parcial: {{ inmueble.filename2 }}</p>
     <hr>
-    <p class="h5">Vienen: {{ inmueble.consumosparciales.user }}</p>
-    {% for consumoparcial in consumoparcial_list %}
-        ep
-        {{ inmueble.consumosparciales.inmueble_asociado }}
-        {{ inmueble.consumosparciales.user }}
-        {{ inmueble.inmueble_asociado }}
-        {{ inmueble.user }}
-        {{ inmueble.consumosparciales.fichero_consumo_parcial }}
-        {{ inmueble.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-        {{ consumoparcial.user }}
-        {{ consumoparcial.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-    {% endfor %}
-    {% for consumoparcial in object_list %}
-        {{ inmueble.consumosparciales.inmueble_asociado }}
-        {{ inmueble.consumosparciales.user }}
-        {{ inmueble.inmueble_asociado }}
-        {{ inmueble.user }}
-        {{ inmueble.consumosparciales.fichero_consumo_parcial }}
-        {{ inmueble.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-        {{ consumoparcial.user }}
-        {{ consumoparcial.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-    {% endfor %}
-{{ inmueble.consumosparciales.inmueble_asociado }}
-        {{ inmueble.consumosparciales.user }}
-        {{ inmueble.inmueble_asociado }}
-        <!-- {{ inmueble.user }}-->
-        {{ inmueble.consumosparciales.fichero_consumo_parcial }}
-        {{ inmueble.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-        {{ consumoparcial.user }}
-        {{ consumoparcial.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-{{ inmueble.consumosparciales.inmueble_asociado }}
-        {{ inmueble.consumosparciales.user }}
-        {{ inmueble.inmueble_asociado }}
-        <!-- {{ inmueble.user }} -->
-        {{ inmueble.consumosparciales.fichero_consumo_parcial }}
-        {{ inmueble.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-        {{ consumoparcial.user }}
-        {{ consumoparcial.fichero_consumo_parcial }}
-        {{ consumoparcial.inmueble_asociado }}
-{{ inmueble.consumosparciales }}
-
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <div class="col-md-12">{{ inmueble.unificar_consumos.grafica_inmueble|safe }}</div>
