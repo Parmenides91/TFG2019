@@ -29,4 +29,23 @@
            href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al listado</a>
     {% endif %}
 
+    <p>Hello</p>
+    <!-- Listado de las predicciones que existen para este inmueble -->
+    <p class="display-3">Predicciones sobre este inmueble:</p>
+    <hr>
+    {% for modeloconsumo in inmueble.modeloconsumo_set.all %}
+        <p>Dentro del primer for</p>
+        {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}
+            <li class="media col-4 mt-2 mb-2">
+                <img class="mr-3" src="" alt="CSV file icon">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">{{ prediccion.titulo }}</h5>
+                    <h6 class="mt-0 mb-1 text-muted">Creado: {{ prediccion.created_at }}</h6>
+                    <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar predicción</a>
+                </div>
+            </li>
+        {% endfor %}
+    {% endfor %}
+    <p>Hola</p>
+
 </div>

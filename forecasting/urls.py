@@ -35,4 +35,7 @@ urlpatterns = [
     path('by/<username>/inmueble/delete/<int:pk>/', views.DeleteInmueble.as_view(), name="delete_inmueble"),
     #direcciones para consumos parciales
     path('by/<username>/inmueble/new_consumo_parcial/', views.CreateConsumoParcial.as_view(), name='create_consumoparcial'),
+    #direcciones para ver predicciones
+    #path('by/<username>/inmueble/<int:pkI>/prediccion/<int:pkP>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
+    path('prediccion/<int:pk>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
 ]

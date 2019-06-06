@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="jumbotron bg-light">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="display-1 ">Predicciones de Consumo</h1>
+                <hr>
+                <p class="text-muted font-italic lead">Información básica sobre las predicciones de consumo de los Inmuebles del Usuario</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        {% block preprediccionconsumo %}{% endblock %}
+        {% block prediccionconsumo_content %}{% endblock %}
+        {% block post_prediccionconsumo %}{% endblock %}
+    </div>
+
+{% endblock %}

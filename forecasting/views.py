@@ -148,6 +148,22 @@ class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.Creat
         return super().form_valid(form)
 
 
+# PREDICCIONES DE CONSUMO
+#ver una predicción de consumo concreta
+class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
+    model = models.PrediccionConsumo
+    select_related = ("modelo_consumo_origen",)
+
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     return queryset.filter(created_by__username__iexact=self.kwargs.get("username"))
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(id__iexact=self.kwargs.get("pk"))
+
+
+
 # CONSUMOS
 class ConsumoList(SelectRelatedMixin, generic.ListView):
     model = models.Consumo
