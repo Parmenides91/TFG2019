@@ -15,6 +15,10 @@ from datetime import datetime, timedelta
 from . import func_parciales
 from . import func_inmueble
 from . import func_analisis_consumo
+from . import func_datos_prediccion
+
+
+from django.core.mail import send_mail
 
 import os
 
@@ -61,6 +65,33 @@ class Inmueble(models.Model):
         else:
             pass
         """
+
+        # """Prueba de que crear las predicciones funciona"""
+        # modelos = ModeloConsumo.objects.all()
+        # for modelo in modelos:
+        #     print('Entramos a por los modelos a hacer predicciones, darling.')
+        #     print('Fecha de creación:')
+        #     print(modelo.created_at)
+        #     print('Esa era la fecha.')
+        #     print('A continuación te digo el fichero')
+        #     print(modelo.fichero_modelo_inmueble.name)
+        #     print('Ese es el fichero')
+        #     nueva_prediccion = PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,
+        #                                                                fichero_prediccion_consumo=func_datos_prediccion.crearPrediccion(
+        #                                                                    modelo.fichero_modelo_inmueble))
+        #     print('Create() hecho. Vamos a guardar todo.')
+        #     nueva_prediccion.save()
+        #     print('Guardado.')
+        #
+        #     print('Ahora mando EMAILS.')
+        #     send_mail(
+        #         'Creación de Predicción',
+        #         'Ha finalizado el proceso de creación de sus predicciones.',
+        #         'from@example.com',
+        #         [modelo.inmueble_origen.user.email],
+        #         fail_silently=False,
+        #     )
+        # """Fin de la prueba de que la creación por cron de las predicciones funciona (o no, eso es lo que voy a comprobar)"""
 
 
 
@@ -251,7 +282,7 @@ class ModeloConsumo(models.Model):
 
 class PrediccionConsumo(models.Model):
     modelo_consumo_origen=models.ForeignKey(ModeloConsumo, on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    #created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     fichero_prediccion_consumo = models.FileField(upload_to='predicciones', blank=True)
 
