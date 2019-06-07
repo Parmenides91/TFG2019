@@ -91,6 +91,21 @@ class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
         return super().get(request, *args, **kwargs)
     """
 
+FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
+FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
+from . import plots
+def recolectarPrecio(creador):
+    ristra = pd.date_range(start=FECHA_INICIO_PRECIOS, end=FECHA_FIN_PRECIOS, freq='h')
+    precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
+    d={'Fecha':ristra, 'PPP':precios['PPD'], 'EDP':precios['EDP'], 'VE':precios['VE']}
+    df = pd.DataFrame(data=d)
+    df = df.set_index('Fecha')
+    df = df.resample('H').interpolate(method='linear')
+    nombre=creador
+    ficheroMR = df.to_csv(nombre+'datosMR.csv')
+    return ficheroMR
+
+
 #crear un nuevo inmueble
 class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
     fields = ('nombre', 'descripcion', 'consumo_inmueble')
@@ -103,6 +118,14 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
 
         # df_inmueble=pd.read_csv(self.object.consumo_inmueble, delimiter=';', decimal=',')
         # df_inmueble=limpiarCSV(df_inmueble)
+
+        # #Cuando se crea un inmueble se crea un histórico de precios de la luz en el Mercado Regulado
+        # nuevo_historicoMR = models.HistoricoMercadoRegulado.objects.create(user=self.request.user,
+        #                                                                    precios_luz=recolectarPrecio(
+        #                                                                        self.request.user),
+        #                                                                    primera_fecha=FECHA_INICIO_PRECIOS,
+        #                                                                    ultima_fecha=FECHA_FIN_PRECIOS)
+        # nuevo_historicoMR.save()
 
         self.object.save()
         return super().form_valid(form)
@@ -161,6 +184,62 @@ class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(id__iexact=self.kwargs.get("pk"))
+
+
+# # HISTÓRICO MERCADO REGULADO
+# #ver un histórico
+# class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
+#     model=models.HistoricoMercadoRegulado
+#     select_related = ("user",)
+#
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         return queryset.filter(id__iexact=self.kwargs.get("pk"))
+#
+#     def get_context_data(self, **kwargs):
+#         if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
+#             #Me viene fecha de inicio y de final
+#             principioYear = self.kwargs['yearS']
+#             principioMonth = self.kwargs['monthS']
+#             principioDay = self.kwargs['dayS']
+#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+#             principio = principio.isoformat('T')
+#             finalYear = self.kwargs['yearF']
+#             finalMonth = self.kwargs['monthF']
+#             finalDay = self.kwargs['dayF']
+#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+#             final = final.isoformat('T')
+#         elif (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS')):
+#             #Me viene sólo un día
+#             principioYear = self.kwargs['yearS']
+#             principioMonth = self.kwargs['monthS']
+#             principioDay = self.kwargs['dayS']
+#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+#             principio = principio.isoformat('T')
+#             final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)
+#             final += timedelta(days=1)
+#             final = final.isoformat('T')
+#         else:
+#             #No me viene fecha
+#             ahora = datetime.now().__format__('%Y-%m-%d')
+#             principio = ahora + 'T02:00:00'
+#             finalYear = datetime.now().__format__('%Y')
+#             finalMonth = datetime.now().__format__('%m')
+#             finalDay = datetime.now().__format__('%d')
+#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+#             final += timedelta(days=1)
+#             final = final.isoformat('T')
+#
+#         context = super(HistoricoMercadoReguladoDetail, self).get_context_data(**kwargs)
+#
+#         hMR=models.HistoricoMercadoRegulado.objects.all()
+#         precios = pd.read_csv(hMR.precios_luz)
+#
+#         context['grafico_precio'] = plots.chart_precios_pvpc(principio, final)
+#         return context
+
+
+
 
 
 

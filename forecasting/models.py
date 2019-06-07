@@ -290,6 +290,52 @@ class PrediccionConsumo(models.Model):
         super().save(*args, **kwargs)
 
 
+# # LA CLASE QUE GUARDA EL HISTÓRICO DE PRECIOS
+# FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
+# FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
+# from . import plots
+# def recolectarPrecio():
+#     precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
+#     precios = pd.DataFrame(data=precios, )
+#     pass
+#
+# class Singleton(type):
+#     _instances = {}
+#     def __call__(cls, *args, **kwargs):
+#         if cls not in cls._instances:
+#             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+#         #else:
+#         #    cls._instances[cls].__init__(*args, **kwargs)
+#         return cls._instances[cls]
+#
+# class HistoricoPrecio(metaclass=Singleton):
+# 	precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
+# 	#Para garantizar la consistencia, almaceno los extremos de mis datos y no dejo que haya huecos. Si se me pide una fecha que está fuera de mis márgenes, solicito desde mi extremo más cercano hasta esa fecha, para que no queden huecos. De esta manera hago las comprobaciones que puedan venir más adelante más fáciles, porque no tengo que comprobar si tengo todas las fechas que se me pidan una a una, si no si los márgenes que me piden están dentro de mis datos. Si están fuera, solicito los datos (aunque tenga datos parciales en mis datos) y si están dentro, devuelvo los datos que me hayan pedido.
+# 	primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
+# 	ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
+
+#Esto es el segundo pensamiento sobre cómo hacerlo
+# FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
+# FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
+# from . import plots
+# def recolectarPrecio(creador):
+#     ristra = pd.date_range(start=FECHA_INICIO_PRECIOS, end=FECHA_FIN_PRECIOS, freq='h')
+#     precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
+#     d={'Fecha':ristra, 'PPP':precios['PPD'], 'EDP':precios['EDP'], 'VE':precios['VE']}
+#     df = pd.DataFrame(data=d)
+#     df = df.set_index('Fecha')
+#     df = df.resample('H').interpolate(method='linear')
+#     nombre=creador
+#     ficheroMR = df.to_csv(nombre+'datosMR.csv')
+#     return ficheroMR
+
+# class HistoricoMercadoRegulado(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
+#     precios_luz = models.FileField()
+#     primera_fecha=models.DateTimeField()
+#     ultima_fecha=models.DateTimeField()
+
+
 
 class ModeloPred(models.Model):
     consumo_origen = models.ForeignKey(Consumo, on_delete = models.CASCADE)

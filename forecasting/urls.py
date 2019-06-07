@@ -38,4 +38,6 @@ urlpatterns = [
     #direcciones para ver predicciones
     #path('by/<username>/inmueble/<int:pkI>/prediccion/<int:pkP>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
     path('prediccion/<int:pk>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
+    # #direcciones para histórico mercado regulado
+    # path('mercado-regulado/<int:pk>', views.HistoricoMercadoReguladoDetail.as_view(), name='single_historicomercadoregulado'),
 ]

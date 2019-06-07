@@ -1,0 +1,19 @@
+{% extends "forecasting/historicomercadoregulado_base.html" %}
+
+
+{% block content_historicomercadoregulado %}
+
+    <div class="container">
+        <h1>Has llegado al Detail de Mercado Regulado</h1>
+
+        <h3>Dueño:</h3>
+        <p>{{ historicomercadoregulado.user }}</p>
+        <h3>Primera fecha:</h3>
+        <p>{{ historicomercadoregulado.primera_fecha }}</p>
+        <h3>Ultima fecha:</h3>
+        <p>{{ historicomercadoregulado.ultima_fecha }}</p>
+        <h3>Fichero</h3>
+        <p>{{ historicomercadoregulado.precios_luz }}</p>
+    </div>
+
+{% endblock %}

@@ -93,6 +93,10 @@ def obtener_precios_mercado_regulado(df):
     fin_fecha = df['Fecha'][(len(df) - 1)]
     precios_MR = plots.precios_pvpc(inicio_fecha, fin_fecha)
 
+    # d={'Fecha': range, 'PPD':precios_MR['PPD'], 'EDP':precios_MR['EDP'], 'VE':precios_MR['VE']}
+    # fichero_precios= pd.DataFrame(data=d)
+    # fichero_precios.to_csv('DATOSluz.csv')
+
     coste_PPD = (calcular_coste_tarifa_MR(df, precios_MR['PPD'], 'PPD')) / 1000
     coste_EDP = (calcular_coste_tarifa_MR(df, precios_MR['EDP'], 'EDP')) / 1000
     coste_VE = (calcular_coste_tarifa_MR(df, precios_MR['VE'], 'VE')) / 1000
