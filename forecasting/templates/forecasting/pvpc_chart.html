@@ -28,14 +28,23 @@
 
         <!-- <button id="ver_pvpc_button" name="ver_pvpc" type="button" class="btn btn-primary">Ver PVPC</button> -->
         <!-- <h3>{{ grafico_precio }}</h3> -->
+        <!--
+<input type="text" id="qta_field" value="${item.value}"/>
+<a href='' onclick="this.href='updateItem?codice=${item.key.codice}&quantita='+document.getElementById('qta_field').value">update</a>
+        -->
 
-        <input id="fechaPrecio" type="date">
-        <button id="ver_precioFecha_button" name="ver_precioFecha" type="button" class="btn btn-primary">Consultar
+        <input type="date" id="fechaPrecioPVPC" value="${item.value}"/>
+        <a href='' onclick="this.href=document.getElementById('fechaPrecioPVPC').value">update</a>
+
+
+        <input id="fechaPrecio" type="date" value="${item.value}">
+        <button id="ver_precioFecha_button" name="ver_precioFecha" type="button" class="btn btn-primary" href=http://127.0.0.1:8000/forecasting/pvpc/" + date>Consultar
             precios
         </button>
 
         <div class="col-md-12">{{ grafico_precio|safe }}</div>
     </div>
+    <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script>
         $("#ver_precioFecha_button").click(function (e) {
@@ -46,11 +55,12 @@
             $.ajax({
                 url: "http://127.0.0.1:8000/forecasting/pvpc/" + date,
                 success: function (data, status, xhr) {
-                    //alert(data)
+                    alert(data)
                 }
             })
         });
     </script>
+    -->
 
 
     <!-- AQUÍ ABAJO VAN EL RESTO DE PRUEBAS -->

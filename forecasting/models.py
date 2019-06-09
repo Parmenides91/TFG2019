@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.statespace.sarimax import SARIMAXResults
@@ -35,6 +36,7 @@ class Inmueble(models.Model):
     descripcion=models.CharField(max_length=255, blank=True)
     created_at=models.DateTimeField(auto_now=True)
     consumo_inmueble=models.FileField(upload_to='consumosInmuebles', blank = False)
+    # consumo_inmueble = models.BinaryField()
     consumo_inmueble_parcial=models.FileField(upload_to='consumosInmuebles', blank = True)
 
     def __str__(self):
@@ -94,8 +96,8 @@ class Inmueble(models.Model):
         # """Fin de la prueba de que la creación por cron de las predicciones funciona (o no, eso es lo que voy a comprobar)"""
 
 
-
-        df = pd.read_csv(self.consumo_inmueble, delimiter=';', decimal=',')
+        df=pd.read_csv(self.consumo_inmueble)
+        # df = pd.read_csv(self.consumo_inmueble, delimiter=';', decimal=',')
         #df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
         """
         try:
@@ -289,30 +291,38 @@ class PrediccionConsumo(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+    # Representar la predicción que se ha llevado a cabo
+    @property
+    def representar_prediccionconsumo(self):
+        df = pd.read_csv('LaPrediccion.csv')
+        info_predicionconsumo = {'grafica_prediccionconsumo': func_datos_prediccion.predicionconsumo_chart(df), }
+        return info_predicionconsumo
 
-# # LA CLASE QUE GUARDA EL HISTÓRICO DE PRECIOS
-# FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
-# FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
-# from . import plots
-# def recolectarPrecio():
-#     precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
-#     precios = pd.DataFrame(data=precios, )
-#     pass
-#
-# class Singleton(type):
-#     _instances = {}
-#     def __call__(cls, *args, **kwargs):
-#         if cls not in cls._instances:
-#             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-#         #else:
-#         #    cls._instances[cls].__init__(*args, **kwargs)
-#         return cls._instances[cls]
-#
-# class HistoricoPrecio(metaclass=Singleton):
-# 	precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
-# 	#Para garantizar la consistencia, almaceno los extremos de mis datos y no dejo que haya huecos. Si se me pide una fecha que está fuera de mis márgenes, solicito desde mi extremo más cercano hasta esa fecha, para que no queden huecos. De esta manera hago las comprobaciones que puedan venir más adelante más fáciles, porque no tengo que comprobar si tengo todas las fechas que se me pidan una a una, si no si los márgenes que me piden están dentro de mis datos. Si están fuera, solicito los datos (aunque tenga datos parciales en mis datos) y si están dentro, devuelvo los datos que me hayan pedido.
-# 	primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
-# 	ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
+
+
+# LA CLASE QUE GUARDA EL HISTÓRICO DE PRECIOS
+FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
+FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
+from . import plots
+def recolectarPrecio():
+    precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
+    precios = pd.DataFrame(data=precios, )
+    pass
+
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        #else:
+        #    cls._instances[cls].__init__(*args, **kwargs)
+        return cls._instances[cls]
+
+class HistoricoMercadoRegulado(metaclass=Singleton):
+	precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
+	#Para garantizar la consistencia, almaceno los extremos de mis datos y no dejo que haya huecos. Si se me pide una fecha que está fuera de mis márgenes, solicito desde mi extremo más cercano hasta esa fecha, para que no queden huecos. De esta manera hago las comprobaciones que puedan venir más adelante más fáciles, porque no tengo que comprobar si tengo todas las fechas que se me pidan una a una, si no si los márgenes que me piden están dentro de mis datos. Si están fuera, solicito los datos (aunque tenga datos parciales en mis datos) y si están dentro, devuelvo los datos que me hayan pedido.
+	primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
+	ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
 
 #Esto es el segundo pensamiento sobre cómo hacerlo
 # FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
@@ -334,6 +344,14 @@ class PrediccionConsumo(models.Model):
 #     precios_luz = models.FileField()
 #     primera_fecha=models.DateTimeField()
 #     ultima_fecha=models.DateTimeField()
+#
+#     # sobreescribo el método de escritura para que, si ya hay una instancia creada, no se creen más
+#     def save(self, *args, **kwargs):
+#         if HistoricoMercadoRegulado.objects.exists() and not self.pk:
+#             # if you'll not check for self.pk
+#             # then error will also raised in update of exists model
+#             raise ValidationError('ERROR: sólo puedes crear un histórico.')
+#         return super(HistoricoMercadoRegulado, self).save(*args, **kwargs)
 
 
 

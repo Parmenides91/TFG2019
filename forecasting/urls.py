@@ -22,6 +22,7 @@ urlpatterns = [
     path("pvpc/", views.PVPCView.as_view(), name = "pvpc_precios"),
     path("pvpc/<int:yearS>/<int:monthS>/<int:dayS>/<int:yearF>/<int:monthF>/<int:dayF>/", views.PVPCView.as_view(), name ="pvpc_precios"),
     path("pvpc/<int:yearS>/<int:monthS>/<int:dayS>/", views.PVPCView.as_view(), name ="pvpc_precios"),
+    path("pvpc/<int:yearS>-<int:monthS>-<int:dayS>/", views.PVPCView.as_view(), name ="pvpc_precios"),
     path("crear_fic_mod/<int:pk>", views.crear_fic_mod, name='crear_fic_mod'),
     #path("by/<username>/consumos/plot/<int:pk>/", views.ConsumoPlotDetail.as_view(), name="single_plot_C"),
     path('informacion_smartmeters/', views.InformacionSmartMeters.as_view(), name="infoS"),
@@ -39,5 +40,5 @@ urlpatterns = [
     #path('by/<username>/inmueble/<int:pkI>/prediccion/<int:pkP>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
     path('prediccion/<int:pk>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
     # #direcciones para histórico mercado regulado
-    # path('mercado-regulado/<int:pk>', views.HistoricoMercadoReguladoDetail.as_view(), name='single_historicomercadoregulado'),
+    path('mercado-regulado/<int:pk>', views.HistoricoMercadoReguladoDetail.as_view(), name='single_historicomercadoregulado'),
 ]

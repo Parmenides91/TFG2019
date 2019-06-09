@@ -35,6 +35,7 @@ def arreglarDatosCSV(df):
 
 
 """
+¡OJO!: no estoy usando esta función en inguna parte. El Job tiene la lógica implementada allí, no tira de esta función
 if:
 - Los ficheros no tienen consumos solapados.
 - No se garantiza que donde acabe uno justo empiece el otro (por lo que en ese caso puede que algo estalle más adelante).

@@ -9,19 +9,20 @@ import pandas as pd
 
 # Representación del Consumo en una gráfica
 def consumo_chart(df):
-    df = df.drop(["CUPS", "Metodo_obtencion"], axis=1)
-    ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')  # secuencia de horas
-    # df['Hora'] = df['Hora'].astype(str) + ':00'
-    # df['Fecha'] = df['Fecha'] + ' ' + df['Hora']
-    df['Fecha'] = ristra
-    df = df.drop(["Hora"], axis=1)
-    df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%Y %H:%M')
+    # df = df.drop(["CUPS", "Metodo_obtencion"], axis=1)
+    #     # ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')  # secuencia de horas
+    #     # # df['Hora'] = df['Hora'].astype(str) + ':00'
+    #     # # df['Fecha'] = df['Fecha'] + ' ' + df['Hora']
+    #     # df['Fecha'] = ristra
+    #     # df = df.drop(["Hora"], axis=1)
+    #     # df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%Y %H:%M')
 
     #n_leyenda = 'Consumo de ' + self.user.username
     n_leyenda = 'Consumo'
 
     trace1 = go.Scatter(
         x=df['Fecha'],
+        # x=df.index,
         y=df['Consumo_kWh'],
         mode='lines+markers',
         name=n_leyenda,

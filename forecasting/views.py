@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.base import ContentFile
 from django.urls import reverse_lazy
 from django.http import Http404, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views import generic
@@ -8,6 +9,7 @@ from django.views.generic import DeleteView, TemplateView, UpdateView
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
+from django.core.files import File
 
 # pip install django-braces
 from braces.views import SelectRelatedMixin
@@ -105,7 +107,9 @@ def recolectarPrecio(creador):
     ficheroMR = df.to_csv(nombre+'datosMR.csv')
     return ficheroMR
 
-
+import os
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 #crear un nuevo inmueble
 class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
     fields = ('nombre', 'descripcion', 'consumo_inmueble')
@@ -116,8 +120,19 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
         self.object.user = self.request.user
         #form.instance.created_by = self.request.user
 
-        # df_inmueble=pd.read_csv(self.object.consumo_inmueble, delimiter=';', decimal=',')
-        # df_inmueble=limpiarCSV(df_inmueble)
+        #Haciéndolo de esta manera, la instancia no encuentra su fichero. YA SÍ QUE ESTÁ BIEN HECHO. NO MAMES, WEY
+        df_inmueble=pd.read_csv(self.object.consumo_inmueble, delimiter=';', decimal=',')
+        df_inmueble=limpiarCSV(df_inmueble)
+        #TODO GUARDAR EL DATAFRAME EN UN PICKLE EN LUGAR DE EN CSV --> modificar el modelo
+        # dire=os.path.join(settings.MEDIA_ROOT, 'consumosInmuebles')
+        # # dire = os.path.join(str(FileSystemStorage.location), 'consumosInmuebles')
+        # dire=os.path.join(dire, self.object.consumo_inmueble.name)
+        # fichero_df_inmueble=df_inmueble.to_csv(dire)
+        # fichero_df_inmueble=df_inmueble.to_csv(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+'\\media\\consumosInmuebles\\'+self.object.consumo_inmueble.name)
+        file_path=settings.MEDIA_ROOT+'\\consumosInmuebles\\'+self.object.consumo_inmueble.name
+
+        self.object.consumo_inmueble.file= ContentFile(df_inmueble.to_csv(columns={'Fecha','Consumo_kWh'}))
+
 
         # #Cuando se crea un inmueble se crea un histórico de precios de la luz en el Mercado Regulado
         # nuevo_historicoMR = models.HistoricoMercadoRegulado.objects.create(user=self.request.user,
@@ -158,14 +173,19 @@ class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.Creat
         self.object = form.save(commit = False)
         self.object.user = self.request.user
 
-        fichero_parcial = self.object.fichero_consumo_parcial
-        df_parcial=pd.read_csv(fichero_parcial, delimiter=';', decimal=',')
-        ristra = pd.date_range(df_parcial['Fecha'][0], periods=len(df_parcial), freq='H')
-        df_parcial['Fecha'] = ristra
-        df_parcial.drop(["Hora"], axis=1, inplace=True)
-        df_parcial['Fecha'] = pd.to_datetime(df_parcial['Fecha'], format='%d/%m/%Y %H:%M')
-        #to_csv y guardo
-        self.object.fichero_consumo_parcial=fichero_parcial
+        # fichero_parcial = self.object.fichero_consumo_parcial
+        # df_parcial=pd.read_csv(fichero_parcial, delimiter=';', decimal=',')
+        # ristra = pd.date_range(df_parcial['Fecha'][0], periods=len(df_parcial), freq='H')
+        # df_parcial['Fecha'] = ristra
+        # df_parcial.drop(["Hora"], axis=1, inplace=True)
+        # df_parcial['Fecha'] = pd.to_datetime(df_parcial['Fecha'], format='%d/%m/%Y %H:%M')
+        # #to_csv y guardo
+        # self.object.fichero_consumo_parcial=fichero_parcial
+
+        df_parcial = pd.read_csv(self.object.fichero_consumo_parcial, delimiter=';', decimal=',')
+        df_parcial = limpiarCSV(df_parcial)
+        file_path = settings.MEDIA_ROOT + '\\consumosParciales\\' + self.object.fichero_consumo_parcial.name #me sobra???
+        self.object.fichero_consumo_parcial.file = ContentFile(df_parcial.to_csv(columns={'Fecha', 'Consumo_kWh'}))
 
         self.object.save()
         return super().form_valid(form)
@@ -186,57 +206,57 @@ class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
         return queryset.filter(id__iexact=self.kwargs.get("pk"))
 
 
-# # HISTÓRICO MERCADO REGULADO
-# #ver un histórico
-# class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
-#     model=models.HistoricoMercadoRegulado
-#     select_related = ("user",)
-#
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         return queryset.filter(id__iexact=self.kwargs.get("pk"))
-#
-#     def get_context_data(self, **kwargs):
-#         if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
-#             #Me viene fecha de inicio y de final
-#             principioYear = self.kwargs['yearS']
-#             principioMonth = self.kwargs['monthS']
-#             principioDay = self.kwargs['dayS']
-#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
-#             principio = principio.isoformat('T')
-#             finalYear = self.kwargs['yearF']
-#             finalMonth = self.kwargs['monthF']
-#             finalDay = self.kwargs['dayF']
-#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-#             final = final.isoformat('T')
-#         elif (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS')):
-#             #Me viene sólo un día
-#             principioYear = self.kwargs['yearS']
-#             principioMonth = self.kwargs['monthS']
-#             principioDay = self.kwargs['dayS']
-#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
-#             principio = principio.isoformat('T')
-#             final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)
-#             final += timedelta(days=1)
-#             final = final.isoformat('T')
-#         else:
-#             #No me viene fecha
-#             ahora = datetime.now().__format__('%Y-%m-%d')
-#             principio = ahora + 'T02:00:00'
-#             finalYear = datetime.now().__format__('%Y')
-#             finalMonth = datetime.now().__format__('%m')
-#             finalDay = datetime.now().__format__('%d')
-#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-#             final += timedelta(days=1)
-#             final = final.isoformat('T')
-#
-#         context = super(HistoricoMercadoReguladoDetail, self).get_context_data(**kwargs)
-#
-#         hMR=models.HistoricoMercadoRegulado.objects.all()
-#         precios = pd.read_csv(hMR.precios_luz)
-#
-#         context['grafico_precio'] = plots.chart_precios_pvpc(principio, final)
-#         return context
+# HISTÓRICO MERCADO REGULADO
+#ver un histórico
+class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
+    model=models.HistoricoMercadoRegulado
+    # select_related = ("user",)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(id__iexact=self.kwargs.get("pk"))
+
+    def get_context_data(self, **kwargs):
+        if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
+            #Me viene fecha de inicio y de final
+            principioYear = self.kwargs['yearS']
+            principioMonth = self.kwargs['monthS']
+            principioDay = self.kwargs['dayS']
+            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+            principio = principio.isoformat('T')
+            finalYear = self.kwargs['yearF']
+            finalMonth = self.kwargs['monthF']
+            finalDay = self.kwargs['dayF']
+            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+            final = final.isoformat('T')
+        elif (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS')):
+            #Me viene sólo un día
+            principioYear = self.kwargs['yearS']
+            principioMonth = self.kwargs['monthS']
+            principioDay = self.kwargs['dayS']
+            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+            principio = principio.isoformat('T')
+            final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)
+            final += timedelta(days=1)
+            final = final.isoformat('T')
+        else:
+            #No me viene fecha
+            ahora = datetime.now().__format__('%Y-%m-%d')
+            principio = ahora + 'T02:00:00'
+            finalYear = datetime.now().__format__('%Y')
+            finalMonth = datetime.now().__format__('%m')
+            finalDay = datetime.now().__format__('%d')
+            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+            final += timedelta(days=1)
+            final = final.isoformat('T')
+
+        context = super(HistoricoMercadoReguladoDetail, self).get_context_data(**kwargs)
+
+        hMR=models.HistoricoMercadoRegulado.objects.all()
+        precios = pd.read_csv(hMR.precios_luz)
+
+        context['grafico_precio'] = plots.chart_precios_pvpc(principio, final)
+        return context
 
 
 

@@ -45,6 +45,7 @@ def crearModelo(fichero):
     print('A continuación calculo el modelo.')
     model = SARIMAX(df['Consumo_kWh'], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24)).fit()
     print('Lo guardo.')
+    #poner un random, o la echa, y así no se sobreescriben, concatenado y fuera
     saved = model.save('modeloXXX.pkl')
     print('Te lo paso guardado')
 

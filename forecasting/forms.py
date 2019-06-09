@@ -8,7 +8,7 @@ from .funciones_basicas import limpiarCSV
 #formulario para la creación de un nuevo inmueble
 class InmuebleForm(forms.ModelForm):
     class Meta():
-        fields=('nombre','descripcion','consumo_inmueble')
+        fields=('nombre','descripcion', 'consumo_inmueble')
         model=models.Inmueble
         filename = forms.FileField
 
