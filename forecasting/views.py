@@ -131,7 +131,8 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
         # fichero_df_inmueble=df_inmueble.to_csv(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+'\\media\\consumosInmuebles\\'+self.object.consumo_inmueble.name)
         file_path=settings.MEDIA_ROOT+'\\consumosInmuebles\\'+self.object.consumo_inmueble.name
 
-        self.object.consumo_inmueble.file= ContentFile(df_inmueble.to_csv(columns={'Fecha','Consumo_kWh'}))
+        # self.object.consumo_inmueble.file= ContentFile(df_inmueble.to_csv(columns={'Fecha','Consumo_kWh'}))
+        self.object.consumo_inmueble.file = ContentFile(df_inmueble.to_csv(columns={'Consumo_kWh',}))
 
 
         # #Cuando se crea un inmueble se crea un histórico de precios de la luz en el Mercado Regulado
@@ -185,7 +186,8 @@ class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.Creat
         df_parcial = pd.read_csv(self.object.fichero_consumo_parcial, delimiter=';', decimal=',')
         df_parcial = limpiarCSV(df_parcial)
         file_path = settings.MEDIA_ROOT + '\\consumosParciales\\' + self.object.fichero_consumo_parcial.name #me sobra???
-        self.object.fichero_consumo_parcial.file = ContentFile(df_parcial.to_csv(columns={'Fecha', 'Consumo_kWh'}))
+        # self.object.fichero_consumo_parcial.file = ContentFile(df_parcial.to_csv(columns={'Fecha', 'Consumo_kWh'}))
+        self.object.fichero_consumo_parcial.file = ContentFile(df_parcial.to_csv(columns={'Consumo_kWh',}))
 
         self.object.save()
         return super().form_valid(form)
