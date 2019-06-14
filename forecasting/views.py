@@ -208,6 +208,62 @@ class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
         return queryset.filter(id__iexact=self.kwargs.get("pk"))
 
 
+
+# TARIFA ELÉCTRICA
+#crear una tarifa eléctrica
+class CreateTarifaElectrica(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    fields = ('nombre', 'hora_ini_periodo_gracia', 'hora_fin_periodo_gracia', 'precio_periodo_gracia', 'precio_periodo_general')
+    model = models.TarifaElectrica
+
+    def form_valid(self, form):
+        self.object = form.save(commit = False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+#Listar las tarifas eléctricas de un usuario
+class UserTarifasElectricas(generic.ListView):
+    model=models.TarifaElectrica
+    template_name = "forecasting/user_tarifaelectrica_list.html"
+
+    def get_queryset(self):
+        try:
+            self.tarifaelectrica_user=User.objects.get(username__iexact=self.kwargs.get("username"))
+        except User.DoesNotExist:
+            raise Http404
+        else:
+            return self.tarifaelectrica_user.tarifaselectricas.all()
+
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        return context
+
+#listado de los inmuebles, en general (probablemente me lo puedo cargar, porque sólo quiero listar por usuario)
+# class TarifaElectricaList(SelectRelatedMixin, generic.ListView):
+#     model=models.TarifaElectrica
+#     select_related = ("user", )
+
+#muestra una tarifa eléctrica
+class TarifaElectricaDetail(SelectRelatedMixin, generic.DetailView):
+    model = models.TarifaElectrica
+    select_related = ("user",)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user__username__iexact = self.kwargs.get("username"))
+
+#modificar una tarifa eléctrica
+class TarifaElectricaUpdateView(LoginRequiredMixin, UpdateView):
+    model = models.TarifaElectrica
+    fields=['nombre', 'hora_ini_uno', 'duracion_uno', 'precio_uno', 'hora_ini_dos', 'duracion_dos', 'precio_dos']
+    template_name_suffix = '_form_update'
+
+#eliminar una tarifa eléctrica
+class DeleteTarifaElectrica(LoginRequiredMixin, DeleteView):
+    model = models.TarifaElectrica
+    success_url = reverse_lazy('home')
+
+
 # HISTÓRICO MERCADO REGULADO
 #ver un histórico
 class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):

@@ -69,6 +69,18 @@
                         </div>
                     </li>
 
+                    <!-- Tarifas Eléctricas del Usuario -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-tarifaelectrica" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Tarifa Eléctrica
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-tarifaelectrica">
+                            <a href="{% url 'forecasting:for_user_tarifaselectricas' username=user.username %}" class="dropdown-item">Tarifas Eléctricas (usuario)</a>
+                            <a href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}" class="dropdown-item">Añadir Tarifa Eléctrica</a>
+                        </div>
+                    </li>
+
                     <!-- Consumos del Usuario -->
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" id="menu-consumo" data-toggle="dropdown"

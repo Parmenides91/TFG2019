@@ -65,6 +65,16 @@ def unirConsumos(df_1, df_2):
 
 
 
+import string
+import random
+
+# https://math.stackexchange.com/questions/2232520/what-are-chance-of-two-randomly-generated-4-digit-strings-being-the-same
+# https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+def id_random_generator(size=8, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+
 """
 import rpy2.robjects as robjects
 def limpiarCSV(ruta):

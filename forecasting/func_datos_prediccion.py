@@ -6,6 +6,10 @@ from plotly.offline import plot
 from datetime import datetime, timedelta
 from django.core.files import File
 
+from django.conf import settings
+
+from .funciones_basicas import id_random_generator
+
 # Load specific forecasting tools
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.statespace.sarimax import SARIMAXResults
@@ -13,7 +17,8 @@ from statsmodels.tsa.statespace.sarimax import SARIMAXResults
 
 def crearPrediccion(fichero):
     print('Has entrado a la función')
-    print(File(fichero))
+    # print(File(fichero))
+    print(fichero)
     print('Cargamos el fichero')
     loaded = SARIMAXResults.load(fichero)
     print('Ya está cargado')
@@ -39,7 +44,8 @@ def crearPrediccion(fichero):
     ristra=pd.date_range(start=inicio, end=final, freq='h')
     d={'Fecha':ristra, 'Consumo_kWh':predicciones}
     df=pd.DataFrame(data=d)
-    prediccion = df.to_csv('LaPrediccion.csv')
+    ruta_fich = settings.MEDIA_ROOT + '\\predicciones\\'
+    prediccion = df.to_csv(ruta_fich+'prediccion'+id_random_generator()+'.csv')
 
     # prediccion = predicciones.to_csv('LaPrediccion.csv')
     print('Guardado en csv. Te lo mando.')

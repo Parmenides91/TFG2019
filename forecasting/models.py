@@ -17,6 +17,10 @@ from . import func_parciales
 from . import func_inmueble
 from . import func_analisis_consumo
 from . import func_datos_prediccion
+from .func_inmueble import coste_tarifas_usuario, coste_tarifas_mr
+
+from .func_datos_prediccion import crearPrediccion
+from .func_datos_modelo import crearModelo
 
 
 from django.core.mail import send_mail
@@ -81,7 +85,7 @@ class Inmueble(models.Model):
         #     nueva_prediccion = PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,
         #                                                                fichero_prediccion_consumo=func_datos_prediccion.crearPrediccion(
         #                                                                    modelo.fichero_modelo_inmueble))
-        #     print('Create() hecho. Vamos a guardar todo.')
+        #     print('Create() hecho. Vamos a guardar tod.')
         #     nueva_prediccion.save()
         #     print('Guardado.')
         #
@@ -95,8 +99,24 @@ class Inmueble(models.Model):
         #     )
         # """Fin de la prueba de que la creación por cron de las predicciones funciona (o no, eso es lo que voy a comprobar)"""
 
+        # # Prueba de guardado de los modelos. No se guardan (aunque sí se crean) y las predicciones no lo encuentran
+        # inmuebles = Inmueble.objects.all()
+        # for inmueble in inmuebles:
+        #     # Método 2
+        #     nuevo_modelo = ModeloConsumo.objects.create(inmueble_origen=inmueble)
+        #     el_mode = crearModelo(inmueble.consumo_inmueble)
+        #     # el_file = ContentFile(el_mode)
+        #     # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
+        #     nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_mode)
+        #     #PON EL SAVE AQUÍ, CUANDO CONSIGA PASAR DEL PUNTO ANTERIOR
 
-        df=pd.read_csv(self.consumo_inmueble)
+
+
+
+        # df=pd.read_csv(self.consumo_inmueble)
+        # df=pd.read_csv(self.consumo_inmueble, index_col = ['Fecha'], parse_dates = True)
+        df = pd.read_csv(self.consumo_inmueble.path, index_col = ['Fecha'], parse_dates = True)
+        df.index.freq = 'H'
         # df = pd.read_csv(self.consumo_inmueble, delimiter=';', decimal=',')
         #df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
         """
@@ -106,7 +126,9 @@ class Inmueble(models.Model):
             pass
         """
 
-        info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),}
+        info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),
+                         #'costes_tarifas_usuario': coste_tarifas_usuario(df),
+                         }
 
         # #organizar consumos parciales
         # func_parciales.obtener_consumos_asociados(self.user_id, self.pk)
@@ -298,8 +320,47 @@ class PrediccionConsumo(models.Model):
         info_predicionconsumo = {'grafica_prediccionconsumo': func_datos_prediccion.predicionconsumo_chart(df), }
         return info_predicionconsumo
 
+# Tarifa personalizada del usuario
+class TarifaElectrica(models.Model):
+    user = models.ForeignKey(User, related_name="tarifaselectricas", on_delete=models.CASCADE)
+    nombre = models.CharField(max_length = 255, unique = True)
+    created_at = models.DateTimeField(auto_now=True)
+    # hora_ini_uno = models.CharField(max_length = 5, blank=False) # formato 13:00 (5 caracteres)
+    # duracion_uno = models.PositiveIntegerField(default = 1, blank=False)
+    # precio_uno = models.DecimalField(default=1, max_digits=8, decimal_places=4, blank=False)
+    # hora_ini_dos = models.CharField(max_length=5, blank=True)  # formato 13:00 (5 caracteres)
+    # duracion_dos = models.PositiveIntegerField(blank=True)
+    # precio_dos = models.DecimalField(max_digits=8, decimal_places=4, blank=True)
+    hora_ini_periodo_gracia = models.CharField(default ='14:00', max_length = 5, blank=False) # formato 13:00 (5 caracteres)
+    hora_fin_periodo_gracia = models.CharField(default ='20:00', max_length = 5, blank=False) # formato 13:00 (5 caracteres)
+    precio_periodo_gracia = models.FloatField(default = 0, blank=False)
+    precio_periodo_general = models.FloatField(default = 0, blank=False)
+
+    def __str__(self):
+        return self.nombre
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("forecasting:single_tarifaelectrica", kwargs={"username":self.user.username, "pk":self.pk})
 
 
+#Relación entre un Inmueble y aplicar una de sus Tarifas Eléctricas
+class CosteInmuebleTE(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    tarifalectrica_asociada = models.ForeignKey(TarifaElectrica, on_delete=models.CASCADE)
+    # inmueble_asociado = models.OneToOneField(Inmueble, on_delete=models.CASCADE)
+    # tarifalectrica_asociada = models.OneToOneField(TarifaElectrica, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    actualizado = models.BooleanField(default=True)
+    coste = models.FloatField()
+
+    # class Meta:
+    #     unique_together = (('inmueble_asociado', 'tarifalectrica_asociada'),)
+
+#LA COMENTO PARA QUE NO ME TOQUE LOS HUEVOS CONSTANTEMENTE
 # LA CLASE QUE GUARDA EL HISTÓRICO DE PRECIOS
 FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
 FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
@@ -323,6 +384,8 @@ class HistoricoMercadoRegulado(metaclass=Singleton):
 	#Para garantizar la consistencia, almaceno los extremos de mis datos y no dejo que haya huecos. Si se me pide una fecha que está fuera de mis márgenes, solicito desde mi extremo más cercano hasta esa fecha, para que no queden huecos. De esta manera hago las comprobaciones que puedan venir más adelante más fáciles, porque no tengo que comprobar si tengo todas las fechas que se me pidan una a una, si no si los márgenes que me piden están dentro de mis datos. Si están fuera, solicito los datos (aunque tenga datos parciales en mis datos) y si están dentro, devuelvo los datos que me hayan pedido.
 	primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
 	ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
+#HASTA AQUÍ
+
 
 #Esto es el segundo pensamiento sobre cómo hacerlo
 # FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00

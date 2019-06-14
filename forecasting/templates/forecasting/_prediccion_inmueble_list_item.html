@@ -1,0 +1,40 @@
+{% load static %}
+
+
+<li class="card border-success">
+    <img class="img-fluid card-img border-white" src="">
+    <div class="card-body text-center">
+        <p>Predicción creada en: {{ prediccion.created_at }} </p>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#verPrediccionModal">Ver
+            predicción
+        </button>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verPrediccionModal" tabindex="-1" role="dialog" aria-labelledby="verPrediccionModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            {% include "forecasting/_prediccion_inmueble_item.html" %}
+            <!--
+          <div class="modal-header">
+            <h5 class="modal-title" id="verPrediccionModalLabel">Título de la predicción</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            AQUÍ va a ir una bpnita gráfica
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+            -->
+
+        </div>
+    </div>
+</div>

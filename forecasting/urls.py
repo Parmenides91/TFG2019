@@ -41,4 +41,10 @@ urlpatterns = [
     path('prediccion/<int:pk>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
     # #direcciones para histórico mercado regulado
     path('mercado-regulado/<int:pk>', views.HistoricoMercadoReguladoDetail.as_view(), name='single_historicomercadoregulado'),
+    # direcciones para las tarifas eléctricas
+    path('by/<username>/tarifa/', views.UserTarifasElectricas.as_view(), name='for_user_tarifaselectricas'),
+    path('by/<username>/tarifa/new_tarifa_electrica/', views.CreateTarifaElectrica.as_view(), name='create_tarifaelectrica'),
+    path('by/<username>/tarifa/<int:pk>/', views.TarifaElectricaDetail.as_view(), name='single_tarifaelectrica'),
+    path('by/<username>/tarifa/edit/<int:pk>/', views.TarifaElectricaUpdateView.as_view(), name='edit_tarifaelectrica'),
+    path('by/<username>/tarifa/delete/<int:pk>/', views.DeleteTarifaElectrica.as_view(), name="delete_tarifaelectrica"),
 ]

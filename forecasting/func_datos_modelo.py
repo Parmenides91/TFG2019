@@ -8,6 +8,10 @@ import numpy as np
 import pandas as pd
 import csv
 
+from .funciones_basicas import id_random_generator
+
+from django.conf import settings
+
 # Load specific forecasting tools
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
@@ -18,14 +22,18 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 
 
 def crearModelo(fichero):
-    print('Has llegado a la función, baby.')
-    df = pd.read_csv(fichero, delimiter=';', decimal=',')
-    ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')
-    df['Fecha'] = ristra
-    df = df.drop(['CUPS', 'Hora', 'Metodo_obtencion'], axis=1)
-    df.index = pd.to_datetime(df['Fecha'])
-    df = df.drop(['Fecha'], axis=1)
-    df.index.freq = 'h'
+    # print('Has llegado a la función, baby.')
+    # df = pd.read_csv(fichero, delimiter=';', decimal=',')
+    # ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')
+    # df['Fecha'] = ristra
+    # df = df.drop(['CUPS', 'Hora', 'Metodo_obtencion'], axis=1)
+    # df.index = pd.to_datetime(df['Fecha'])
+    # df = df.drop(['Fecha'], axis=1)
+    # df.index.freq = 'h'
+
+    # Método 2
+    df = pd.read_csv(fichero, index_col=['Fecha'], parse_dates=True)
+    df.index.freq = 'H'
 
     # Limpio los datos
     filt_df = df.loc[:, 'Consumo_kWh']
@@ -46,12 +54,20 @@ def crearModelo(fichero):
     model = SARIMAX(df['Consumo_kWh'], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24)).fit()
     print('Lo guardo.')
     #poner un random, o la echa, y así no se sobreescriben, concatenado y fuera
-    saved = model.save('modeloXXX.pkl')
+    # saved = model.save('modeloXXX.pkl')
+    ruta_fich = settings.MEDIA_ROOT + '\\modelos\\'
+    saved = model.save(ruta_fich+'modelo'+id_random_generator()+'.pkl')
     print('Te lo paso guardado')
+    print('Esto es lo que te paso:')
+    print(saved)
+
 
     return saved
 
 
+
+
+# JURARÍA QUE ESTO NO LO USO YA EN NINGUNA PARTE
 # Crea el modelo desde el consumo que haya elegido el usuario
 def creacion_modelo(consumo):
     df = pd.read_csv(consumo, delimiter=';', decimal=',')

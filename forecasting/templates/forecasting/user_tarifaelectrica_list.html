@@ -1,0 +1,18 @@
+{% extends "forecasting/tarifaelectrica_base.html" %}
+
+
+{% block content_tarifaelectrica %}
+
+    <div class="mt-4">
+        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
+        <h3 class="display-4 mb-5">Estas son las tarifas eléctricas que has creado hasta ahora:</h3>
+
+        <ul class="list-unstyled row justify-content-between">
+            {% for tarifaelectrica in tarifaelectrica_list %}
+                {% include "forecasting/_tarifaelectrica_list_item.html" %}
+            {% endfor %}
+        </ul>
+
+    </div>
+
+{% endblock %}

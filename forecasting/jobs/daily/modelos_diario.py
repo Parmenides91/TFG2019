@@ -2,6 +2,7 @@ from django_extensions.management.jobs import BaseJob
 
 from django.core.mail import send_mail
 from django.core.files import File
+from django.core.files.base import ContentFile
 
 from ... import models
 # from ...models import Inmueble, ModeloConsumo
@@ -16,16 +17,33 @@ class Job(BaseJob):
         print('Procedo a acceder a la BBDD a por los inmuebles.')
         inmuebles = models.Inmueble.objects.all()
         for inmueble in inmuebles:
-            print('Allá vamos.')
-            nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble,
-                                                               fichero_modelo_inmueble=crearModelo(
-                                                                   inmueble.consumo_inmueble))
-            print('Vamos a guardar.')
+            # # Método 1
+            # nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble,
+            #                                                    fichero_modelo_inmueble=crearModelo(
+            #                                                        inmueble.consumo_inmueble))
+            # nuevo_modelo.save()
+            # el_file=File(nuevo_modelo.fichero_modelo_inmueble)
+            # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
+            # print(nuevo_modelo.fichero_modelo_inmueble.name)
+
+            # Método 2
+            nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble)
+            el_mode=crearModelo(inmueble.consumo_inmueble)
+            # el_file = ContentFile(el_mode)
+            # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
+            nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_mode)
             nuevo_modelo.save()
-            print('Guardado debería estar.')
+            print('fichero_modelo_inmueble')
+            print(nuevo_modelo.fichero_modelo_inmueble)
+            print('fichero_modelo_inmueble.name')
+            print(nuevo_modelo.fichero_modelo_inmueble.name)
+            print('fichero_modelo_inmueble.file')
+            print(nuevo_modelo.fichero_modelo_inmueble.file)
+            print('fichero_modelo_inmueble')
+            print(nuevo_modelo.fichero_modelo_inmueble)
 
             send_mail(
-                'Creación Modelo',
+                'Creacion Modelo',
                 'Se ha creado el nuevo modelo.',
                 'from@example.com',
                 [inmueble.user.email],

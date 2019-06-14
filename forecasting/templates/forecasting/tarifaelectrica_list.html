@@ -1,0 +1,21 @@
+{% extends "forecasting/tarifaelectrica_base.html" %}
+
+{% load humanize %}
+
+
+{% block content_tarifaelectrica %}
+
+<div class="jumbotron mt-4">
+
+	<h1>Listado completo de las Tarifas Eléctricas</h1>
+	<h3 class="mr-5 mb-5 font-italic text-right"><a class="text-muted" href="{% url 'forecasting:for_user_tarifaselectricas' username=user.username %}">{{ user.username }}</a></h3>
+
+	<ul class="list-unstyled row justify-content-between">
+		{% for tarifaelectrica in tarifaelectrica_list %}
+	  	    {% include "forecasting/_tarifaelectrica_list_item.html" %}
+		{% endfor %}
+	</ul>
+
+</div>
+
+{% endblock %}

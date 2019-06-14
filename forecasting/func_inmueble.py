@@ -1,5 +1,6 @@
 #from . import models
 from . import plots
+from . import models
 
 import plotly.plotly as py
 import plotly.graph_objs as go
@@ -21,8 +22,8 @@ def consumo_chart(df):
     n_leyenda = 'Consumo'
 
     trace1 = go.Scatter(
-        x=df['Fecha'],
-        # x=df.index,
+        # x=df['Fecha'],
+        x=df.index,
         y=df['Consumo_kWh'],
         mode='lines+markers',
         name=n_leyenda,
@@ -85,3 +86,60 @@ def consumo_chart(df):
     fig = go.Figure(data=data, layout=layout)
     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
     return plot_div
+
+
+# Cálculo del coste del consumo del inmueble mediante las tarifas personalizadas que haya creado el usuario
+def coste_tarifas_usuario(df, tarifaelectrica):
+    # df = pd.read_csv(fichero, index_col=['Fecha'], parse_dates=True)
+    # df.index.freq = 'H'
+
+    coste_periodo_gracia = 0
+    for index, row in df.between_time(tarifaelectrica.hora_ini_periodo_gracia, tarifaelectrica.hora_fin_periodo_gracia).iterrows():
+        coste_periodo_gracia += row['Consumo_kWh'] * tarifaelectrica.precio_periodo_gracia
+
+    coste_periodo_general = 0
+    for index, row in df.between_time(tarifaelectrica.hora_ini_periodo_gracia, tarifaelectrica.hora_fin_periodo_gracia, include_start=False,
+                                          include_end=False).iterrows():
+        coste_periodo_general += row['Consumo_kWh'] * tarifaelectrica.precio_periodo_general
+
+    return coste_periodo_gracia + coste_periodo_general
+
+
+    # tarifaselectricas = models.TarifaElectrica.objects.all()
+    # costes_dict = {}
+    # i = 0
+    # for tarifaelectrica in tarifaselectricas:
+    #     # coste_uno = df['Consumo_kWh'] * float(tarifaelectrica.precio_uno)
+    #     # coste_dos = df['Consumo_kWh'] * float(tarifaelectrica.precio_dos)
+    #
+    #     # coste_uno = 0
+    #     # for index, row in df.iterrows():
+    #     #     coste_uno += row['Consumo_kWh'] * float(tarifaelectrica.precio_uno)
+    #     # coste_dos = 0
+    #     # for index, row in df.iterrows():
+    #     #     coste_dos += row['Consumo_kWh'] * float(tarifaelectrica.precio_dos)
+    #     #
+    #     # coste_final = coste_uno+coste_dos
+    #
+    #     coste_periodo_gracia = 0
+    #     for index, row in df.between_time(tarifaelectrica.hora_ini_periodo_gracia, tarifaelectrica.hora_fin_periodo_gracia).iterrows():
+    #         coste_periodo_gracia += row['Consumo_kWh'] * tarifaelectrica.precio_periodo_gracia
+    #
+    #     coste_periodo_general = 0
+    #     for index, row in df.between_time(tarifaelectrica.hora_ini_periodo_gracia, tarifaelectrica.hora_fin_periodo_gracia, include_start=False,
+    #                                       include_end=False).iterrows():
+    #         coste_periodo_general += row['Consumo_kWh'] * tarifaelectrica.precio_periodo_general
+    #
+    #     coste_final = coste_periodo_gracia + coste_periodo_general
+    #
+    #     coste_tarifa={'Tarifa':tarifaelectrica.nombre, 'Coste':coste_final}
+    #
+    #     costes_dict.update({i:coste_tarifa})
+    #     i += 1
+    #
+    # return costes_dict
+
+
+# Cálculo del coste del consumo del inmueble mediante los precios del mercado regulado
+def coste_tarifas_mr(df):
+    pass

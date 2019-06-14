@@ -1,0 +1,15 @@
+{% extends "forecasting/tarifaelectrica_base.html" %}
+
+{% load bootstrap4 %}
+
+
+{% block content_tarifaelectrica %}
+<h4>CREAR NUEVA TARIFA ELÉCTRICA</h4>
+<form method="POST" action="{% url 'forecasting:create_tarifaelectrica' username=user.username %}" id="tarifaelectricaForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+		<button type="submit" class="btn btn-primary btn-large">Crear tarifa eléctrica</button>
+	{% endbuttons %}
+</form>
+{% endblock %}

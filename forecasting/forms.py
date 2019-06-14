@@ -43,6 +43,16 @@ class ModeloConsumoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
 
+#formulario para la creación de una nueva tarifa eléctrica
+class TarifaElectricaForm(forms.ModelForm):
+    class Meta():
+        fields=('nombre', 'hora_ini_periodo_gracia', 'hora_fin_periodo_gracia', 'precio_periodo_gracia', 'precio_periodo_general')
+        model=models.TarifaElectrica
+
+    def __init__(self, *args, **kwargs):
+        user=kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
 
 class ConsumoForm(forms.ModelForm):
     class Meta():

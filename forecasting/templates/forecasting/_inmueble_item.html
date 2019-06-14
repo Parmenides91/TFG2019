@@ -48,4 +48,50 @@
     {% endfor %}
     <p>Hola</p>
 
+
+    <!-- Listado de las predicciones que existen para este inmueble. Versión de ventanas modales -->
+    <p class="display-3">Listado de las predicciones que existen para este inmueble. Versión de ventanas modales</p>
+    {% for modeloconsumo in inmueble.modeloconsumo_set.all %}
+        <ul class="list-unstyled row justify-content-between">>
+        {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}
+            {% include "forecasting/_prediccion_inmueble_list_item.html" %}
+        {% endfor %}
+        </ul>
+    {% endfor %}
+
+
+    <!-- Listado de los costes del consumo aplicando las tarifas creadas por el usuario -->
+    <p class="display-3">Costes según las tarifas del usuario:</p>
+    <p>Primero</p>
+    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario }}</p>
+    <p>Segundo</p>
+    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0 }}</p>
+    <p>Tercero</p>
+    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>
+    <p>Cuarto</p>
+    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>
+
+
+    <!-- PRUEBA, listado -->
+    <p>Tarifa 1:</p>
+    {% if inmueble.unificar_consumos.costes_tarifas_usuario.0 %}
+        <p>Nombre de la Tarifa Eléctrica: {{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>
+        <p>Coste según Tarifa: {{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>
+    {% endif %}
+
+    <p>Tarifa 2:</p>
+    {% if inmueble.unificar_consumos.costes_tarifas_usuario.1 %}
+        <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>
+        <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>
+    {% endif %}
+
+
+    <!-- Listado de los Costes de un Inmueble a  partir de una Tarifa Eléctrica -->
+    <p>Listado de Costes:</p>
+    <ul class="list-unstyled row justify-content-between">
+    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}
+        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}
+    {% endfor %}
+    </ul>
+
 </div>

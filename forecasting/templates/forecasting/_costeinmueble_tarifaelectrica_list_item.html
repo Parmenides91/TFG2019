@@ -1,0 +1,23 @@
+{% load static %}
+
+
+<li class="media col-4 mt-2 mb-2">
+    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill04.png' %}" alt="coste file icon">
+    <div class="media-body">
+        <h5 class="mt-0 mb-1"><em><strong>{{ costeinmueblete.tarifalectrica_asociada.nombre }}</strong></em></h5>
+        <h6 class="mt-0 mb-1"><strong>{{ costeinmueblete.coste }}</strong> €</h6>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#verCosteInmuebleTarifaElectricaModal">Consultar</button>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verCosteInmuebleTarifaElectricaModal" tabindex="-1" role="dialog" aria-labelledby="verCosteInmuebleTarifaElectricaLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% include "forecasting/_costeinmueble_tarifaelectrica_item.html" %}
+        </div>
+    </div>
+</div>
