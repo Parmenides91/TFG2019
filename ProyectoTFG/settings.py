@@ -17,6 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
+# FILE_PATH_FIELD_DIRECTORY = os.path.join(BASE_DIR, 'ficheros')
 
 
 # Quick-start development settings - unsuitable for production

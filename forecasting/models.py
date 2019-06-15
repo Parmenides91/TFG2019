@@ -112,6 +112,23 @@ class Inmueble(models.Model):
 
 
 
+        #Prueba de ver si el cálculo de costes en el MR funciona:
+        usuarios = User.objects.all()
+        for usuario in usuarios:
+            inmuebles = Inmueble.objects.filter(user=usuario)
+            for inmueble in inmuebles:
+                df_c = pd.read_csv(inmueble.consumo_inmueble, index_col='Fecha', parse_dates=True)
+                # historico = models.HistoricoMercadoRegulado.objects.filter(id=1)
+                # HistoricoMercadoRegulado.__new__()
+                h = HistoricoMercadoRegulado()
+                historico = h.precios_mr
+                df_p = historico[df_c.first_valid_index(): df_c.last_valid_index()]
+
+                df_merge = pd.merge(df_c, df_p, how='inner', left_index=True, right_index=True)
+
+                costeTPD = 0
+        #Hasta aquí la prueba
+
 
         # df=pd.read_csv(self.consumo_inmueble)
         # df=pd.read_csv(self.consumo_inmueble, index_col = ['Fecha'], parse_dates = True)
@@ -365,26 +382,44 @@ class CosteInmuebleTE(models.Model):
 FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
 FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
 from . import plots
-def recolectarPrecio():
-    precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
-    precios = pd.DataFrame(data=precios, )
-    pass
+# def recolectarPrecio():
+#     precios = plots.precios_pvpc(FECHA_INICIO_PRECIOS, FECHA_FIN_PRECIOS)
+#     precios = pd.DataFrame(data=precios, )
+#     pass
 
 class Singleton(type):
     _instances = {}
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        #else:
-        #    cls._instances[cls].__init__(*args, **kwargs)
+        else:
+           cls._instances[cls].__init__(*args, **kwargs)
         return cls._instances[cls]
 
+from django.core.files import File
+ECHA_INICIO_PRECIOS=datetime(2018, 1, 1, 0, 0, 0).isoformat('T') # 2018-01-01 00:00:00
+FECHA_FIN_PRECIOS=datetime(2019, 6, 13, 0, 0, 0).isoformat('T') # 2019-06-13 00:00:00
+def leerHistorico():
+    df = pd.read_csv('HistoricoPreciosMR.csv', index_col = 0, parse_dates = True)
+    return df
+
 class HistoricoMercadoRegulado(metaclass=Singleton):
-	precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
-	#Para garantizar la consistencia, almaceno los extremos de mis datos y no dejo que haya huecos. Si se me pide una fecha que está fuera de mis márgenes, solicito desde mi extremo más cercano hasta esa fecha, para que no queden huecos. De esta manera hago las comprobaciones que puedan venir más adelante más fáciles, porque no tengo que comprobar si tengo todas las fechas que se me pidan una a una, si no si los márgenes que me piden están dentro de mis datos. Si están fuera, solicito los datos (aunque tenga datos parciales en mis datos) y si están dentro, devuelvo los datos que me hayan pedido.
-	primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
-	ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
+    precios_mr = models.BinaryField(default=leerHistorico())
+    # precios_mr = models.FileField(default=leerHistorico())
+    # precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
+    primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
+    ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
 #HASTA AQUÍ
+
+
+#Coste del consumo de un Inmueble en relación con los precios del Mercado Regulado
+class CosteInmuebleMR(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    tipo = models.CharField(default='PPD', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    actualizado = models.BooleanField(default=True)
+    coste = models.FloatField()
 
 
 #Esto es el segundo pensamiento sobre cómo hacerlo

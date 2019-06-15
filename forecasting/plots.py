@@ -319,10 +319,12 @@ def precios_pvpc(a, b):
 
 # Para pintar los precios de las fechas que se le pasen
 def chart_precios_pvpc(a, b):
-    #start_ = '2019-05-04T02:00:00'
-    #end_ = '2019-05-05T01:00:00'
-    start_ = a
-    end_ = b
+    # start_ = '2019-06-13T02:00:00'
+    # end_ = '2019-06-14T01:00:00'
+    start_ = '2017-12-31T02:00:00'
+    end_ = '2019-06-14T01:00:00'
+    # start_ = a
+    # end_ = b
 
     # The token is unique: You should ask for yours to: Consultas Sios <consultasios@ree.es>
 
@@ -347,7 +349,12 @@ def chart_precios_pvpc(a, b):
     #dt.T
     #ristra = (df[names[0]].index).to_series()
 
-    ristra = (df[names[0]].index).tz_convert('Etc/GMT-1')
+    info = {'Fecha':df[names[0]].index, 'TPD':df[names[0]].values, 'EDP':df[names[1]].values, 'VE':df[names[2]].values,}
+    daframe = pd.DataFrame(data=info)
+    csvPrecios = daframe.to_csv('historicoMR.csv')
+
+    # ristra = (df[names[0]].index).tz_convert('Etc/GMT-1')
+    ristra = (df[names[0]].index)
 
     #ristra.to_series(keep_tz=False)
     trace1 = go.Scatter(

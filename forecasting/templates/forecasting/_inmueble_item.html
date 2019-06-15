@@ -94,4 +94,54 @@
     {% endfor %}
     </ul>
 
+
+    <!-- Análisis de los costes del Inmueble para las tarifas qe hay -->
+    <ul class="row align-items-start list-unstyled">
+
+        <!-- Primera Columna: Tarifas Personalizadas -->
+        <li class="col-4 justify-content-around bg-danger">
+            <ul class="row list-unstyled justify-content-center">
+                <!-- Título -->
+                <li class="media my-2 border-bottom border-dark">
+					<p class="h4">Tarifas Personalizadas:</p>
+				</li>
+                <!-- items -->
+                {% if inmueble.costeinmueblete_set.exists %}
+                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}
+                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}
+                    {% endfor %}
+                {% else %}
+                    <p class="h4 text-muted">Crea alguna tarifa para mostrar aquí su coste.</p>
+                {% endif %}
+            </ul>
+        </li>
+
+        <!-- Segunda Columna: Mercado Regulado -->
+        <li class="col-4 justify-content-around bg-warning">
+            <ul class="row list-unstyled justify-content-center">
+                <!-- Título -->
+                <li class="media my-2 border-bottom border-dark">
+					<p class="h4">Mercado Regulado:</p>
+				</li>
+                <!-- items -->
+
+            </ul>
+        </li>
+
+        <!-- Tercera Columna: Mercado Libre -->
+        <li class="col-4 justify-content-around bg-success">
+            <ul class="row list-unstyled justify-content-center">
+                <!-- Título -->
+                <li class="media my-2 border-bottom border-dark">
+					<p class="h4">Mercado Libre:</p>
+				</li>
+                <!-- items -->
+
+            </ul>
+        </li>
+
+
+    </ul>
+
+
 </div>
