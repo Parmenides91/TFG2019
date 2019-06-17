@@ -1,0 +1,23 @@
+<!--
+    Atención:
+    - Un diseño propio
+-->
+
+<div class="container">
+    <p class="display-1">El Nombre: {{ tarifamercadoregulado.created_at }}</p>
+    <hr>
+
+    {% if user.is_authenticated %}
+        <a class="btn btn-primary"
+           href="{% url 'forecasting:edit_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Modificar
+            histórico</a>
+        <a class="btn btn-primary"
+           href="{% url 'forecasting:delete_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Eliminar
+            histórico</a>
+        <a class="btn btn-secondary"
+           href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=tarifamercadoregulado.user.username %}">Volver al
+            listado</a>
+    {% endif %}
+
+
+</div>

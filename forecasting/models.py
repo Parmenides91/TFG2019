@@ -18,6 +18,7 @@ from . import func_inmueble
 from . import func_analisis_consumo
 from . import func_datos_prediccion
 from .func_inmueble import coste_tarifas_usuario, coste_tarifas_mr
+from .func_inmueble import crear_graficas_inmueble
 
 from .func_datos_prediccion import crearPrediccion
 from .func_datos_modelo import crearModelo
@@ -39,6 +40,8 @@ class Inmueble(models.Model):
     nombre=models.CharField(max_length=30, unique=True)
     descripcion=models.CharField(max_length=255, blank=True)
     created_at=models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    modelo_actualizado = models.BooleanField(default=False)
     consumo_inmueble=models.FileField(upload_to='consumosInmuebles', blank = False)
     # consumo_inmueble = models.BinaryField()
     consumo_inmueble_parcial=models.FileField(upload_to='consumosInmuebles', blank = True)
@@ -60,7 +63,7 @@ class Inmueble(models.Model):
 
     # Unificar los consumos que tenga esta casa
     @property
-    def unificar_consumos(self):
+    def representar_inmueble(self):
         """
         if self.consumo_inmueble==None and self.consumo_inmueble_parcial:
             self.consumo_inmueble=self.consumo_inmueble_parcial
@@ -104,29 +107,53 @@ class Inmueble(models.Model):
         # for inmueble in inmuebles:
         #     # Método 2
         #     nuevo_modelo = ModeloConsumo.objects.create(inmueble_origen=inmueble)
-        #     el_mode = crearModelo(inmueble.consumo_inmueble)
+        #     ruta_modelo = crearModelo(inmueble.consumo_inmueble)
+        #     print(ruta_modelo)
         #     # el_file = ContentFile(el_mode)
         #     # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
-        #     nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_mode)
+        #     # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', ruta_modelo)
+        #     nuevo_modelo.fichero_modelo_inmueble = ruta_modelo
+        #     nuevo_modelo.save()
         #     #PON EL SAVE AQUÍ, CUANDO CONSIGA PASAR DEL PUNTO ANTERIOR
 
 
 
-        #Prueba de ver si el cálculo de costes en el MR funciona:
-        usuarios = User.objects.all()
-        for usuario in usuarios:
-            inmuebles = Inmueble.objects.filter(user=usuario)
-            for inmueble in inmuebles:
-                df_c = pd.read_csv(inmueble.consumo_inmueble, index_col='Fecha', parse_dates=True)
-                # historico = models.HistoricoMercadoRegulado.objects.filter(id=1)
-                # HistoricoMercadoRegulado.__new__()
-                h = HistoricoMercadoRegulado()
-                historico = h.precios_mr
-                df_p = historico[df_c.first_valid_index(): df_c.last_valid_index()]
 
-                df_merge = pd.merge(df_c, df_p, how='inner', left_index=True, right_index=True)
+        # #Prueba a ver si las predicciones se crean. O, al menos, si les llega la ruta del modelo:
+        # modelos = ModeloConsumo.objects.all()
+        # for modelo in modelos:
+        #     print('Entramos a por los modelos a hacer predicciones, darling.')
+        #     print('Fecha de creación:')
+        #     print(modelo.created_at)
+        #     print('Esa era la fecha.')
+        #     print('A continuación te digo el fichero')
+        #     # print(modelo.fichero_modelo_inmueble.name)
+        #     print(modelo.fichero_modelo_inmueble)
+        #     print('Ese es el fichero')
+        #     # fich_modelo=modelo.fichero_modelo_inmueble
+        #     nueva_prediccion = PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,
+        #                                                                fichero_prediccion_consumo=crearPrediccion(
+        #                                                                    modelo.fichero_modelo_inmueble))
+        #     print('Create() hecho. Vamos a guardar todo.')
+        #     nueva_prediccion.save()
+        #     print('Guardado.')
 
-                costeTPD = 0
+
+        # #Prueba de ver si el cálculo de costes en el MR funciona:
+        # usuarios = User.objects.all()
+        # for usuario in usuarios:
+        #     inmuebles = Inmueble.objects.filter(user=usuario)
+        #     for inmueble in inmuebles:
+        #         df_c = pd.read_csv(inmueble.consumo_inmueble, index_col='Fecha', parse_dates=True)
+        #         # historico = models.HistoricoMercadoRegulado.objects.filter(id=1)
+        #         # HistoricoMercadoRegulado.__new__()
+        #         h = HistoricoMercadoRegulado.precios_mr
+        #         historico = h.precios_mr
+        #         df_p = historico[df_c.first_valid_index(): df_c.last_valid_index()]
+        #
+        #         df_merge = pd.merge(df_c, df_p, how='inner', left_index=True, right_index=True)
+        #
+        #         costeTPD = 0
         #Hasta aquí la prueba
 
 
@@ -144,6 +171,7 @@ class Inmueble(models.Model):
         """
 
         info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),
+                         'graficas_inmueble': crear_graficas_inmueble(df)
                          #'costes_tarifas_usuario': coste_tarifas_usuario(df),
                          }
 
@@ -312,10 +340,13 @@ class Consumo(models.Model):
             return self.coste_tarifa_PPP
     """
 
+from django.conf import settings
+
 class ModeloConsumo(models.Model):
     inmueble_origen=models.ForeignKey(Inmueble, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
-    fichero_modelo_inmueble = models.FileField(upload_to='modelos', blank=True)
+    # fichero_modelo_inmueble = models.FileField(upload_to='modelos', blank=True)
+    fichero_modelo_inmueble = models.FilePathField(path=os.path.join(settings.MEDIA_DIR, 'modelos'))
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -366,16 +397,28 @@ class TarifaElectrica(models.Model):
 #Relación entre un Inmueble y aplicar una de sus Tarifas Eléctricas
 class CosteInmuebleTE(models.Model):
     inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
-    tarifalectrica_asociada = models.ForeignKey(TarifaElectrica, on_delete=models.CASCADE)
+    tarifaelectrica_asociada = models.ForeignKey(TarifaElectrica, on_delete=models.CASCADE)
     # inmueble_asociado = models.OneToOneField(Inmueble, on_delete=models.CASCADE)
-    # tarifalectrica_asociada = models.OneToOneField(TarifaElectrica, on_delete=models.CASCADE)
+    # tarifaelectrica_asociada = models.OneToOneField(TarifaElectrica, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     modified_at = models.DateTimeField(auto_now=True)
     actualizado = models.BooleanField(default=True)
     coste = models.FloatField()
 
     # class Meta:
-    #     unique_together = (('inmueble_asociado', 'tarifalectrica_asociada'),)
+    #     unique_together = (('inmueble_asociado', 'tarifaelectrica_asociada'),)
+
+
+class TarifaMercadoRegulado(models.Model):
+    user = models.ForeignKey(User, related_name="tarifasmercadoregulado", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    fichero_precios = models.FileField(upload_to='preciosMR', blank = False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
 
 #LA COMENTO PARA QUE NO ME TOQUE LOS HUEVOS CONSTANTEMENTE
 # LA CLASE QUE GUARDA EL HISTÓRICO DE PRECIOS
@@ -387,29 +430,29 @@ from . import plots
 #     precios = pd.DataFrame(data=precios, )
 #     pass
 
-class Singleton(type):
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        else:
-           cls._instances[cls].__init__(*args, **kwargs)
-        return cls._instances[cls]
+# class Singleton():
+#     _instances = {}
+#     def __call__(cls, *args, **kwargs):
+#         if cls not in cls._instances:
+#             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+#         else:
+#            cls._instances[cls].__init__(*args, **kwargs)
+#         return cls._instances[cls]
 
-from django.core.files import File
-ECHA_INICIO_PRECIOS=datetime(2018, 1, 1, 0, 0, 0).isoformat('T') # 2018-01-01 00:00:00
-FECHA_FIN_PRECIOS=datetime(2019, 6, 13, 0, 0, 0).isoformat('T') # 2019-06-13 00:00:00
-def leerHistorico():
-    df = pd.read_csv('HistoricoPreciosMR.csv', index_col = 0, parse_dates = True)
-    return df
+# from django.core.files import File
+# ECHA_INICIO_PRECIOS=datetime(2018, 1, 1, 0, 0, 0).isoformat('T') # 2018-01-01 00:00:00
+# FECHA_FIN_PRECIOS=datetime(2019, 6, 13, 0, 0, 0).isoformat('T') # 2019-06-13 00:00:00
+# def leerHistorico():
+#     df = pd.read_csv('HistoricoPreciosMR.csv', index_col = 0, parse_dates = True)
+#     return df
 
-class HistoricoMercadoRegulado(metaclass=Singleton):
-    precios_mr = models.BinaryField(default=leerHistorico())
-    # precios_mr = models.FileField(default=leerHistorico())
-    # precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
-    primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
-    ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
-#HASTA AQUÍ
+# class HistoricoMercadoRegulado(metaclass=Singleton):
+#     precios_mr = models.BinaryField(default=leerHistorico())
+#     # precios_mr = models.FileField(default=leerHistorico())
+#     # precios_luz = models.FileField(upload_to='preciosPVPC', blank=False, default=recolectarPrecio())
+#     primera_fecha=models.DateTimeField(blank=False, default=FECHA_INICIO_PRECIOS)
+#     ultima_fecha=models.DateTimeField(blank=False, default=FECHA_FIN_PRECIOS)
+# #HASTA AQUÍ
 
 
 #Coste del consumo de un Inmueble en relación con los precios del Mercado Regulado

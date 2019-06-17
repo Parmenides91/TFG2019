@@ -8,6 +8,87 @@ from plotly.offline import plot
 import pandas as pd
 
 
+def crear_graficas_inmueble(df):
+    grafs_dict = {'horas': crear_grafica_generica(df, 'horario'),
+                  'dias': crear_grafica_generica(df.resample('D').sum(), 'diario'),
+                  'semanas': crear_grafica_generica(df.resample('W').sum(), 'semanal'),
+                  'meses': crear_grafica_generica(df.resample('M').sum(), 'mensual')}
+    return grafs_dict
+
+def crear_grafica_generica(df, tipo):
+    n_leyenda = 'Consumo '+tipo
+
+    trace1 = go.Scatter(
+        # x=df['Fecha'],
+        x=df.index,
+        y=df['Consumo_kWh'],
+        mode='lines+markers',
+        name=n_leyenda,
+        marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
+
+    data = [trace1, ]
+
+    layout = go.Layout(
+        title='',
+        showlegend=True,
+        # width = 800,
+        # height = 700,
+        hovermode='closest',
+        bargap=0,
+        legend=dict(
+            # orientation='h',
+            x=0.2, y=1.1,
+            traceorder='normal',
+            font=dict(
+                family='sans-serif',
+                size=12,
+                color='#000',
+            ),
+            bgcolor='#E2E2E2',
+            bordercolor='#FFFFFF',
+            borderwidth=2,
+        ),
+        margin=dict(
+            autoexpand=False,
+            l=100,
+            r=20,
+            t=110,
+        ),
+        xaxis=dict(
+            title='',
+            showline=True,
+            showgrid=True,
+            showticklabels=True,
+            linecolor='rgb(204, 204, 204)',
+            linewidth=2,
+            ticks='outside',
+            tickcolor='rgb(204, 204, 204)',
+            tickwidth=2,
+            ticklen=2,
+            tickfont=dict(
+                family='Arial',
+                size=12,
+                color='rgb(82, 82, 82)',
+            ),
+        ),
+        yaxis=dict(
+            title='kW/h',
+            showgrid=True,
+            zeroline=False,
+            showline=True,
+            showticklabels=True,
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div
+
+
+
+
+
+
 # Representación del Consumo en una gráfica
 def consumo_chart(df):
     # df = df.drop(["CUPS", "Metodo_obtencion"], axis=1)

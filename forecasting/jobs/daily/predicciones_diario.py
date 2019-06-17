@@ -20,7 +20,8 @@ class Job(BaseJob):
             print(modelo.created_at)
             print('Esa era la fecha.')
             print('A continuación te digo el fichero')
-            print(modelo.fichero_modelo_inmueble.name)
+            # print(modelo.fichero_modelo_inmueble.name)
+            print(modelo.fichero_modelo_inmueble)
             print('Ese es el fichero')
             # fich_modelo=modelo.fichero_modelo_inmueble
             nueva_prediccion = models.PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,

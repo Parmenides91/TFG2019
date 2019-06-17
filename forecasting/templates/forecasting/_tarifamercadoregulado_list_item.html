@@ -1,0 +1,11 @@
+{% load static %}
+
+
+<li class="card col-sm-3 mx-3 my-3 border-success">
+    <img class="img-fluid card-img border-white" src="{% static 'icon/house03.png' %}" alt="tarifamercadoregulado icon">
+    <div class="card-body text-center">
+        <a href="{% url 'forecasting:single_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}"
+           class="h5 font-weight-bold">{{ tarifamercadoregulado.created_at }}</a>
+    </div>
+</li>
+

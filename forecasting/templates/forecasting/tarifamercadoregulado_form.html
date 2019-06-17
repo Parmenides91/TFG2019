@@ -1,0 +1,15 @@
+{% extends "forecasting/tarifamercadoregulado_base.html" %}
+
+{% load bootstrap4 %}
+
+
+{% block content_tarifamercadoregulado %}
+<h4>Sube un nuevo histórico de precios de las tarifas del Mercado Regulado</h4>
+<form method="POST" action="{% url 'forecasting:create_tarifamercadoregulado' username=user.username %}" id="tarifamercadoreguladoForm" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+		<button type="submit" class="btn btn-primary btn-large">Subir histórico</button>
+	{% endbuttons %}
+</form>
+{% endblock %}

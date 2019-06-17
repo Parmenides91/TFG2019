@@ -23,14 +23,14 @@ class Job(BaseJob):
                 for tarifa in tarifas:
 
                     #Pobre manera de manejar las cosas: me cargo lo anterior y vuelvo a calcular tod.
-                    costesactuales= models.CosteInmuebleTE.objects.filter(inmueble_asociado=inmueble, tarifalectrica_asociada=tarifa)
+                    costesactuales= models.CosteInmuebleTE.objects.filter(inmueble_asociado=inmueble, tarifaelectrica_asociada=tarifa)
                     for costeactual in costesactuales:
                         costeactual.delete()
                     #Fin de la pobre manera de manejar las cosas
 
                     print('Procedo a crear un Coste')
                     nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble,
-                                                                                  tarifalectrica_asociada=tarifa,
+                                                                                  tarifaelectrica_asociada=tarifa,
                                                                                   coste=coste_tarifas_usuario(
                                                                                       df,
                                                                                       tarifa))
@@ -47,7 +47,7 @@ class Job(BaseJob):
     # for inmueble in inmuebles:
     #     tarifaselectricas = models.TarifaElectrica.objects.all()
     #     for tarifaelectrica in tarifaselectricas:
-    #         nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble, tarifalectrica_asociada=tarifaelectrica, coste=coste_tarifas_usuario(inmueble.consumo_inmueble, tarifaelectrica))
+    #         nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble, tarifaelectrica_asociada=tarifaelectrica, coste=coste_tarifas_usuario(inmueble.consumo_inmueble, tarifaelectrica))
     #         # nuevo_costeInmuebleTE.coste = coste_tarifas_usuario(inmueble.consumo_inmueble, tarifaelectrica)
     #         nuevo_costeInmuebleTE.modified_at = datetime.datetime.now()
     #         nuevo_costeInmuebleTE.actualizado = True
@@ -59,9 +59,9 @@ class Job(BaseJob):
     # for inmueble in inmuebles:
     #     costesInm = inmueble.costeinmueblete_set.all()
     #     for costeInm in costesInm:
-    #         if (costeInm.modified_at < inmueble.modefied_at) or (costeInm.modified_at <costeInm.tarifalectrica_asociada.modified_at):
+    #         if (costeInm.modified_at < inmueble.modefied_at) or (costeInm.modified_at <costeInm.tarifaelectrica_asociada.modified_at):
     #             #Se ha modificado el inmueble o la tarifa, hay que recalcular
-    #             costeInm.coste = coste_tarifas_usuario(inmueble.consumo_inmueble, costeInm.tarifalectrica_asociada)
+    #             costeInm.coste = coste_tarifas_usuario(inmueble.consumo_inmueble, costeInm.tarifaelectrica_asociada)
     #             costeInm.modified_at = datetime.datetime.now()
     #             costeInm.save()
     #         else:
@@ -85,14 +85,14 @@ class Job(BaseJob):
     #                 costeinmueblete.save()
     #         else:
     #             nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble,
-    #                                                                           tarifalectrica_asociada=tarifaelectrica)
+    #                                                                           tarifaelectrica_asociada=tarifaelectrica)
     #             costeTE = coste_tarifas_usuario(inmueble.consumo_inmueble)
     #             nuevo_costeInmuebleTE.coste = costeTE
     #             nuevo_costeInmuebleTE.modified_at = datetime.datetime.now()
     #             nuevo_costeInmuebleTE.actualizado = True
     #             nuevo_costeInmuebleTE.save()
 
-    # nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble, tarifalectrica_asociada=tarifaelectrica)
+    # nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble, tarifaelectrica_asociada=tarifaelectrica)
     # costeTE = coste_tarifas_usuario(inmueble.consumo_inmueble)
     # nuevo_costeInmuebleTE.coste = costeTE
     # nuevo_costeInmuebleTE.modified_at=datetime.datetime.now()

@@ -53,6 +53,15 @@ class TarifaElectricaForm(forms.ModelForm):
         user=kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
+#formulario para la creación de una nueva tarifa del mercado regulado
+class TarifaMercadoReguladoForm(forms.ModelForm):
+    class Meta():
+        fields=('fichero_precios',)
+        model=models.TarifaMercadoRegulado
+
+    def __init__(self, *args, **kwargs):
+        user=kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
 
 class ConsumoForm(forms.ModelForm):
     class Meta():

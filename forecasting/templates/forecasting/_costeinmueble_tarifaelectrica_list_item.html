@@ -8,38 +8,38 @@
         <h6 class="mt-0 mb-1"><strong>{{ costeinmueblete.coste }}</strong> €</h6>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
-                data-target="#verCosteInmuebleTarifaElectricaModal">Consultar
+                data-target="#verCosteInmuebleTarifaElectricaModal{{ costeinmueblete.tarifalectrica_asociada.id }}">Consultar
         </button>
     </div>
 </li>
 
 
 <!-- Modal -->
-<div class="modal fade" id="verCosteInmuebleTarifaElectricaModal" tabindex="-1" role="dialog"
+<div class="modal fade" id="verCosteInmuebleTarifaElectricaModal{{ costeinmueblete.tarifalectrica_asociada.id }}" tabindex="-1" role="dialog"
      aria-labelledby="verCosteInmuebleTarifaElectricaLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-{#            {% include "forecasting/_costeinmueble_tarifaelectrica_item.html" %}#}
+            {% include "forecasting/_costeinmueble_tarifaelectrica_item.html" %}
 
-            <div class="modal-header">
+{#            <div class="modal-header">#}
                 {#    <h5 class="modal-title" id="verPrediccionModalLabel">{{ costeinmueblete.tarifalectrica_asociada.nombre }}</h5>#}
-                <h5 class="modal-title" id="verPrediccionModalLabel">Información Tarifa Eléctrica</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <p class="h3">{{ costeinmueblete.tarifalectrica_asociada.nombre }}</p>
-                <p class="my-0">Periodo de gracia:
-                    <strong>{{ costeinmueblete.tarifalectrica_asociada.hora_ini_periodo_gracia }}</strong> -
-                    <strong>{{ costeinmueblete.tarifalectrica_asociada.hora_fin_periodo_gracia }}</strong></p>
-                <p class="my-0">Precio periodo de gracia:
-                    <strong>{{ costeinmueblete.tarifalectrica_asociada.precio_periodo_gracia }}</strong> €</p>
-                <p class="my-0">Precio normal:
-                    <strong>{{ costeinmueblete.tarifalectrica_asociada.precio_periodo_general }}</strong> €</p>
-                <a href="{% url 'forecasting:single_tarifaelectrica' username=costeinmueblete.tarifalectrica_asociada.user.username pk=costeinmueblete.tarifalectrica_asociada.pk %}">Detalle</a>
+{#                <h5 class="modal-title" id="verPrediccionModalLabel">Información Tarifa Eléctrica</h5>#}
+{#                <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#                    <span aria-hidden="true">&times;</span>#}
+{#                </button>#}
+{#            </div>#}
+{##}
+{#            <div class="modal-body">#}
+{#                <p class="h3">{{ costeinmueblete.tarifalectrica_asociada.nombre }}</p>#}
+{#                <p class="my-0">Periodo de gracia:#}
+{#                    <strong>{{ costeinmueblete.tarifalectrica_asociada.hora_ini_periodo_gracia }}</strong> -#}
+{#                    <strong>{{ costeinmueblete.tarifalectrica_asociada.hora_fin_periodo_gracia }}</strong></p>#}
+{#                <p class="my-0">Precio periodo de gracia:#}
+{#                    <strong>{{ costeinmueblete.tarifalectrica_asociada.precio_periodo_gracia }}</strong> €</p>#}
+{#                <p class="my-0">Precio normal:#}
+{#                    <strong>{{ costeinmueblete.tarifalectrica_asociada.precio_periodo_general }}</strong> €</p>#}
+{#                <a href="{% url 'forecasting:single_tarifaelectrica' username=costeinmueblete.tarifalectrica_asociada.user.username pk=costeinmueblete.tarifalectrica_asociada.pk %}">Detalle</a>#}
 
                 {#    <p>Creado: {{ costeinmueblete.created_at }}</p>#}
                 {#        <p class="">Inicio periodo de gracia: {{ costeinmueblete.tarifalectrica_asociada.hora_ini_periodo_gracia }}</p>#}

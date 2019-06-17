@@ -264,57 +264,107 @@ class DeleteTarifaElectrica(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('home')
 
 
-# HISTÓRICO MERCADO REGULADO
-#ver un histórico
-class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
-    model=models.HistoricoMercadoRegulado
-    # select_related = ("user",)
+# TARIFA MERCADO REGULADO - histórico subido por el usuario
+#Crear/subir un histórico de tarifas del Mercado Regulado
+class CreateTarifaMercadoRegulado(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    fields = ('fichero_precios',)
+    model = models.TarifaMercadoRegulado
+
+    def form_valid(self, form):
+        self.object = form.save(commit = False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+#Listar las tarifas eléctricas de un usuario
+class UserTarifasMercadoRegulado(generic.ListView):
+    model=models.TarifaMercadoRegulado
+    template_name = "forecasting/user_tarifamercadoregulado_list.html"
+
+    def get_queryset(self):
+        try:
+            self.tarifamercadoregulado_user=User.objects.get(username__iexact=self.kwargs.get("username"))
+        except User.DoesNotExist:
+            raise Http404
+        else:
+            return self.tarifamercadoregulado_user.tarifasmercadoregulado.all()
+
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        return context
+
+#Muetra una Tarifa del Mercado Regulado
+class TarifaMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
+    model = models.TarifaMercadoRegulado
+    select_related = ("user",)
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(id__iexact=self.kwargs.get("pk"))
+        return queryset.filter(user__username__iexact = self.kwargs.get("username"))
 
-    def get_context_data(self, **kwargs):
-        if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
-            #Me viene fecha de inicio y de final
-            principioYear = self.kwargs['yearS']
-            principioMonth = self.kwargs['monthS']
-            principioDay = self.kwargs['dayS']
-            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
-            principio = principio.isoformat('T')
-            finalYear = self.kwargs['yearF']
-            finalMonth = self.kwargs['monthF']
-            finalDay = self.kwargs['dayF']
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final = final.isoformat('T')
-        elif (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS')):
-            #Me viene sólo un día
-            principioYear = self.kwargs['yearS']
-            principioMonth = self.kwargs['monthS']
-            principioDay = self.kwargs['dayS']
-            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
-            principio = principio.isoformat('T')
-            final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)
-            final += timedelta(days=1)
-            final = final.isoformat('T')
-        else:
-            #No me viene fecha
-            ahora = datetime.now().__format__('%Y-%m-%d')
-            principio = ahora + 'T02:00:00'
-            finalYear = datetime.now().__format__('%Y')
-            finalMonth = datetime.now().__format__('%m')
-            finalDay = datetime.now().__format__('%d')
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final += timedelta(days=1)
-            final = final.isoformat('T')
+#modificar una tarifa eléctrica
+# class TarifaMercadoReguladoUpdateView(LoginRequiredMixin, UpdateView):
+#     model = models.TarifaElectrica
+#     fields=['fichero_precios']
+#     template_name_suffix = '_form_update'
 
-        context = super(HistoricoMercadoReguladoDetail, self).get_context_data(**kwargs)
+#Elimina una tarifa del mercado regulado
+class DeleteTarifaMercadoRegulado(LoginRequiredMixin, DeleteView):
+    model = models.TarifaMercadoRegulado
+    success_url = reverse_lazy('home')
 
-        hMR=models.HistoricoMercadoRegulado.objects.all()
-        precios = pd.read_csv(hMR.precios_luz)
 
-        context['grafico_precio'] = plots.chart_precios_pvpc(principio, final)
-        return context
+# # HISTÓRICO MERCADO REGULADO
+# #ver un histórico
+# class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
+#     model=models.HistoricoMercadoRegulado
+#     # select_related = ("user",)
+#
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         return queryset.filter(id__iexact=self.kwargs.get("pk"))
+#
+#     def get_context_data(self, **kwargs):
+#         if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
+#             #Me viene fecha de inicio y de final
+#             principioYear = self.kwargs['yearS']
+#             principioMonth = self.kwargs['monthS']
+#             principioDay = self.kwargs['dayS']
+#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+#             principio = principio.isoformat('T')
+#             finalYear = self.kwargs['yearF']
+#             finalMonth = self.kwargs['monthF']
+#             finalDay = self.kwargs['dayF']
+#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+#             final = final.isoformat('T')
+#         elif (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS')):
+#             #Me viene sólo un día
+#             principioYear = self.kwargs['yearS']
+#             principioMonth = self.kwargs['monthS']
+#             principioDay = self.kwargs['dayS']
+#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+#             principio = principio.isoformat('T')
+#             final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)
+#             final += timedelta(days=1)
+#             final = final.isoformat('T')
+#         else:
+#             #No me viene fecha
+#             ahora = datetime.now().__format__('%Y-%m-%d')
+#             principio = ahora + 'T02:00:00'
+#             finalYear = datetime.now().__format__('%Y')
+#             finalMonth = datetime.now().__format__('%m')
+#             finalDay = datetime.now().__format__('%d')
+#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+#             final += timedelta(days=1)
+#             final = final.isoformat('T')
+#
+#         context = super(HistoricoMercadoReguladoDetail, self).get_context_data(**kwargs)
+#
+#         hMR=models.HistoricoMercadoRegulado.objects.all()
+#         precios = pd.read_csv(hMR.precios_luz)
+#
+#         context['grafico_precio'] = plots.chart_precios_pvpc(principio, final)
+#         return context
 
 
 

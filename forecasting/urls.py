@@ -40,11 +40,17 @@ urlpatterns = [
     #path('by/<username>/inmueble/<int:pkI>/prediccion/<int:pkP>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
     path('prediccion/<int:pk>', views.PrediccionConsumoDetail.as_view(), name='single_prediccionconsumo'),
     # #direcciones para histórico mercado regulado
-    path('mercado-regulado/<int:pk>', views.HistoricoMercadoReguladoDetail.as_view(), name='single_historicomercadoregulado'),
+    # path('mercado-regulado/<int:pk>', views.HistoricoMercadoReguladoDetail.as_view(), name='single_historicomercadoregulado'),
     # direcciones para las tarifas eléctricas
     path('by/<username>/tarifa/', views.UserTarifasElectricas.as_view(), name='for_user_tarifaselectricas'),
     path('by/<username>/tarifa/new_tarifa_electrica/', views.CreateTarifaElectrica.as_view(), name='create_tarifaelectrica'),
     path('by/<username>/tarifa/<int:pk>/', views.TarifaElectricaDetail.as_view(), name='single_tarifaelectrica'),
     path('by/<username>/tarifa/edit/<int:pk>/', views.TarifaElectricaUpdateView.as_view(), name='edit_tarifaelectrica'),
     path('by/<username>/tarifa/delete/<int:pk>/', views.DeleteTarifaElectrica.as_view(), name="delete_tarifaelectrica"),
+    # direcciones para las tarifas del mercado regulado
+    path('by/<username>/regulado/', views.UserTarifasMercadoRegulado.as_view(), name='for_user_tarifasmercadoregulado'),
+    path('by/<username>/regulado/new_tarifa_mr/', views.CreateTarifaMercadoRegulado.as_view(), name='create_tarifamercadoregulado'),
+    path('by/<username>/regulado/<int:pk>/', views.TarifaMercadoReguladoDetail.as_view(), name='single_tarifamercadoregulado'),
+    # path('by/<username>/regulado/edit/<int:pk>/', views.TarifaMercadoReguladoUpdateView.as_view(), name='edit_tarifamercadoregulado'),
+    path('by/<username>/regulado/delete/<int:pk>/', views.DeleteTarifaMercadoRegulado.as_view(), name="delete_tarifamercadoregulado"),
 ]

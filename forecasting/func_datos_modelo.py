@@ -56,13 +56,15 @@ def crearModelo(fichero):
     #poner un random, o la echa, y así no se sobreescriben, concatenado y fuera
     # saved = model.save('modeloXXX.pkl')
     ruta_fich = settings.MEDIA_ROOT + '\\modelos\\'
-    saved = model.save(ruta_fich+'modelo'+id_random_generator()+'.pkl')
+    ruta_modelo = ruta_fich+'modelo'+id_random_generator()+'.pkl'
+    model.save(ruta_modelo)
+
     print('Te lo paso guardado')
     print('Esto es lo que te paso:')
-    print(saved)
+    print(ruta_modelo)
 
 
-    return saved
+    return ruta_modelo
 
 
 

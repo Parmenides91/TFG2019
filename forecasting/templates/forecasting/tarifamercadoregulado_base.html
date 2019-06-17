@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+    <div class="jumbotron bg-light">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="display-1 ">Tarifas Mercado Regulado</h1>
+                <hr>
+                <p class="text-muted font-italic lead">Datos históricos sobre las tarifas del Mercado Regulado.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        {% block pre_tarifamercadoregulado %}{% endblock %}
+        {% block content_tarifamercadoregulado %}{% endblock %}
+        {% block post_tarifamercadoregulado %}{% endblock %}
+    </div>
+
+{% endblock %}

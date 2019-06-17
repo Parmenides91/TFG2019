@@ -26,21 +26,39 @@ class Job(BaseJob):
             # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
             # print(nuevo_modelo.fichero_modelo_inmueble.name)
 
-            # Método 2
-            nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble)
-            el_mode=crearModelo(inmueble.consumo_inmueble)
-            # el_file = ContentFile(el_mode)
-            # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
-            nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_mode)
-            nuevo_modelo.save()
-            print('fichero_modelo_inmueble')
-            print(nuevo_modelo.fichero_modelo_inmueble)
-            print('fichero_modelo_inmueble.name')
-            print(nuevo_modelo.fichero_modelo_inmueble.name)
-            print('fichero_modelo_inmueble.file')
-            print(nuevo_modelo.fichero_modelo_inmueble.file)
-            print('fichero_modelo_inmueble')
-            print(nuevo_modelo.fichero_modelo_inmueble)
+            # # Método 2
+            # nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble)
+            # el_mode=crearModelo(inmueble.consumo_inmueble)
+            # # el_file = ContentFile(el_mode)
+            # # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
+            # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_mode)
+            # nuevo_modelo.save()
+            # print('fichero_modelo_inmueble')
+            # print(nuevo_modelo.fichero_modelo_inmueble)
+            # print('fichero_modelo_inmueble.name')
+            # print(nuevo_modelo.fichero_modelo_inmueble.name)
+            # print('fichero_modelo_inmueble.file')
+            # print(nuevo_modelo.fichero_modelo_inmueble.file)
+            # print('fichero_modelo_inmueble')
+            # print(nuevo_modelo.fichero_modelo_inmueble)
+
+            # # Método 3
+            # nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble)
+            # ruta_modelo = crearModelo(inmueble.consumo_inmueble)
+            # nuevo_modelo.fichero_modelo_inmueble = ruta_modelo
+            # nuevo_modelo.save()
+
+            # Método 4
+            if not inmueble.modelo_actualizado:
+                # Se necesita crear el modelo porque el consumo del inmueble ha sido modificado
+                nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble,
+                                                                   fichero_modelo_inmueble=crearModelo(
+                                                                       inmueble.consumo_inmueble))
+                nuevo_modelo.save()
+            else:
+                # El modelo que existe es correcto y no se requieren más acciones
+                pass
+
 
             send_mail(
                 'Creacion Modelo',

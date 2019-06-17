@@ -69,6 +69,20 @@
                         </div>
                     </li>
 
+                    <!-- Tarifas -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-tarifas" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Tarifas
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-tarifas">
+                            <a href="{% url 'forecasting:for_user_tarifaselectricas' username=user.username %}" class="dropdown-item">Personalizadas</a>
+                            <a href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=user.username %}" class="dropdown-item">Mercado Regulado</a>
+                            <a href="#" class="dropdown-item">Mercado Libre</a>
+                        </div>
+                    </li>
+
+
                     <!-- Tarifas Eléctricas del Usuario -->
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" id="menu-tarifaelectrica" data-toggle="dropdown"

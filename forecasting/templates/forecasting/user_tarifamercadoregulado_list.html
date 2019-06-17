@@ -1,0 +1,32 @@
+{% extends "forecasting/tarifamercadoregulado_base.html" %}
+
+
+{% block content_tarifamercadoregulado %}
+
+    <div class="mt-4">
+        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
+        <h3 class="display-4 mb-5">Estos son los históricos que has subido hasta ahora:</h3>
+
+        <ul class="list-unstyled row justify-content-between">
+            {% for tarifamercadoregulado in tarifamercadoregulado_list_list %}
+                {% include "forecasting/_tarifamercadoregulado_list_item.html" %}
+            {% endfor %}
+        </ul>
+
+        <div class="row">
+            <div class="col-9">
+                <ul class="list-unstyled row justify-content-between">
+            {% for tarifamercadoregulado in tarifamercadoregulado_list_list %}
+                {% include "forecasting/_tarifamercadoregulado_list_item.html" %}
+            {% endfor %}
+        </ul>
+            </div>
+            <div class="col-3 my-3">
+                <p class="text-justify">Sube un nuevo fichero con los datos históricos de las tarifas del Mercado Regulado</p>
+                <a class="btn btn-outline-success btn-block" href="{% url 'forecasting:create_tarifamercadoregulado' username=user.username %}" class="dropdown-item">Subir histórico</a>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
