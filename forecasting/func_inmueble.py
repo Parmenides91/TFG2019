@@ -7,7 +7,7 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 import pandas as pd
 
-
+#Reparte juego para crear las gráficas en distintas fases temporales
 def crear_graficas_inmueble(df):
     grafs_dict = {'horas': crear_grafica_generica(df, 'horario'),
                   'dias': crear_grafica_generica(df.resample('D').sum(), 'diario'),
@@ -15,6 +15,7 @@ def crear_graficas_inmueble(df):
                   'meses': crear_grafica_generica(df.resample('M').sum(), 'mensual')}
     return grafs_dict
 
+#Gráfica genérica
 def crear_grafica_generica(df, tipo):
     n_leyenda = 'Consumo '+tipo
 
@@ -219,6 +220,31 @@ def coste_tarifas_usuario(df, tarifaelectrica):
     #     i += 1
     #
     # return costes_dict
+
+
+def coste_tarifas_MR(df_c, df_p):
+    # print(df_c.index)
+    # df_c.index = pd.to_datetime(df_c['Fecha'])
+    # df_c.index.freq = 'h'
+    # df_c = df_c.drop('Fecha', axis=1)
+    df_p.index = df_c.index
+    df_combinado = df_c.join(df_p[['TPD', 'EDP', 'VE']])
+
+    costeTPD = 0
+    costeEDP = 0
+    costeVE = 0
+    for index, row in df_combinado.iterrows():
+        costeTPD += (row['TPD']) * row['Consumo_kWh']
+        costeEDP += (row['EDP']) * row['Consumo_kWh']
+        costeVE += (row['VE']) * row['Consumo_kWh']
+
+    costeTPD = costeTPD / 1000
+    costeEDP = costeEDP / 1000
+    costeVE = costeVE / 1000
+
+    costes = {'TPD':costeTPD, 'EDP':costeEDP, 'VE':costeVE}
+
+    return costes
 
 
 # Cálculo del coste del consumo del inmueble mediante los precios del mercado regulado

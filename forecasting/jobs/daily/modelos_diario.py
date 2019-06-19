@@ -3,6 +3,7 @@ from django_extensions.management.jobs import BaseJob
 from django.core.mail import send_mail
 from django.core.files import File
 from django.core.files.base import ContentFile
+import os
 
 from ... import models
 # from ...models import Inmueble, ModeloConsumo
@@ -50,45 +51,49 @@ class Job(BaseJob):
 
             # Método 4
             if not inmueble.modelo_actualizado:
-                # Se necesita crear el modelo porque el consumo del inmueble ha sido modificado
+                # Hay que crear un modelo porque el consumo del inmueble ha sido modificado o acaba de ser creado
+                # Me cargo el viejo, si es que existe.
+                previo = models.ModeloConsumo.objects.filter(inmueble_origen=inmueble)
+                if previo:
+                    if os.path.exists(previo.fichero_modelo_inmueble_string):
+                        os.remove(previo.fichero_modelo_inmueble_string)
+                    else:
+                        pass
+                    previo.delete()
+                else:
+                    pass
+
+                # Creo un modelo nuevo
+                # ruta_modelo = crearModelo(inmueble.consumo_inmueble)
+                ruta_modelo = crearModelo(inmueble.consumo_inmueble_string)
                 nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble,
-                                                                   fichero_modelo_inmueble=crearModelo(
-                                                                       inmueble.consumo_inmueble))
+                                                                   fichero_modelo_inmueble=ruta_modelo)
                 nuevo_modelo.save()
+
+                # Aviso de que el modelo ya se ha creado con los cambios que se hubieran hecho en el Inmueble
+                inmueble.modelo_actualizado = True
+                inmueble.save()
+
+                # Aviso al usuario
+                send_mail(
+                    'Creacion Modelo',
+                    'Se ha creado el nuevo modelo.',
+                    'from@example.com',
+                    [inmueble.user.email],
+                    fail_silently=False,
+                )
+
             else:
                 # El modelo que existe es correcto y no se requieren más acciones
+                print('No hace falta crear un modelo nuevo.')
                 pass
 
 
-            send_mail(
-                'Creacion Modelo',
-                'Se ha creado el nuevo modelo.',
-                'from@example.com',
-                [inmueble.user.email],
-                fail_silently=False,
-            )
-
-# class Job(BaseJob):
-#     help = "Creación de los modelos de los consumos"
-#
-#     def execute(self):
-#         # executing empty sample job
-#         inmuebles = models.Inmueble.objects.all()
-#
-#         for inmueble in inmuebles:
-#             for consumo in inmueble.consumo_inmueble:
-#                 nuevo_modelo = models.ModeloConsumo.objects.create()
-#                 nuevo_modelo.fichero_modelo_inmueble=creacion_modelo(consumo)
-#                 nuevo_modelo.inmueble_origen=inmueble
-#                 nuevo_modelo.save()
-#
-#                 send_mail(
-#                     'Creación Modelo',
-#                     'Se ha creado el nuevo modelo.',
-#                     'from@example.com',
-#                     [inmueble.user.email],
-#                     fail_silently=False,
-#                 )
-#
-#
-#
+            # # Aviso al usuario
+            # send_mail(
+            #     'Creacion Modelo',
+            #     'Se ha creado el nuevo modelo.',
+            #     'from@example.com',
+            #     [inmueble.user.email],
+            #     fail_silently=False,
+            # )

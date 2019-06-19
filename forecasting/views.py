@@ -22,7 +22,7 @@ from . import plots
 from . models import ModeloPred
 from . import func_datos_modelo
 from . import func_parciales
-from .funciones_basicas import limpiarCSV
+from .funciones_basicas import limpiarCSV, id_random_generator
 
 import csv
 
@@ -123,7 +123,7 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
         #Haciéndolo de esta manera, la instancia no encuentra su fichero. YA SÍ QUE ESTÁ BIEN HECHO. NO MAMES, WEY
         df_inmueble=pd.read_csv(self.object.consumo_inmueble, delimiter=';', decimal=',')
         df_inmueble=limpiarCSV(df_inmueble)
-        #TODO GUARDAR EL DATAFRAME EN UN PICKLE EN LUGAR DE EN CSV --> modificar el modelo
+        #TOD GUARDAR EL DATAFRAME EN UN PICKLE EN LUGAR DE EN CSV --> modificar el modelo
         # dire=os.path.join(settings.MEDIA_ROOT, 'consumosInmuebles')
         # # dire = os.path.join(str(FileSystemStorage.location), 'consumosInmuebles')
         # dire=os.path.join(dire, self.object.consumo_inmueble.name)
@@ -133,6 +133,9 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
 
         # self.object.consumo_inmueble.file= ContentFile(df_inmueble.to_csv(columns={'Fecha','Consumo_kWh'}))
         self.object.consumo_inmueble.file = ContentFile(df_inmueble.to_csv(columns={'Consumo_kWh',}))
+        file_path2 = settings.MEDIA_ROOT+'\\consumosInmuebles\\'+'ConInm'+id_random_generator()+'.csv'
+        df_inmueble.to_csv(file_path2)
+        self.object.consumo_inmueble_string =file_path2
 
 
         # #Cuando se crea un inmueble se crea un histórico de precios de la luz en el Mercado Regulado

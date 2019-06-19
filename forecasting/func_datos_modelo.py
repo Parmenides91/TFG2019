@@ -32,7 +32,8 @@ def crearModelo(fichero):
     # df.index.freq = 'h'
 
     # Método 2
-    df = pd.read_csv(fichero, index_col=['Fecha'], parse_dates=True)
+    # df = pd.read_csv(fichero, index_col=['Fecha'], parse_dates=True)
+    df = pd.read_csv(fichero, index_col=0, parse_dates=True)
     df.index.freq = 'H'
 
     # Limpio los datos

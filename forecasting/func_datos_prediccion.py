@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import plotly.graph_objs as go
+from django.core.files.base import ContentFile
 from plotly.offline import plot
 
 from datetime import datetime, timedelta
@@ -45,13 +46,98 @@ def crearPrediccion(fichero):
     d={'Fecha':ristra, 'Consumo_kWh':predicciones}
     df=pd.DataFrame(data=d)
     ruta_fich = settings.MEDIA_ROOT + '\\predicciones\\'
-    prediccion = df.to_csv(ruta_fich+'prediccion'+id_random_generator()+'.csv')
+    ruta_pred = ruta_fich+'prediccion'+id_random_generator()+'.csv'
+    df.to_csv(ruta_pred)
 
     # prediccion = predicciones.to_csv('LaPrediccion.csv')
     print('Guardado en csv. Te lo mando.')
 
     # return predicciones
-    return prediccion
+    return ruta_pred
+
+
+
+
+#Reparte juego para crear las gráficas de predicción en distintas fases temporales
+def crear_graficas_predicción(df):
+    grafs_dict = {'horas': crear_grafica_generica(df, 'horario'),
+                  'dias': crear_grafica_generica(df.resample('D').sum(), 'diario'),
+                  'semanas': crear_grafica_generica(df.resample('W').sum(), 'semanal'),
+                  'meses': crear_grafica_generica(df.resample('M').sum(), 'mensual')}
+    return grafs_dict
+
+#Gráfica genérica
+def crear_grafica_generica(df, tipo):
+    n_leyenda = 'Predicción '+tipo
+
+    trace1 = go.Scatter(
+        x=df.index,
+        y=df['Consumo_kWh'],
+        mode='lines+markers',
+        name=n_leyenda,
+        marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
+
+    data = [trace1, ]
+
+    layout = go.Layout(
+        title='',
+        showlegend=True,
+        # width = 800,
+        # height = 700,
+        hovermode='closest',
+        bargap=0,
+        legend=dict(
+            # orientation='h',
+            x=0.2, y=1.1,
+            traceorder='normal',
+            font=dict(
+                family='sans-serif',
+                size=12,
+                color='#000',
+            ),
+            bgcolor='#E2E2E2',
+            bordercolor='#FFFFFF',
+            borderwidth=2,
+        ),
+        margin=dict(
+            autoexpand=False,
+            l=100,
+            r=20,
+            t=110,
+        ),
+        xaxis=dict(
+            title='',
+            showline=True,
+            showgrid=True,
+            showticklabels=True,
+            linecolor='rgb(204, 204, 204)',
+            linewidth=2,
+            ticks='outside',
+            tickcolor='rgb(204, 204, 204)',
+            tickwidth=2,
+            ticklen=2,
+            tickfont=dict(
+                family='Arial',
+                size=12,
+                color='rgb(82, 82, 82)',
+            ),
+        ),
+        yaxis=dict(
+            title='kW/h',
+            showgrid=True,
+            zeroline=False,
+            showline=True,
+            showticklabels=True,
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div
+
+
+
+
 
 
 def predicionconsumo_chart(df):

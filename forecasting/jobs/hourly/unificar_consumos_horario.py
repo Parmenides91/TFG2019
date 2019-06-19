@@ -4,7 +4,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 
 from ... import models
-from ...funciones_basicas import limpiarCSV
+from ...funciones_basicas import limpiarCSV, id_random_generator
 from django.conf import settings
 
 import pandas as pd
@@ -95,7 +95,21 @@ class Job(BaseJob):
                 el_con= open(ruta_fich+'consumoINMUEBLE'+str(inmueble.id)+'.csv')
                 el_file=File(el_con)
                 inmueble.consumo_inmueble.save('consumoInmueble'+str(inmueble.id)+'.csv',el_file)
+
+                # Método 3
+                ruta_fich2 = settings.MEDIA_ROOT + '\\consumosInmuebles\\' + 'ConInm' + id_random_generator() + '.csv'
+                df_combinado.to_csv(ruta_fich2) #el nuevo consumo del inmueble
+                inmueble.consumo_inmueble_string=ruta_fich2
+                inmueble.save()
+
                 parcial.delete()
+
+                #Aviso de que el Inmueble ha cambiado y de que el modelo debe volver a crearse
+                inmueble.modelo_actualizado=False
+                inmueble.prediccion_actualizada=False
+                inmueble.save()
+
+
 
                 # inmu_id=inmueble.id
                 # print(inmu_id)

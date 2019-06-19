@@ -19,6 +19,7 @@ from . import func_analisis_consumo
 from . import func_datos_prediccion
 from .func_inmueble import coste_tarifas_usuario, coste_tarifas_mr
 from .func_inmueble import crear_graficas_inmueble
+from .func_datos_prediccion import crear_graficas_predicción
 
 from .func_datos_prediccion import crearPrediccion
 from .func_datos_modelo import crearModelo
@@ -42,7 +43,13 @@ class Inmueble(models.Model):
     created_at=models.DateTimeField(auto_now=True)
     modified_at = models.DateTimeField(auto_now=True)
     modelo_actualizado = models.BooleanField(default=False)
+    prediccion_actualizada = models.BooleanField(default=False)
+    #3 triggers para calcular los costes de cada tipo de tarifa si ha habido cambios
+    actualizar_costes_TE = models.BooleanField(default=True)
+    actualizar_costes_MR = models.BooleanField(default=True)
+    actualizar_costes_ML = models.BooleanField(default=True)
     consumo_inmueble=models.FileField(upload_to='consumosInmuebles', blank = False)
+    consumo_inmueble_string = models.CharField(max_length=255, blank=True)
     # consumo_inmueble = models.BinaryField()
     consumo_inmueble_parcial=models.FileField(upload_to='consumosInmuebles', blank = True)
 
@@ -106,13 +113,13 @@ class Inmueble(models.Model):
         # inmuebles = Inmueble.objects.all()
         # for inmueble in inmuebles:
         #     # Método 2
-        #     nuevo_modelo = ModeloConsumo.objects.create(inmueble_origen=inmueble)
         #     ruta_modelo = crearModelo(inmueble.consumo_inmueble)
+        #     nuevo_modelo = ModeloConsumo.objects.create(inmueble_origen=inmueble, fichero_modelo_inmueble_string=ruta_modelo)
         #     print(ruta_modelo)
         #     # el_file = ContentFile(el_mode)
         #     # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', el_file)
         #     # nuevo_modelo.fichero_modelo_inmueble.save('ElModelo', ruta_modelo)
-        #     nuevo_modelo.fichero_modelo_inmueble = ruta_modelo
+        #     # nuevo_modelo.fichero_modelo_inmueble_string = ruta_modelo
         #     nuevo_modelo.save()
         #     #PON EL SAVE AQUÍ, CUANDO CONSIGA PASAR DEL PUNTO ANTERIOR
 
@@ -131,10 +138,12 @@ class Inmueble(models.Model):
         #     print(modelo.fichero_modelo_inmueble)
         #     print('Ese es el fichero')
         #     # fich_modelo=modelo.fichero_modelo_inmueble
+        #     # prediccion = crearPrediccion(modelo.fichero_modelo_inmueble)
+        #     ruta_pred = crearPrediccion(modelo.fichero_modelo_inmueble_string)
+        #
         #     nueva_prediccion = PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,
-        #                                                                fichero_prediccion_consumo=crearPrediccion(
-        #                                                                    modelo.fichero_modelo_inmueble))
-        #     print('Create() hecho. Vamos a guardar todo.')
+        #                                                                fichero_prediccion_consumo_string=ruta_pred)
+        #     print('Create() hecho. Vamos a guardar tod.')
         #     nueva_prediccion.save()
         #     print('Guardado.')
 
@@ -239,7 +248,8 @@ class Consumo(models.Model):
         self.coste_tarifa_PPP = info_consumo.get('PVPCprecioPPP')
         """
         info_consumo = {'grafica_consumo': func_analisis_consumo.consumo_chart(df),
-                        'PVPCprecios': func_analisis_consumo.obtener_precios_mercado_regulado(df)}
+                        #'PVPCprecios': func_analisis_consumo.obtener_precios_mercado_regulado(df),
+                        }
 
         self.coste_tarifa_PPP = info_consumo.get('PVPCprecios').get('PPD')
         self.coste_tarifa_EDP = info_consumo.get('PVPCprecios').get('EDP')
@@ -347,6 +357,7 @@ class ModeloConsumo(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     # fichero_modelo_inmueble = models.FileField(upload_to='modelos', blank=True)
     fichero_modelo_inmueble = models.FilePathField(path=os.path.join(settings.MEDIA_DIR, 'modelos'))
+    fichero_modelo_inmueble_string=models.CharField(max_length=255, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -357,6 +368,7 @@ class PrediccionConsumo(models.Model):
     #created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     fichero_prediccion_consumo = models.FileField(upload_to='predicciones', blank=True)
+    fichero_prediccion_consumo_string = models.CharField(max_length=255, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -364,9 +376,30 @@ class PrediccionConsumo(models.Model):
     # Representar la predicción que se ha llevado a cabo
     @property
     def representar_prediccionconsumo(self):
-        df = pd.read_csv('LaPrediccion.csv')
-        info_predicionconsumo = {'grafica_prediccionconsumo': func_datos_prediccion.predicionconsumo_chart(df), }
-        return info_predicionconsumo
+        # #Itento 1
+        # df = pd.read_csv(self.fichero_prediccion_consumo_string, index_col=0, parse_dates=True)
+        # df.index.freq = 'H'
+        # info_prediccion = {'graficas_inmueble': crear_graficas_predicción(df),
+        #                  }
+        # return info_prediccion
+
+        #Intento 2:
+        try:
+            df = pd.read_csv(self.fichero_prediccion_consumo_string, index_col=0, parse_dates=True)
+            df.index.freq = 'H'
+            info_prediccion = {'graficas_prediccion': crear_graficas_predicción(df),
+                               }
+        except:
+            df = pd.read_csv('C:\\Users\\rbene\\PycharmProjects\\ProyectoTFG\\media\\predicciones\\prediccionYR1BM85N.csv', index_col=0, parse_dates=True)
+            df.index.freq = 'H'
+            info_prediccion = {'graficas_prediccion': crear_graficas_predicción(df),
+                               }
+        return info_prediccion
+
+        # df = pd.read_csv('LaPrediccion.csv')
+        # # info_predicionconsumo = {'grafica_prediccionconsumo': func_datos_prediccion.predicionconsumo_chart(df), }
+        # # return info_predicionconsumo
+        # return True
 
 # Tarifa personalizada del usuario
 class TarifaElectrica(models.Model):
@@ -409,6 +442,7 @@ class CosteInmuebleTE(models.Model):
     #     unique_together = (('inmueble_asociado', 'tarifaelectrica_asociada'),)
 
 
+# Precios del Mercado Regulado
 class TarifaMercadoRegulado(models.Model):
     user = models.ForeignKey(User, related_name="tarifasmercadoregulado", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
@@ -417,6 +451,20 @@ class TarifaMercadoRegulado(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("forecasting:single_tarifamercadoregulado", kwargs={"username":self.user.username, "pk":self.pk})
+
+#Coste del consumo de un Inmueble en relación con los precios del Mercado Regulado
+class CosteInmuebleMR(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    # tarifamr_asociada = models.ForeignKey(TarifaMercadoRegulado, on_delete=models.CASCADE)
+    tipo = models.CharField(default='PPD', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    actualizado = models.BooleanField(default=True)
+    coste = models.FloatField()
+
 
 
 
@@ -455,14 +503,7 @@ from . import plots
 # #HASTA AQUÍ
 
 
-#Coste del consumo de un Inmueble en relación con los precios del Mercado Regulado
-class CosteInmuebleMR(models.Model):
-    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
-    tipo = models.CharField(default='PPD', max_length=3, blank=False)
-    created_at = models.DateTimeField(auto_now=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    actualizado = models.BooleanField(default=True)
-    coste = models.FloatField()
+
 
 
 #Esto es el segundo pensamiento sobre cómo hacerlo

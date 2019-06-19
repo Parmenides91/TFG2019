@@ -10,6 +10,7 @@ class Job(BaseJob):
     help = "Obtiene coste del consumo de un Inmueble aplicando una Tarifa Eléctrica del usuario."
 
     def execute(self):
+        # Método 1:
         usuarios = models.User.objects.all()
         print('Tengo los Usuarios')
         for usuario in usuarios:
@@ -22,11 +23,12 @@ class Job(BaseJob):
                 print('Tengo las Tarifas Eléctricas del usuario')
                 for tarifa in tarifas:
 
-                    #Pobre manera de manejar las cosas: me cargo lo anterior y vuelvo a calcular tod.
-                    costesactuales= models.CosteInmuebleTE.objects.filter(inmueble_asociado=inmueble, tarifaelectrica_asociada=tarifa)
+                    # Pobre manera de manejar las cosas: me cargo lo anterior y vuelvo a calcular tod.
+                    costesactuales = models.CosteInmuebleTE.objects.filter(inmueble_asociado=inmueble,
+                                                                           tarifaelectrica_asociada=tarifa)
                     for costeactual in costesactuales:
                         costeactual.delete()
-                    #Fin de la pobre manera de manejar las cosas
+                    # Fin de la pobre manera de manejar las cosas
 
                     print('Procedo a crear un Coste')
                     nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble,
@@ -40,6 +42,49 @@ class Job(BaseJob):
                     print(nuevo_costeInmuebleTE)
                     nuevo_costeInmuebleTE.save()
                     print('Se ha guardado.')
+
+
+        # # Método 2:
+        # usuarios = models.User.objects.all()
+        # print('Tengo los Usuarios')
+        # for usuario in usuarios:
+        #     inmuebles = models.Inmueble.objects.filter(user=usuario)
+        #     print('Tengo los Inmuebles del Usuario')
+        #     for inmueble in inmuebles:
+        #         if inmueble.actualizar_costes_TE:
+        #             # Se han creado tarifas y/o ha habido cambios (en alguna de ellas)
+        #             df = pd.read_csv(inmueble.consumo_inmueble, index_col=['Fecha'], parse_dates=True)
+        #             df.index.freq = 'H'
+        #             tarifas = models.TarifaElectrica.objects.filter(user=usuario)
+        #             print('Tengo las Tarifas Eléctricas del usuario')
+        #             for tarifa in tarifas:
+        #
+        #                 # Pobre manera de manejar las cosas: me cargo lo anterior y vuelvo a calcular tod.
+        #                 costesactuales = models.CosteInmuebleTE.objects.filter(inmueble_asociado=inmueble,
+        #                                                                        tarifaelectrica_asociada=tarifa)
+        #                 for costeactual in costesactuales:
+        #                     costeactual.delete()
+        #                 # Fin de la pobre manera de manejar las cosas
+        #
+        #                 print('Procedo a crear un Coste')
+        #                 nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble,
+        #                                                                               tarifaelectrica_asociada=tarifa,
+        #                                                                               coste=coste_tarifas_usuario(
+        #                                                                                   df,
+        #                                                                                   tarifa))
+        #                 nuevo_costeInmuebleTE.modified_at = datetime.datetime.now()
+        #                 nuevo_costeInmuebleTE.actualizado = True
+        #                 print('Debería haberse creado. Mira:')
+        #                 print(nuevo_costeInmuebleTE)
+        #                 nuevo_costeInmuebleTE.save()
+        #                 print('Se ha guardado.')
+        #
+        #                 # No se requiere recalcular los costes de las tarifas
+        #                 inmueble.actualizar_costes_TE = False
+        #                 inmueble.save()
+        #         else:
+        #             # No se requiere recalcular las tarifas
+        #             pass
 
         print('Fin.')
 

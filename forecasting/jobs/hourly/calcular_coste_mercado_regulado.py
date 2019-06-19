@@ -6,6 +6,8 @@ from ... import models
 from ...func_inmueble import coste_tarifas_usuario
 
 
+# CREO QUE ESTE FICHERO NO LO USO PARA NADA.
+
 class Job(BaseJob):
     help = "Obtiene coste del consumo de un Inmueble según los precios del Mercado Regulado"
 

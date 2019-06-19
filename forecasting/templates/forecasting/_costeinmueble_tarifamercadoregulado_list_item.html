@@ -1,0 +1,34 @@
+{% load static %}
+
+
+<li class="media my-2">
+    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill04.png' %}" alt="coste file icon">
+    <div class="media-body">
+        <h5 class="mt-0 mb-1"><em><strong>Tipo de Tarifa: {{ costeinmueblemr.tipo }}</strong></em></h5>
+        <h6 class="mt-0 mb-1"><strong>Precio: {{ costeinmueblemr.coste|floatformat:2 }}</strong> €</h6>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
+                data-target="#verCosteInmuebleTarifaMercadoReguladoModal{{ costeinmuebletmr.id }}">
+            Consultar
+        </button>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verCosteInmuebleTarifaMercadoReguladoModal{{ costeinmuebletmr.id }}"
+     tabindex="-1" role="dialog"
+     aria-labelledby="verCosteInmuebleTarifaMercadoReguladoLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% include "forecasting/_costeinmueble_tarifamercadoregulado_item.html" %}
+        </div>
+
+{#        <div class="modal-footer">#}
+{#            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>#}
+{#        </div>#}
+
+    </div>
+</div>
+{#</div>#}

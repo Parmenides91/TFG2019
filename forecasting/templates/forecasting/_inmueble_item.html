@@ -13,13 +13,22 @@
 {#    <p class="h5">Consumo Inmueble Parcial: {{ inmueble.filename2 }}</p>#}
 {#    <hr>#}
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-12">
             <p class="h2">{{ inmueble.nombre }}</p>
             <hr>
         </div>
         <div class="col-7">
             <p class="lead">{{ inmueble.descripcion }}</p>
+
+            <hr>
+            <p class="text-left text-muted my-0"><strong>Información:</strong></p>
+            {% if inmueble.modelo_actualizado %}
+                <p class="text-left text-muted">Dispone de una predicción basada en este Inmueble.</p>
+            {% else %}
+                <p class="text-left text-muted">Proximamente se creará una predicción de este consumo.</p>
+            {% endif %}
+
         </div>
         <div class="col-3">
             <p class="text-muted text-right my-0">Creado: <em>{{ inmueble.created_at }}</em></p>
@@ -28,6 +37,7 @@
         </div>
         <div class="col-2 align-content-end">
             {% if user.is_authenticated %}
+{#                <p class="text-right my-0"><strong>Acciones:</strong></p>#}
                 <a class="btn btn-primary btn-sm btn-block my-1"
                    href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar
                     inmueble</a>
@@ -46,7 +56,7 @@
 {#    <div class="col-md-12">{{ inmueble.representar_inmueble.grafica_inmueble|safe }}</div>#}
 
     <!-- Gráficas del consumo del Inmueble con distinta temporalidad -->
-    <nav>
+    <nav class="">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-item nav-link active" id="nav-graf-horaria-tab" data-toggle="tab" href="#nav-graf-horaria"
                role="tab" aria-controls="nav-graf-horaria" aria-selected="true">Horaria</a>
@@ -77,7 +87,6 @@
 
     <!-- Análisis de los costes del Inmueble para las tarifas que hay -->
     <ul class="row align-items-start list-unstyled">
-
         <!-- Primera Columna: Tarifas Personalizadas -->
         <li class="col-4 justify-content-around">
             <ul class="row list-unstyled justify-content-center">
@@ -95,7 +104,6 @@
                 {% endif %}
             </ul>
         </li>
-
         <!-- Segunda Columna: Mercado Regulado -->
         <li class="col-4 justify-content-around">
             <ul class="row list-unstyled justify-content-center">
@@ -104,16 +112,15 @@
 					<p class="h4">Mercado Regulado:</p>
 				</li>
                 <!-- items -->
-{#                {% if inmueble.costeinmueblete_set.exists %}#}
-{#                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
-{#                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
-{#                    {% endfor %}#}
-{#                {% else %}#}
-{#                    <p class="h4 text-muted text-center">No hay tarifas que mostrar.</p>#}
-{#                {% endif %}#}
+                {% if inmueble.costeinmueblemr_set.exists %}
+                    {% for costeinmueblemr in inmueble.costeinmueblemr_set.all %}
+                        {% include "forecasting/_costeinmueble_tarifamercadoregulado_list_item.html" %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Regulado.</p>
+                {% endif %}
             </ul>
         </li>
-
         <!-- Tercera Columna: Mercado Libre -->
         <li class="col-4 justify-content-around">
             <ul class="row list-unstyled justify-content-center">
@@ -122,17 +129,8 @@
 					<p class="h4">Mercado Libre:</p>
 				</li>
                 <!-- items -->
-{#                {% if inmueble.costeinmueblete_set.exists %}#}
-{#                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
-{#                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
-{#                    {% endfor %}#}
-{#                {% else %}#}
-{#                    <p class="h4 text-muted text-center">No hay tarifas que mostrar.</p>#}
-{#                {% endif %}#}
             </ul>
         </li>
-
-
     </ul>
 
 
@@ -164,6 +162,7 @@
                 <div class="media-body">
                     <h5 class="mt-0 mb-1">{{ prediccion.titulo }}</h5>
                     <h6 class="mt-0 mb-1 text-muted">Creado: {{ prediccion.created_at }}</h6>
+                    <h6 class="mt-0 mb-1 text-muted">Fichero: {{ prediccion.fichero_prediccion_consumo_string }}</h6>
                     <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar predicción</a>
                 </div>
             </li>
@@ -175,7 +174,7 @@
     <!-- Listado de las predicciones que existen para este inmueble. Versión de ventanas modales -->
     <p class="display-3">Listado de las predicciones que existen para este inmueble. Versión de ventanas modales</p>
     {% for modeloconsumo in inmueble.modeloconsumo_set.all %}
-        <ul class="list-unstyled row justify-content-between">>
+        <ul class="list-unstyled row justify-content-between">
         {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}
             {% include "forecasting/_prediccion_inmueble_list_item.html" %}
         {% endfor %}

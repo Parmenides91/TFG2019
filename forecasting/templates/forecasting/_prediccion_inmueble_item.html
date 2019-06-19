@@ -7,7 +7,28 @@
     </button>
 </div>
 <div class="modal-body">
-    {{ prediccion.representar_prediccionconsumo.grafica_prediccionconsumo|safe }}
+    <div class="row">
+        <div class="col-6">
+            Fechas estimadas: TAL
+        </div>
+        <div class="col-6">
+            Precio estimado: TAL-TAL
+        </div>
+    </div>
+
+    <div class="row">
+        <p>Fichero: {{ prediccion.fichero_prediccion_consumo_string }}</p>
+    </div>
+
+    <div class="row">
+        <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar detalles</a>
+    </div>
+
+{#    fichero_prediccion_consumo_string#}
+{#    {{ prediccion.representar_prediccionconsumo.grafica_prediccionconsumo|safe }}#}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{#    <div class="col-md-12">{{ prediccionconsumo.representar_prediccionconsumo.graficas_prediccion.horas|safe }}</div>#}
+    {{ prediccion.representar_prediccionconsumo.graficas_prediccion.horas|safe }}
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

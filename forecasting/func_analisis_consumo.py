@@ -110,30 +110,54 @@ def obtener_precios_mercado_regulado(df):
 
 def calcular_coste_tarifa_MR(df, precios, tipo):
     if tipo == 'PPD':
+        # # Método 1:
+        # coste_PPD = 0
+        # for index, row in df.iterrows():
+        #     if index < len(precios):
+        #         coste_PPD += row['Consumo_kWh'] * precios[index]
+        #     else:
+        #         break
+
+        # Método 2:
+        df_combinado = pd.merge(df, precios, how='inner', left_index=True, right_index=True)
         coste_PPD = 0
-        for index, row in df.iterrows():
-            if index < len(precios):
-                coste_PPD += row['Consumo_kWh'] * precios[index]
-            else:
-                break
+        for index, row in df_combinado.iterrows():
+            coste_PPD += row['Consumo_kWh'] * row['PPD']
+
         return coste_PPD
 
     elif tipo == 'EDP':
+        # # Método 1:
+        # coste_EDP = 0
+        # for index, row in df.iterrows():
+        #     if index < len(precios):
+        #         coste_EDP += row['Consumo_kWh'] * precios[index]
+        #     else:
+        #         break
+
+        # Método 2:
+        df_combinado = pd.merge(df, precios, how='inner', left_index=True, right_index=True)
         coste_EDP = 0
-        for index, row in df.iterrows():
-            if index < len(precios):
-                coste_EDP += row['Consumo_kWh'] * precios[index]
-            else:
-                break
+        for index, row in df_combinado.iterrows():
+            coste_EDP += row['Consumo_kWh'] * row['EDP']
+
         return coste_EDP
 
     else:
+        # # Método 1:
+        # coste_VE = 0
+        # for index, row in df.iterrows():
+        #     if index < len(precios):
+        #         coste_VE += row['Consumo_kWh'] * precios[index]
+        #     else:
+        #         break
+
+        # Método 2:
+        df_combinado = pd.merge(df, precios, how='inner', left_index=True, right_index=True)
         coste_VE = 0
-        for index, row in df.iterrows():
-            if index < len(precios):
-                coste_VE += row['Consumo_kWh'] * precios[index]
-            else:
-                break
+        for index, row in df_combinado.iterrows():
+            coste_VE += row['Consumo_kWh'] * row['VE']
+
         return coste_VE
 
 

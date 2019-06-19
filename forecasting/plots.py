@@ -301,9 +301,13 @@ def precios_pvpc(a, b):
     dfmul, df_list, names = esios.get_multiple_series(indicators_, start_, end_)
     df = dfmul[names]  # get the actual series and neglect the rest of the info
 
-    precios = {'PPD':df[names[0]].values,
-               'EDP':df[names[1]].values,
-               'VE':df[names[2]].values,}
+    # precios = {'PPD':df[names[0]].values,
+    #            'EDP':df[names[1]].values,
+    #            'VE':df[names[2]].values,}
+
+    info = {'Fecha': df[names[0]].index, 'TPD': df[names[0]].values, 'EDP': df[names[1]].values,
+            'VE': df[names[2]].values, }
+    daframe = pd.DataFrame(data=info)
 
     """
     if tipo == 'PPD':
@@ -314,7 +318,8 @@ def precios_pvpc(a, b):
         return df[names[2]].values
     """
 
-    return precios
+    # return precios
+    return daframe
 
 
 # Para pintar los precios de las fechas que se le pasen
