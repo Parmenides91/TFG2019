@@ -5,6 +5,7 @@
 
 <div class="container">
     <p class="display-1">El Nombre: {{ tarifamercadoregulado.created_at }}</p>
+    <p class="display-1">Rango de fechas disponibles: {{ tarifamercadoregulado.ver_rango.rango }}</p>
     <hr>
 
     {% if user.is_authenticated %}

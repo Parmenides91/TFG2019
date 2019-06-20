@@ -51,7 +51,9 @@ class Job(BaseJob):
                 print('No hay predicción con el modelo actualizado')
                 fich_prediccion = crearPrediccion(modelo.fichero_modelo_inmueble)
                 nueva_prediccion = models.PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,
+                                                                           user=modelo.user,
                                                                            fichero_prediccion_consumo=fich_prediccion)
+                # nueva_prediccion.modelomr_actualizado=False #no haría falta porque por defecto se pone a False
                 nueva_prediccion.save()
 
                 modelo.inmueble_origen.prediccion_actualizada=True

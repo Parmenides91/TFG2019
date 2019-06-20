@@ -67,6 +67,7 @@ class Job(BaseJob):
                 # ruta_modelo = crearModelo(inmueble.consumo_inmueble)
                 ruta_modelo = crearModelo(inmueble.consumo_inmueble_string)
                 nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble,
+                                                                   user=inmueble.user,
                                                                    fichero_modelo_inmueble=ruta_modelo)
                 nuevo_modelo.save()
 

@@ -354,6 +354,7 @@ from django.conf import settings
 
 class ModeloConsumo(models.Model):
     inmueble_origen=models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     # fichero_modelo_inmueble = models.FileField(upload_to='modelos', blank=True)
     fichero_modelo_inmueble = models.FilePathField(path=os.path.join(settings.MEDIA_DIR, 'modelos'))
@@ -366,7 +367,10 @@ class ModeloConsumo(models.Model):
 class PrediccionConsumo(models.Model):
     modelo_consumo_origen=models.ForeignKey(ModeloConsumo, on_delete=models.CASCADE)
     #created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
+    modelomr_actualizado = models.BooleanField(default=False)
+    costemr_actualizado = models.BooleanField(default=False)
     fichero_prediccion_consumo = models.FileField(upload_to='predicciones', blank=True)
     fichero_prediccion_consumo_string = models.CharField(max_length=255, blank=True)
 
@@ -448,12 +452,22 @@ class TarifaMercadoRegulado(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     modified_at = models.DateTimeField(auto_now=True)
     fichero_precios = models.FileField(upload_to='preciosMR', blank = False)
+    fichero_precios_string = models.CharField(max_length=255, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("forecasting:single_tarifamercadoregulado", kwargs={"username":self.user.username, "pk":self.pk})
+
+    @property
+    def ver_rango(self):
+        df = pd.read_csv(self.fichero_precios, index_col=0, parse_dates=True)
+        cadena = str(df.first_valid_index()) + ' - ' + str(df.last_valid_index())
+        # rangos_fechas = {'inicio':df.first_valid_index(),'fin':df.last_valid_index()}
+        rango_fechas = {'rango':cadena}
+        return rango_fechas
+
 
 #Coste del consumo de un Inmueble en relación con los precios del Mercado Regulado
 class CosteInmuebleMR(models.Model):
@@ -534,6 +548,60 @@ from . import plots
 #             # then error will also raised in update of exists model
 #             raise ValidationError('ERROR: sólo puedes crear un histórico.')
 #         return super(HistoricoMercadoRegulado, self).save(*args, **kwargs)
+
+
+
+
+# Modelo para predecir los precios del Mercado Regulado
+class ModeloMercadoRegulado(models.Model):
+    tarifaMR_origen = models.ForeignKey(TarifaMercadoRegulado, on_delete=models.CASCADE)
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    tipo = models.CharField(default='TPD', max_length=3, blank=False)
+    # prediccionconsumo_actualizada = models.BooleanField(default=False) #CONSIDERA CAMBIAR ESTE NOMBRE A prediccionmr_actualizada
+    prediccionmr_actualizada = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    ruta_modelo = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+    pass
+
+
+# Predicción de precios del Mercado Regulado
+class PrediccionMercadoRegulado(models.Model):
+    modelo_tarifamr_origen = models.ForeignKey(ModeloMercadoRegulado, on_delete=models.CASCADE)
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    tipo = models.CharField(default='TPD', max_length=3, blank=False)
+    costemr_actualizado = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    ruta_prediccion = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    # Representar la predicción
+    @property
+    def representar_prediccionmr(self):
+        df = pd.read_csv(self.ruta_prediccion, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+
+        # info_prediccion = {'graficas_prediccion_mr': crear_graficas_prediccion_mr(df),
+        #                    }
+
+        info_prediccion = {}
+        return info_prediccion
+
+
+# Coste asociado a una predicción datos predichos sobre el mercado regulado
+class CosteMRPrediccion (models.Model):
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    prediccionmr_asociada = models.ForeignKey(PrediccionMercadoRegulado, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    actualizado = models.BooleanField(default=True)
+    coste = models.FloatField()
+
+
 
 
 
