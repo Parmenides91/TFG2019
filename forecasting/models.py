@@ -592,6 +592,16 @@ class PrediccionMercadoRegulado(models.Model):
         return info_prediccion
 
 
+#Relación entre una Prediccion de Consumo y aplicar una de sus Tarifas Eléctricas
+class CostePrediccionTE(models.Model):
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    tarifaelectrica_asociada = models.ForeignKey(TarifaElectrica, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    actualizado = models.BooleanField(default=True)
+    coste = models.FloatField()
+
+
 # Coste asociado a una predicción datos predichos sobre el mercado regulado
 class CosteMRPrediccion (models.Model):
     prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)

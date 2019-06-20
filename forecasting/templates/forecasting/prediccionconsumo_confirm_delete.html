@@ -1,0 +1,28 @@
+{% extends "forecasting/prediccionconsumo_base.html" %}
+
+<!--
+    Esta página requiere atención:
+    - Un diseño
+-->
+
+{% block prediccionconsumo_content %}
+
+<div class="mt-5 mb-5">
+	<h3>¿Está seguro de que quiere eliminar esta Prediccion de Consumo?</h3>
+
+	<div class="posts">
+{#		{% include "forecasting/_inmueble_list_item.html" with post=object hide_delete=True %}#}
+        <h3 class="card-title">Esto es una predicción:</h3>
+        <h6 class="text-muted mb-5">{{ prediccionconsumo.created_at }}</h6>
+        <h6 class="text-muted mb-5">{{ prediccionconsumo.fichero_prediccion_consumo }}</h6>
+        <h6 class="text-muted mb-5">{{ prediccionconsumo.modelo_consumo_origen }}</h6>
+	</div>
+
+	<form method="POST">
+		{% csrf_token %}
+		<input type="submit" value="Confirm Delete" class="btn btn-danger btn-large">
+		<a href="{% url 'forecasting:single_prediccionconsumo' pk=object.pk %}" class="btn btn-light btn-large">Cancelar</a>
+	</form>
+</div>
+
+{% endblock %}

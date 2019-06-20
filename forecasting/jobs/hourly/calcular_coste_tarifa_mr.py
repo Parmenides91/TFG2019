@@ -51,6 +51,7 @@ class Job(BaseJob):
                         if (ini_inm >= ini_mr and ini_inm <= fin_mr) and (fin_inm >= ini_mr and fin_inm <= fin_mr):
                             #las fechas del consumo están dentro de las fechas de mi histórico
                             print('En este histórico tengo las fechas que necesito')
+                            # SACA ESTE CÓDIGO DE AQUÍ Y PONLO EN UNA FUNCIÓN EN func_mr.py
                             df_merge = pd.merge(df, df_p, how='inner', left_index=True, right_index=True)
                             costeTPD = 0
                             costeEDP = 0

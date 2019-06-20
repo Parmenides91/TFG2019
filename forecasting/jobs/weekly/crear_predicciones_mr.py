@@ -14,7 +14,10 @@ class Job(BaseJob):
                 modelosMR = prediccionconsumo.modelomercadoregulado_set.all()
                 for modeloMR in modelosMR:
                     # Intento 2:
-                    if prediccionconsumo.modelomr_actualizado and not modeloMR.prediccionmr_actualizada:
+                    print(prediccionconsumo.modelomr_actualizado)
+                    print(modeloMR.prediccionmr_actualizada)
+                    # if prediccionconsumo.modelomr_actualizado and not modeloMR.prediccionmr_actualizada:
+                    if True:
                         #El modelo está actualizado pero la prediccion de precios no
                         # Ten en cuenta que hay un modelo por cada tipo de tarifa
                         # Tengo que calcular la predicción
@@ -24,6 +27,7 @@ class Job(BaseJob):
                                                                                               prediccionconsumo_asociada=prediccionconsumo,
                                                                                               tipo=modeloMR.tipo,
                                                                                               ruta_prediccion=ruta_prediccion_mr)
+                        nueva_prediccion_mr.tipo=modeloMR.tipo
                         nueva_prediccion_mr.save()
 
                         modeloMR.prediccionmr_actualizada = True

@@ -12,13 +12,86 @@
 
 
         <h1>LA GRÁFICA!</h1>
-{#        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
-{#        <div class="col-md-12">prediccionconsumo.representar_prediccionconsumo.grafica_prediccionconsumo|safe</div>#}
+        {#        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
+        {#        <div class="col-md-12">prediccionconsumo.representar_prediccionconsumo.grafica_prediccionconsumo|safe</div>#}
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <div class="col-md-12">{{ prediccionconsumo.representar_prediccionconsumo.graficas_prediccion.horas|safe }}</div>
     </div>
+
+
+    {% if user.is_authenticated %}
+        {#                <p class="text-right my-0"><strong>Acciones:</strong></p>#}
+        {#        <a class="btn btn-primary btn-sm btn-block my-1"#}
+        {#           href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar#}
+        {#            inmueble</a>#}
+        <a class="btn btn-warning btn-sm btn-block my-1"
+           href="{% url 'forecasting:delete_prediccionconsumo' pk=prediccionconsumo.pk %}">Eliminar
+            Predicción</a>
+        {#        <a class="btn btn-secondary btn-sm btn-block my-1"#}
+        {#           href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al#}
+        {#            listado</a>#}
+    {% endif %}
+
+
 </div>
 
 <div class="col-12">
-    <p>Coste según predicción de costes: {{ prediccionconsumo.costemrprediccion.coste }}</p>
+    {#    <p>Coste según predicción de costes: {{ prediccionconsumo.costemrprediccion.coste }}</p>#}
+    <p>COSTES ASOCIADOS A ESTA PREDICCIÓN:</p>
+    {% if prediccionconsumo.costemrprediccion_set.exists %}
+        {% for costemr in prediccionconsumo.costemrprediccion_set.all %}
+            <p>Coste: {{ costemr.coste }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No hay costes creados, darling.</p>
+    {% endif %}
 </div>
+
+
+<!-- Análisis de los costes de la Predicción de Consumo -->
+<ul class="row align-items-start list-unstyled">
+    <!-- Primera Columna: Tarifas Personalizadas -->
+    <li class="col-4 justify-content-around">
+        <ul class="row list-unstyled justify-content-center">
+            <!-- Título -->
+            <li class="media my-2 border-bottom border-dark">
+                <p class="h4">Tarifas Personalizadas:</p>
+            </li>
+            <!-- items -->
+            {% if prediccionconsumo.costeprediccionte_set.exists %}
+                {% for costeprediccionte in prediccionconsumo.costeprediccionte_set.all %}
+                    {% include "forecasting/_costeprediccionconsumo_tarifaelectrica_list_item.html" %}
+                {% endfor %}
+            {% else %}
+                <p class="text-muted text-center">Crea alguna tarifa para mostrar aquí su coste.</p>
+            {% endif %}
+        </ul>
+    </li>
+    <!-- Segunda Columna: Mercado Regulado -->
+    <li class="col-4 justify-content-around">
+        <ul class="row list-unstyled justify-content-center">
+            <!-- Título -->
+            <li class="media my-2 border-bottom border-dark">
+                <p class="h4">Mercado Regulado:</p>
+            </li>
+            <!-- items -->
+            {% if prediccionconsumo.costemrprediccion_set.exists %}
+                {% for costeprediccionmr in prediccionconsumo.costemrprediccion_set.all %}
+                    {% include "forecasting/_costeprediccionconsumo_tarifamercadoregulado_list_item.html" %}
+                {% endfor %}
+            {% else %}
+                <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Regulado.</p>
+            {% endif %}
+        </ul>
+    </li>
+    <!-- Tercera Columna: Mercado Libre -->
+    <li class="col-4 justify-content-around">
+        <ul class="row list-unstyled justify-content-center">
+            <!-- Título -->
+            <li class="media my-2 border-bottom border-dark">
+                <p class="h4">Mercado Libre:</p>
+            </li>
+            <!-- items -->
+        </ul>
+    </li>
+</ul>

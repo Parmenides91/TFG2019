@@ -32,6 +32,7 @@ def crear_grafica_generica(df, tipo):
     layout = go.Layout(
         title='',
         showlegend=True,
+        autosize = True,
         # width = 800,
         # height = 700,
         hovermode='closest',

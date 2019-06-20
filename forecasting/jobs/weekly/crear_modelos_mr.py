@@ -25,7 +25,8 @@ class Job(BaseJob):
                 primera_fecha_prediccion = df_pc.first_valid_index()
                 ultima_fecha_prediccion = df_pc.last_valid_index()
                 for tarifaMR in tarifasMR:
-                    df_mr = pd.read_csv(tarifaMR.fichero_precios_string, index_col=0, parse_dates=True)
+                    # df_mr = pd.read_csv(tarifaMR.fichero_precios_string, index_col=0, parse_dates=True)
+                    df_mr = pd.read_csv(tarifaMR.fichero_precios, index_col=0, parse_dates=True)
                     ultima_fecha_modelo = primera_fecha_prediccion - timedelta(hours=1)
                     primera_fecha_modelo = primera_fecha_prediccion - timedelta(weeks=SEMANAS_ATRAS)
                     df_mr = df_mr.loc[primera_fecha_modelo : ultima_fecha_modelo]

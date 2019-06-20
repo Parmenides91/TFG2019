@@ -60,3 +60,32 @@ def crearPrediccionMR(fichero_modelo, tipo):
     df.to_csv(ruta_pred)
 
     return ruta_pred
+
+
+def crear_costes_mr_prediccion(df_consumo, df_precios, tipo):
+    #deberían tener exactamente las mismas fechas como index, así que se genera una nueva columna con el precio
+    df_merge = pd.merge(df_consumo, df_precios, how='inner', left_index=True, right_index=True)
+
+    coste = 0
+
+    if tipo == 'TPD':
+        for index, row in df_merge.iterrows():
+            coste += (row['TPD']) * row['Consumo_kWh']
+    else:
+        print('Realmente no deberías estar aquí #º')
+
+    if tipo == 'EDP':
+        for index, row in df_merge.iterrows():
+            coste += (row['EDP']) * row['Consumo_kWh']
+    else:
+        print('Realmente no deberías estar aquí #2')
+
+    if tipo == 'VE':
+        for index, row in df_merge.iterrows():
+            coste += (row['VE']) * row['Consumo_kWh']
+    else:
+        print('Realmente no deberías estar aquí #3')
+
+    coste = coste / 1000
+
+    return coste

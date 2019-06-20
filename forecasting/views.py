@@ -210,6 +210,16 @@ class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
         queryset = super().get_queryset()
         return queryset.filter(id__iexact=self.kwargs.get("pk"))
 
+#TODO debería redigirigr al inmueble
+#Para eliminar manualmente las predicciones de consumo
+class DeletePrediccionConsumo(LoginRequiredMixin, DeleteView):
+    model = models.PrediccionConsumo
+    success_url = reverse_lazy('home')
+
+    #Aviso al Inmueble que la predicción ha dejado de estar actualizada (porque me la he cargado, claramente)
+    def delete(self, request, *args, **kwargs):
+        self.object.modelo_consumo_origen.inmueble_origen.prediccion_actualizada=False
+        return super(DeletePrediccionConsumo, self).delete(*args, **kwargs)
 
 
 # TARIFA ELÉCTRICA
