@@ -1,40 +1,62 @@
-<!--
-    Atención:
-    - Un diseño propio
--->
 
-<div class="container">
-    <p class="display-1">El Nombre: {{ tarifaelectrica.nombre }}</p>
-    <hr>
-    <p class="display-1">El User: {{ tarifaelectrica.user.username }}</p>
-    <hr>
-    <p class="display-1">Creado cuando: {{ tarifaelectrica.created_at }}</p>
-    <hr>
-    <p class="display-1">Inicio periodo de gracia: {{ tarifaelectrica.hora_ini_periodo_gracia }}</p>
-    <hr>
-    <p class="display-1">Fin Periodo de Gracia: {{ tarifaelectrica.hora_fin_periodo_gracia }}</p>
-    <hr>
-    <p class="display-1">Precio Del periodo de gracia: {{ tarifaelectrica.precio_periodo_gracia }}</p>
-    <hr>
-    <p class="display-1">Precio del resto de horas: {{ tarifaelectrica.precio_periodo_general }}</p>
-    <hr>
+{% load static %}
+{% load humanize %}
 
-
-
-
-
-
-    {% if user.is_authenticated %}
-        <a class="btn btn-primary"
-           href="{% url 'forecasting:edit_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}">Modificar
-            tarifa eléctrica</a>
-        <a class="btn btn-primary"
+<div class="media my-5">
+    <img class="align-self-center mr-3" src="{% static 'icon/tarifa02.png' %}" alt="">
+    <div class="media-body row">
+        <div class="col-9">
+            <h2>Tarifa Eléctrica Personalizada: <em>{{ tarifaelectrica.nombre }}</em></h2>
+            <hr>
+            <p class="lead">Creado: <strong>{{ tarifaelectrica.created_at|naturalday }}</strong></p>
+            <p class="lead">Periodo de gracia: <strong>{{ tarifaelectrica.hora_ini_periodo_gracia }} - {{ tarifaelectrica.hora_fin_periodo_gracia }}</strong>
+            <p class="lead">Precio periodo de gracia: <strong>{{ tarifaelectrica.precio_periodo_gracia }} €</strong></p>
+            <p class="lead">Precio normal: <strong>{{ tarifaelectrica.precio_periodo_general }} €</strong></p>
+        </div>
+        <div class="col-3 align-self-end">
+            {% if user.is_authenticated %}
+                <a class="btn btn-danger btn-sm btn-block"
            href="{% url 'forecasting:delete_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}">Eliminar
             tarifa eléctrica</a>
-        <a class="btn btn-secondary"
+                <a class="btn btn-secondary btn-sm btn-block"
            href="{% url 'forecasting:for_user_tarifaselectricas' username=tarifaelectrica.user.username %}">Volver al
             listado</a>
-    {% endif %}
-
+            {% endif %}
+        </div>
+    </div>
 
 </div>
+
+
+
+
+{##}
+{#<div class="container">#}
+{#    <p class="display-1">El Nombre: {{ tarifaelectrica.nombre }}</p>#}
+{#    <hr>#}
+{#    <p class="display-1">El User: {{ tarifaelectrica.user.username }}</p>#}
+{#    <hr>#}
+{#    <p class="display-1">Creado cuando: {{ tarifaelectrica.created_at }}</p>#}
+{#    <hr>#}
+{#    <p class="display-1">Inicio periodo de gracia: {{ tarifaelectrica.hora_ini_periodo_gracia }}</p>#}
+{#    <hr>#}
+{#    <p class="display-1">Fin Periodo de Gracia: {{ tarifaelectrica.hora_fin_periodo_gracia }}</p>#}
+{#    <hr>#}
+{#    <p class="display-1">Precio Del periodo de gracia: {{ tarifaelectrica.precio_periodo_gracia }}</p>#}
+{#    <hr>#}
+{#    <p class="display-1">Precio del resto de horas: {{ tarifaelectrica.precio_periodo_general }}</p>#}
+{#    <hr>#}
+{##}
+{#    {% if user.is_authenticated %}#}
+{#        <a class="btn btn-primary"#}
+{#           href="{% url 'forecasting:edit_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}">Modificar#}
+{#            tarifa eléctrica</a>#}
+{#        <a class="btn btn-primary"#}
+{#           href="{% url 'forecasting:delete_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}">Eliminar#}
+{#            tarifa eléctrica</a>#}
+{#        <a class="btn btn-secondary"#}
+{#           href="{% url 'forecasting:for_user_tarifaselectricas' username=tarifaelectrica.user.username %}">Volver al#}
+{#            listado</a>#}
+{#    {% endif %}#}
+{##}
+{#</div>#}

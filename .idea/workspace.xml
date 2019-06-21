@@ -4,17 +4,16 @@
     <list default="true" id="5d26880c-b3e4-4f18-90ee-564ad5d0c853" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/func_inmueble.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/func_inmueble.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/plots.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_list_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_list_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_item.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_list_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_list_item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccionconsumo_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccionconsumo_item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_list_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_list_item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_list_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_list_item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/user_inmueble_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/user_inmueble_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/user_tarifaelectrica_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/user_tarifaelectrica_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/user_tarifamercadoregulado_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/user_tarifamercadoregulado_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_list_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_list_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forecasting/templates/forecasting/pvpc_chart.html" beforeDir="false" afterPath="$PROJECT_DIR$/forecasting/templates/forecasting/pvpc_chart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/historicoMR.csv" beforeDir="false" afterPath="$PROJECT_DIR$/historicoMR.csv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -40,17 +39,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/templates/base.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="67" column="41" selection-start-line="67" selection-start-column="41" selection-end-line="67" selection-end-column="41" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -62,8 +51,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ModeloMer</find>
-      <find>MODELOMER</find>
       <find>modelo_actualizado</find>
       <find>modelo_act</find>
       <find>modelomer</find>
@@ -92,6 +79,8 @@
       <find>marg</find>
       <find>single_inmue</find>
       <find>class PrediccionCon</find>
+      <find>pvpc</find>
+      <find>class PrediccionConsum</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -100,25 +89,17 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ProyectoTFG/settings.py" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/tarifa_mercadoregulado_base.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/tarifamercadoregulado_base.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/tarifamercadoregulado_confirm_delete.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/tarifamercadoregulado_detail.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/tarifamercadoregulado_form.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/tarifamercadoregulado_list_item.html" />
         <option value="$PROJECT_DIR$/forecasting/forms.py" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_list_item.html" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_item.html" />
         <option value="$PROJECT_DIR$/forecasting/jobs/hourly/unificar_consumos_horario.py" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_item.html" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_list_item.html" />
         <option value="$PROJECT_DIR$/forecasting/func_analisis_consumo.py" />
-        <option value="$PROJECT_DIR$/forecasting/plots.py" />
         <option value="$PROJECT_DIR$/forecasting/jobs/hourly/calcular_coste_mercado_regulado.py" />
         <option value="$PROJECT_DIR$/forecasting/jobs/hourly/calcular_coste_tarifa_personalizada.py" />
         <option value="$PROJECT_DIR$/forecasting/jobs/daily/actualizar_historico_mr.py" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_item.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_list_item.html" />
         <option value="$PROJECT_DIR$/forecasting/jobs/daily/modelos_diario.py" />
         <option value="$PROJECT_DIR$/forecasting/func_datos_prediccion.py" />
@@ -139,7 +120,6 @@
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeprediccionconsumo_tarifamercadoregulado_item.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeprediccionconsumo_tarifamercadoregulado_list_item.html" />
         <option value="$PROJECT_DIR$/forecasting/jobs/weekly/crear_predicciones_mr.py" />
-        <option value="$PROJECT_DIR$/forecasting/models.py" />
         <option value="$PROJECT_DIR$/forecasting/func_inmueble.py" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_item.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_list_item.html" />
@@ -148,9 +128,18 @@
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/user_tarifaelectrica_list.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/user_inmueble_list.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_list_item.html" />
-        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" />
         <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccionconsumo_item.html" />
         <option value="$PROJECT_DIR$/templates/base.html" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/pvpc_chart.html" />
+        <option value="$PROJECT_DIR$/forecasting/plots.py" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_item.html" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_list_item.html" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_item.html" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_item.html" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html" />
+        <option value="$PROJECT_DIR$/forecasting/models.py" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_list_item.html" />
+        <option value="$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_item.html" />
       </list>
     </option>
   </component>
@@ -177,19 +166,6 @@
             <path>
               <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
               <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
-              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
-              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ProyectoTFG" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ProyectoTFG" type="462c0819:PsiDirectoryNode" />
-              <item name="forecasting" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="forecasting" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -398,12 +374,13 @@
       <workItem from="1560983076740" duration="10159000" />
       <workItem from="1561024770073" duration="20209000" />
       <workItem from="1561060697140" duration="653000" />
-      <workItem from="1561072641970" duration="9383000" />
+      <workItem from="1561072641970" duration="10067000" />
+      <workItem from="1561105379096" duration="5860000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="571960000" />
+    <option name="totallyTimeSpent" value="578504000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -416,21 +393,20 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="75" y="14" width="1279" height="753" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.31337163" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3182937" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32718894" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49579126" visible="true" weight="0.22096774" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49579126" weight="0.3467742" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.533871" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32872504" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="manage.py@ProyectoTFG" order="9" sideWeight="0.498366" weight="0.42741936" />
+      <window_info anchor="bottom" id="manage.py@ProyectoTFG" order="9" sideWeight="0.498366" weight="0.38225806" />
       <window_info anchor="bottom" id="Database Changes" order="10" weight="0.32941177" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50420874" side_tool="true" weight="0.40635452" />
       <window_info anchor="bottom" id="Terminal" order="12" weight="0.32854578" />
@@ -567,73 +543,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/forecasting/func_parciales.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="8" column="38" lean-forward="true" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/funciones_basicas.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="72" column="14" selection-start-line="72" selection-start-column="14" selection-end-line="72" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/tarifamercadoregulado_confirm_delete.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/plots.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="877">
-          <caret line="358" column="50" lean-forward="true" selection-start-line="358" selection-start-column="50" selection-end-line="358" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/func_analisis_consumo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="91" column="33" lean-forward="true" selection-start-line="91" selection-start-column="33" selection-end-line="91" selection-end-column="33" />
-          <folding>
-            <element signature="e#22#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/jobs/hourly/calcular_coste_mercado_regulado.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="45" selection-start-line="8" selection-start-column="45" selection-end-line="8" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/jobs/minutely/prueba.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Program Files/Python37/Lib/datetime.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="453" column="6" selection-start-line="453" selection-start-column="6" selection-end-line="453" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/jobs/hourly/unificar_consumos_horario.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -708,16 +617,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="218" column="108" selection-start-line="218" selection-start-column="108" selection-end-line="218" selection-end-column="108" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/func_datos_modelo.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-347">
@@ -778,31 +677,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" lean-forward="true" selection-end-line="21" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeprediccionconsumo_tarifaelectrica_item.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="4" column="13" lean-forward="true" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_list_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="5" lean-forward="true" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_list_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="37" lean-forward="true" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
         </state>
       </provider>
     </entry>
@@ -820,13 +698,6 @@
           <folding>
             <element signature="e#0#53#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
         </state>
       </provider>
     </entry>
@@ -878,9 +749,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_item.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_list_item.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -892,13 +760,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="70" selection-start-line="7" selection-start-column="48" selection-end-line="7" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_list_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -940,16 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="365" lean-forward="true" selection-start-line="365" selection-end-line="365" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_prediccionconsumo_item.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -957,17 +808,132 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
+    <entry file="file://$PROJECT_DIR$/forecasting/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="54" column="10" lean-forward="true" selection-start-line="54" selection-start-column="10" selection-end-line="54" selection-end-column="10" />
+        <state relative-caret-position="170">
+          <caret line="618" column="37" lean-forward="true" selection-start-line="618" selection-start-column="37" selection-end-line="618" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/inmueble_base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="12" column="14" lean-forward="true" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/pvpc_chart.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="32" column="90" selection-start-line="32" selection-start-column="90" selection-end-line="32" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/plots.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="345" column="4" selection-start-line="345" selection-start-column="4" selection-end-line="345" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="67" column="41" selection-start-line="67" selection-start-column="41" selection-end-line="67" selection-end-column="41" />
+        <state relative-caret-position="145">
+          <caret line="170" column="84" lean-forward="true" selection-start-line="170" selection-start-column="84" selection-end-line="170" selection-end-column="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_list_item.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_consumo_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1122" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_list_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="37" lean-forward="true" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifamercadoregulado_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="95" selection-start-line="14" selection-start-column="58" selection-end-line="14" selection-end-column="95" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="6" lean-forward="true" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_costeinmueble_tarifaelectrica_list_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="18" column="22" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="107" selection-start-line="12" selection-start-column="107" selection-end-line="12" selection-end-column="107" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_tarifaelectrica_list_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_tarifamercadoregulado_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="21" column="58" lean-forward="true" selection-start-line="21" selection-start-column="58" selection-end-line="21" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_inmueble_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="179" column="50" selection-start-line="179" selection-start-column="50" selection-end-line="179" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="370" column="14" selection-start-line="370" selection-start-column="4" selection-end-line="370" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="47" column="85" lean-forward="true" selection-start-line="47" selection-start-column="85" selection-end-line="47" selection-end-column="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/forecasting/templates/forecasting/_prediccion_inmueble_list_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
         </state>
       </provider>
     </entry>

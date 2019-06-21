@@ -326,10 +326,10 @@ def precios_pvpc(a, b):
 def chart_precios_pvpc(a, b):
     # start_ = '2019-06-13T02:00:00'
     # end_ = '2019-06-14T01:00:00'
-    start_ = '2017-12-31T02:00:00'
-    end_ = '2019-06-14T01:00:00'
-    # start_ = a
-    # end_ = b
+    # start_ = '2017-12-31T02:00:00'
+    # end_ = '2019-06-14T01:00:00'
+    start_ = a
+    end_ = b
 
     # The token is unique: You should ask for yours to: Consultas Sios <consultasios@ree.es>
 
@@ -343,7 +343,7 @@ def chart_precios_pvpc(a, b):
     indicators_.append(1013)  # Precio de Regulación Secundaria subir
     indicators_.append(1014)  # Precio de Regulación Secundaria bajar
     indicators_.append(1015)  # Precio mercado SPOT Diario
-    #indicators_.append(1293)  # Demanda real
+    indicators_.append(1293)  # Demanda real
     names = esios.get_names(indicators_)
     dfmul, df_list, names = esios.get_multiple_series(indicators_, start_, end_)
     df = dfmul[names]  # get the actual series and neglect the rest of the info

@@ -1,5 +1,6 @@
 <div class="modal-header">
-    <h5 class="modal-title" id="verPrediccionModalLabel">Información Tarifa Eléctrica</h5>
+{#    <h5 class="modal-title" id="verPrediccionModalLabel">Información Tarifa Eléctrica</h5>#}
+    <h5 class="modal-title" id="verPrediccionModalLabel">Tarifa Eléctrica</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -11,10 +12,10 @@
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.hora_ini_periodo_gracia }}</strong> -
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.hora_fin_periodo_gracia }}</strong></p>
     <p class="my-0">Precio periodo de gracia:
-        <strong>{{ costeinmueblete.tarifaelectrica_asociada.hora_fin_periodo_gracia }}</strong> €</p>
+        <strong>{{ costeinmueblete.tarifaelectrica_asociada.precio_periodo_gracia }}</strong> €</p>
     <p class="my-0">Precio normal:
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.precio_periodo_general }}</strong> €</p>
-    <a href="{% url 'forecasting:single_tarifaelectrica' username=costeinmueblete.tarifaelectrica_asociada.user.username pk=costeinmueblete.tarifaelectrica_asociada.pk %}">Detalle</a>
+    <a class="btn btn-success btn-sm btn-block my-3" href="{% url 'forecasting:single_tarifaelectrica' username=costeinmueblete.tarifaelectrica_asociada.user.username pk=costeinmueblete.tarifaelectrica_asociada.pk %}">Detalles de la Tarifa</a>
 </div>
 
 <div class="modal-footer">

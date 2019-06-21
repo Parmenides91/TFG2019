@@ -3,27 +3,24 @@
 
 {% block pre_pvpc %}
 
-    <!-- jQuery -->
+{#    <h1>Gráfica de precios para PVPC</h1>#}
+{#    <p>Poner un calendario para seleccionar fechas. Probablemente haya que ponerlo dentro de un form.</p>#}
 
-    <!-- Fengyuan Chen's Datepicker -->
-
-
-
-    <h1>Gráfica de precios para PVPC</h1>
-    <p>Poner un calendario para seleccionar fechas. Probablemente haya que ponerlo dentro de un form.</p>
-
-    <!-- <input id="datepicker"> -->
-
-
-
-
-
-
+<div class="jumbotron bg-light">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="display-1 ">Mercado Regulado</h1>
+                <hr>
+                <p class="text-muted font-italic lead">Consulta los precios de las tarifas del Mercado Regulado</p>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 
+
 {% block pvpc_content %}
-    <div>
+    <div class="container">
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
         <!-- <button id="ver_pvpc_button" name="ver_pvpc" type="button" class="btn btn-primary">Ver PVPC</button> -->
@@ -33,14 +30,15 @@
 <a href='' onclick="this.href='updateItem?codice=${item.key.codice}&quantita='+document.getElementById('qta_field').value">update</a>
         -->
 
+            <p class="lead"><strong>Introduce una fecha para consultar el precio:</strong></p>
         <input type="date" id="fechaPrecioPVPC" value="${item.value}"/>
-        <a href='' onclick="this.href=document.getElementById('fechaPrecioPVPC').value">update</a>
+        <a href='' onclick="this.href=document.getElementById('fechaPrecioPVPC').value">Consultar</a>
 
 
-        <input id="fechaPrecio" type="date" value="${item.value}">
-        <button id="ver_precioFecha_button" name="ver_precioFecha" type="button" class="btn btn-primary" href=http://127.0.0.1:8000/forecasting/pvpc/" + date>Consultar
-            precios
-        </button>
+{#        <input id="fechaPrecio" type="date" value="${item.value}">#}
+{#        <button id="ver_precioFecha_button" name="ver_precioFecha" type="button" class="btn btn-primary" href=http://127.0.0.1:8000/forecasting/pvpc/" + date>Consultar#}
+{#            precios#}
+{#        </button>#}
 
         <div class="col-md-12">{{ grafico_precio|safe }}</div>
     </div>

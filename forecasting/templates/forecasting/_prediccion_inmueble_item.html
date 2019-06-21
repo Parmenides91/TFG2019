@@ -1,35 +1,53 @@
 
+{% load humanize %}
 
 <div class="modal-header">
-    <h5 class="modal-title" id="verPrediccionModalLabel">Título: {{ prediccion.created_at }}</h5>
+{#    <h5 class="modal-title" id="verPrediccionModalLabel">Título: {{ prediccion.created_at }}</h5>#}
+    <h5 class="modal-title" id="verPrediccionModalLabel">Predicción de consumo:</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
+
 <div class="modal-body">
-    <div class="row">
-        <div class="col-6">
-            Fechas estimadas: TAL
-        </div>
-        <div class="col-6">
-            Precio estimado: TAL-TAL
-        </div>
+    <div class="container row">
+        <p class="lead">Inmueble origen: <strong>{{ prediccion.modelo_consumo_origen.inmueble_origen.nombre }}</strong></p>
+        <p class="lead">Creado: <strong>{{ prediccion.created_at|naturalday }}</strong></p>
+        <p></p>
+        {% if prediccion.costemr_actualizado %}
+            <p class="lead">Hay un coste del mercado regulado calculado para esta predicción.</p>
+        {% else %}
+            <p class="lead">Próximamente se calculará un coste del mercado regulado para esta predicción.</p>
+        {% endif %}
+        <a class="btn btn-success btn-sm btn-block" href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}">Ver detalles de la Predicción</a>
     </div>
+</div>
 
-    <div class="row">
-        <p>Fichero: {{ prediccion.fichero_prediccion_consumo_string }}</p>
-    </div>
-
-    <div class="row">
-        <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar detalles</a>
-    </div>
-
+{#<div class="modal-body">#}
+{#    <div class="row">#}
+{#        <div class="col-6">#}
+{#            Fechas estimadas: TAL#}
+{#        </div>#}
+{#        <div class="col-6">#}
+{#            Precio estimado: TAL-TAL#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    <div class="row">#}
+{#        <p>Fichero: {{ prediccion.fichero_prediccion_consumo_string }}</p>#}
+{#    </div>#}
+{##}
+{#    <div class="row">#}
+{#        <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar detalles</a>#}
+{#    </div>#}
+{##}
 {#    fichero_prediccion_consumo_string#}
 {#    {{ prediccion.representar_prediccionconsumo.grafica_prediccionconsumo|safe }}#}
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{#    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
 {#    <div class="col-md-12">{{ prediccionconsumo.representar_prediccionconsumo.graficas_prediccion.horas|safe }}</div>#}
-    {{ prediccion.representar_prediccionconsumo.graficas_prediccion.horas|safe }}
-</div>
+{#    {{ prediccion.representar_prediccionconsumo.graficas_prediccion.horas|safe }}#}
+{#</div>#}
+
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 </div>

@@ -176,7 +176,8 @@
 
     <!-- Listado de las predicciones que existen para este inmueble. Versión de ventanas modales -->
 {#    <p class="display-3">Listado de las predicciones que existen para este inmueble. Versión de ventanas modales</p>#}
-    <p class="display-3">Predicciones disponibles sobre este inmueble:</p>
+{#    <p class="display-3">Predicciones disponibles sobre este inmueble:</p>#}
+    <p class="display-3">Predicciones asociadas al inmueble:</p>
     {% for modeloconsumo in inmueble.modeloconsumo_set.all %}
         <ul class="list-unstyled row justify-content-between">
         {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}
