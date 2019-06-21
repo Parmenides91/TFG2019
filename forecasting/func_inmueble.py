@@ -139,6 +139,9 @@ def consumo_chart(df):
             l=100,
             r=20,
             t=110,
+            # l=0,
+            # r=0,
+            # t=0,
         ),
         xaxis=dict(
             title='',

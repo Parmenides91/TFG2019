@@ -1,18 +1,55 @@
 {% extends "forecasting/tarifaelectrica_base.html" %}
 
 
+
 {% block content_tarifaelectrica %}
 
     <div class="mt-4">
         <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
         <h3 class="display-4 mb-5">Estas son las tarifas eléctricas que has creado hasta ahora:</h3>
 
-        <ul class="list-unstyled row justify-content-between">
-            {% for tarifaelectrica in tarifaelectrica_list %}
-                {% include "forecasting/_tarifaelectrica_list_item.html" %}
-            {% endfor %}
-        </ul>
+        <div class="row">
+            <div class="col-9">
+                <ul class="list-unstyled row justify-content-between">
+                    {% for tarifaelectrica in tarifaelectrica_list %}
+                        {% include "forecasting/_tarifaelectrica_list_item.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-3 my-3">
+                <p class="text-justify lead">Crea una nueva tarifa personalizada y podrás ver su coste aplicado a cada uno de tus inmuebles.</p>
+                <a class="btn btn-outline-success btn-block"
+                   href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}"
+                   class="dropdown-item">Crear Tarifa Eléctrica</a>
+            </div>
+        </div>
+
+
+{#        <ul class="list-unstyled row justify-content-between">#}
+{#            {% for tarifaelectrica in tarifaelectrica_list %}#}
+{#                {% include "forecasting/_tarifaelectrica_list_item.html" %}#}
+{#            {% endfor %}#}
+{#        </ul>#}
 
     </div>
 
 {% endblock %}
+
+
+
+
+{#{% block content_tarifaelectrica %}#}
+{##}
+{#    <div class="mt-4">#}
+{#        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>#}
+{#        <h3 class="display-4 mb-5">Estas son las tarifas eléctricas que has creado hasta ahora:</h3>#}
+{##}
+{#        <ul class="list-unstyled row justify-content-between">#}
+{#            {% for tarifaelectrica in tarifaelectrica_list %}#}
+{#                {% include "forecasting/_tarifaelectrica_list_item.html" %}#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{##}
+{#    </div>#}
+{##}
+{#{% endblock %}#}

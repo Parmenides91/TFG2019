@@ -1,7 +1,8 @@
 {% load static %}
 
 
-<li class="card col-sm-3 mx-3 my-3 border-success">
+{#<li class="card col-sm-3 mx-3 my-3 border-success">#}
+<li class="card col-sm-3 mx-3 my-3 border-white">
     <img class="img-fluid card-img border-white" src="{% static 'icon/house03.png' %}" alt="inmueble icon">
     <div class="card-body text-center">
         <a href="{% url 'forecasting:single_inmueble' username=inmueble.user.username pk=inmueble.pk %}"

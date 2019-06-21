@@ -1,51 +1,95 @@
-<div class="card mt-5 mb-5">
-    <div class="card-body pb-4">
-        <h3 class="card-title">Esto es una predicción</h3>
-        <h6 class="text-muted mb-5">{{ prediccionconsumo.created_at }}</h6>
-        <h6 class="text-muted mb-5">{{ prediccionconsumo.fichero_prediccion_consumo }}</h6>
-        <h6 class="text-muted mb-5">{{ prediccionconsumo.modelo_consumo_origen }}</h6>
-        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-            dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-            deserunt mollit anim id est laborum.</p>
+<div class="row mb-4">
+    <div class="col-12">
+        <p class="h2">Predicción de Consumo</p>
+        <hr>
+    </div>
+    <div class="col-10">
+        <p class="lead">Creado: <em>{{ prediccionconsumo.created_at }}</em></p>
+        <p class="lead">Inmueble de origen: <em>{{ prediccionconsumo.modelo_consumo_origen.inmueble_origen }}</em></p>
+
+        {#        <hr>#}
+        {#        <p class="text-left text-muted my-0"><strong>Información:</strong></p>#}
+        {#        {% if inmueble.modelo_actualizado %}#}
+        {#            <p class="text-left text-muted">Dispone de una predicción basada en este Inmueble.</p>#}
+        {#        {% else %}#}
+        {#            <p class="text-left text-muted">Proximamente se creará una predicción de este consumo.</p>#}
+        {#        {% endif %}#}
+
+    </div>
+    {#    <div class="col-3">#}
+    {#        <p class="text-muted text-right my-0">Creado: <em>{{ inmueble.created_at }}</em></p>#}
+    {#        <p class="text-muted text-right my-0">Modificado: <em>{{ inmueble.modified_at }}</em></p>#}
+    {#        <p class="text-muted text-right my-0">Usuario: <em>{{ inmueble.user.username }}</em></p>#}
+    {#    </div>#}
+    <div class="col-2 align-content-end">
+        {% if user.is_authenticated %}
+            {#                <p class="text-right my-0"><strong>Acciones:</strong></p>#}
+            <a class="btn btn-secondary btn-sm btn-block my-1"
+               href="{% url 'forecasting:single_inmueble' username=prediccionconsumo.user.username pk=prediccionconsumo.modelo_consumo_origen.inmueble_origen.pk %}">Ir
+                al
+                Inmueble</a>
+            {#            <a class="btn btn-secondary btn-sm btn-block my-1"#}
+            {#               href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al#}
+            {#                listado</a>#}
+            <a class="btn btn-danger btn-sm btn-block my-1"
+               href="{% url 'forecasting:delete_prediccionconsumo' pk=prediccionconsumo.pk %}">Eliminar
+                Predicción</a>
+        {% endif %}
+    </div>
+</div>
 
 
-        <h1>LA GRÁFICA!</h1>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<div class="col-md-12">{{ prediccionconsumo.representar_prediccionconsumo.graficas_prediccion.horas|safe }}</div>
+
+
+{#<div class="card mt-5 mb-5">#}
+{#    <div class="card-body pb-4">#}
+{#        <h3 class="card-title">Esto es una predicción</h3>#}
+{#        <h6 class="text-muted mb-5">{{ prediccionconsumo.created_at }}</h6>#}
+{#        <h6 class="text-muted mb-5">{{ prediccionconsumo.fichero_prediccion_consumo }}</h6>#}
+{#        <h6 class="text-muted mb-5">{{ prediccionconsumo.modelo_consumo_origen }}</h6>#}
+{#        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt#}
+{#            ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut#}
+{#            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum#}
+{#            dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia#}
+{#            deserunt mollit anim id est laborum.</p>#}
+{##}
+{##}
+{#        <h1>LA GRÁFICA!</h1>#}
         {#        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
         {#        <div class="col-md-12">prediccionconsumo.representar_prediccionconsumo.grafica_prediccionconsumo|safe</div>#}
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-        <div class="col-md-12">{{ prediccionconsumo.representar_prediccionconsumo.graficas_prediccion.horas|safe }}</div>
-    </div>
-
-
-    {% if user.is_authenticated %}
+{#        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>#}
+{#        <div class="col-md-12">{{ prediccionconsumo.representar_prediccionconsumo.graficas_prediccion.horas|safe }}</div>#}
+{#    </div>#}
+{##}
+{##}
+{#    {% if user.is_authenticated %}#}
         {#                <p class="text-right my-0"><strong>Acciones:</strong></p>#}
         {#        <a class="btn btn-primary btn-sm btn-block my-1"#}
         {#           href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar#}
         {#            inmueble</a>#}
-        <a class="btn btn-warning btn-sm btn-block my-1"
-           href="{% url 'forecasting:delete_prediccionconsumo' pk=prediccionconsumo.pk %}">Eliminar
-            Predicción</a>
+{#        <a class="btn btn-warning btn-sm btn-block my-1"#}
+{#           href="{% url 'forecasting:delete_prediccionconsumo' pk=prediccionconsumo.pk %}">Eliminar#}
+{#            Predicción</a>#}
         {#        <a class="btn btn-secondary btn-sm btn-block my-1"#}
         {#           href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al#}
         {#            listado</a>#}
-    {% endif %}
+{#    {% endif %}#}
+{##}
+{#</div>#}
 
-
-</div>
-
-<div class="col-12">
-    {#    <p>Coste según predicción de costes: {{ prediccionconsumo.costemrprediccion.coste }}</p>#}
-    <p>COSTES ASOCIADOS A ESTA PREDICCIÓN:</p>
-    {% if prediccionconsumo.costemrprediccion_set.exists %}
-        {% for costemr in prediccionconsumo.costemrprediccion_set.all %}
-            <p>Coste: {{ costemr.coste }}</p>
-        {% endfor %}
-    {% else %}
-        <p>No hay costes creados, darling.</p>
-    {% endif %}
-</div>
+{#<div class="col-12">#}
+{#    <p>Coste según predicción de costes: {{ prediccionconsumo.costemrprediccion.coste }}</p>#}
+{#    <p>COSTES ASOCIADOS A ESTA PREDICCIÓN:</p>#}
+{#    {% if prediccionconsumo.costemrprediccion_set.exists %}#}
+{#        {% for costemr in prediccionconsumo.costemrprediccion_set.all %}#}
+{#            <p>Coste: {{ costemr.coste }}</p>#}
+{#        {% endfor %}#}
+{#    {% else %}#}
+{#        <p>No hay costes creados, darling.</p>#}
+{#    {% endif %}#}
+{#</div>#}
 
 
 <!-- Análisis de los costes de la Predicción de Consumo -->

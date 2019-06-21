@@ -1,24 +1,80 @@
-<!--
-    Atención:
-    - Un diseño propio
--->
 
-<div class="container">
-    <p class="display-1">El Nombre: {{ tarifamercadoregulado.created_at }}</p>
-    <p class="display-1">Rango de fechas disponibles: {{ tarifamercadoregulado.ver_rango.rango }}</p>
-    <hr>
+{% load static %}
+{% load humanize %}
 
-    {% if user.is_authenticated %}
-{#        <a class="btn btn-primary"#}
-{#           href="{% url 'forecasting:edit_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Modificar#}
-{#            histórico</a>#}
-        <a class="btn btn-primary"
-           href="{% url 'forecasting:delete_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Eliminar
-            histórico</a>
-        <a class="btn btn-secondary"
-           href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=tarifamercadoregulado.user.username %}">Volver al
-            listado</a>
-    {% endif %}
 
+<div class="media my-5">
+    <img class="align-self-center mr-3" src="{% static 'icon/historico02.png' %}" alt="">
+    <div class="media-body row">
+        <div class="col-9">
+            <h2>Histórico de precios</h2>
+            <hr>
+            <p class="lead">Creado: <strong>{{ tarifamercadoregulado.created_at|naturalday }}</strong></p>
+            <p class="lead">Rango de fechas disponibles: <strong>{{ tarifamercadoregulado.ver_rango.rango }}</strong>
+            </p>
+        </div>
+        <div class="col-3 align-self-end">
+            {% if user.is_authenticated %}
+                <a class="btn btn-secondary btn-sm btn-block"
+                   href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=tarifamercadoregulado.user.username %}">Volver
+                    al
+                    listado</a>
+                <a class="btn btn-danger btn-sm btn-block"
+                   href="{% url 'forecasting:delete_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Eliminar
+                    histórico</a>
+            {% endif %}
+        </div>
+    </div>
 
 </div>
+
+
+{#<div>#}
+{#    <div class="row my-2">#}
+{#        <div class="2">#}
+{#            <img class="img-fluid card-img border-white h-50 w-50" src="{% static 'icon/historico02.png' %}"#}
+{#                 alt="tarifamercadoregulado icon">#}
+{#        </div>#}
+{#        <div class="col-8">#}
+{#            <h2>Histórico de precios</h2>#}
+{#            <hr>#}
+{#            <p class="lead">Creado: <strong>{{ tarifamercadoregulado.created_at|naturalday }}</strong></p>#}
+{#            <p class="lead">Rango de fechas disponibles: <strong>{{ tarifamercadoregulado.ver_rango.rango }}</strong>#}
+{#            </p>#}
+{#        </div>#}
+{#        <div class="col-2 align-self-end">#}
+{#            {% if user.is_authenticated %}#}
+{#                <a class="btn btn-secondary btn-sm btn-block"#}
+{#                   href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=tarifamercadoregulado.user.username %}">Volver#}
+{#                    al#}
+{#                    listado</a>#}
+{#                <a class="btn btn-danger btn-sm btn-block"#}
+{#                   href="{% url 'forecasting:delete_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Eliminar#}
+{#                    histórico</a>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+
+
+{#<div class="container">#}
+{#    <p class="display-1">El Nombre: {{ tarifamercadoregulado.created_at }}</p>#}
+{#    <p class="display-1">Rango de fechas disponibles: {{ tarifamercadoregulado.ver_rango.rango }}</p>#}
+{#    <hr>#}
+{##}
+{#    <h2>Histórico de precios</h2>#}
+{#    <hr>#}
+{#    <p class="lead">Creado: <strong>{{ tarifamercadoregulado.created_at|naturalday }}</strong></p>#}
+{#    <p class="lead">Rango de fechas disponibles: <strong>{{ tarifamercadoregulado.ver_rango.rango }}</strong></p>#}
+{##}
+{#    {% if user.is_authenticated %}#}
+{#        <a class="btn btn-primary"#}
+{#           href="{% url 'forecasting:delete_tarifamercadoregulado' username=tarifamercadoregulado.user.username pk=tarifamercadoregulado.pk %}">Eliminar#}
+{#            histórico</a>#}
+{#        <a class="btn btn-secondary"#}
+{#           href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=tarifamercadoregulado.user.username %}">Volver#}
+{#            al#}
+{#            listado</a>#}
+{#    {% endif %}#}
+{##}
+{#</div>#}

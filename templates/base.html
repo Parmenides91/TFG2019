@@ -62,8 +62,10 @@
                             Inmueble
                         </a>
                         <div class="dropdown-menu" aria-labelledby="menu-consumo">
+{#                            <a href="{% url 'forecasting:for_user_inmuebles' username=user.username %}" class="dropdown-item">Mis#}
+{#                                Inmuebles (usuario)</a>#}
                             <a href="{% url 'forecasting:for_user_inmuebles' username=user.username %}" class="dropdown-item">Mis
-                                Inmuebles (usuario)</a>
+                                Inmuebles</a>
                             <a href="{% url 'forecasting:create_inmueble' username=user.username %}" class="dropdown-item">Añadir Inmueble</a>
                             <a href="{% url 'forecasting:create_consumoparcial' username=user.username %}" class="dropdown-item">Añadir Consumo Parcial</a>
                         </div>
@@ -83,59 +85,59 @@
                     </li>
 
 
-                    <!-- Tarifas Eléctricas del Usuario -->
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="menu-tarifaelectrica" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Tarifa Eléctrica
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="menu-tarifaelectrica">
-                            <a href="{% url 'forecasting:for_user_tarifaselectricas' username=user.username %}" class="dropdown-item">Tarifas Eléctricas (usuario)</a>
-                            <a href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}" class="dropdown-item">Añadir Tarifa Eléctrica</a>
-                        </div>
-                    </li>
+{#                    <!-- Tarifas Eléctricas del Usuario -->#}
+{#                    <li class="nav-item dropdown">#}
+{#                        <a href="#" class="nav-link dropdown-toggle" id="menu-tarifaelectrica" data-toggle="dropdown"#}
+{#                           aria-haspopup="true" aria-expanded="false">#}
+{#                            Tarifa Eléctrica#}
+{#                        </a>#}
+{#                        <div class="dropdown-menu" aria-labelledby="menu-tarifaelectrica">#}
+{#                            <a href="{% url 'forecasting:for_user_tarifaselectricas' username=user.username %}" class="dropdown-item">Tarifas Eléctricas (usuario)</a>#}
+{#                            <a href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}" class="dropdown-item">Añadir Tarifa Eléctrica</a>#}
+{#                        </div>#}
+{#                    </li>#}
 
-                    <!-- Consumos del Usuario -->
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="menu-consumo" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Consumo
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="menu-consumo">
-                            <a href="{% url 'forecasting:all' %}" class="dropdown-item">Mis Consumos</a>
-                            <a href="{% url 'forecasting:for_user' username=user.username %}" class="dropdown-item">Mis
-                                Consumos (usuario)</a>
-                            <a href="{% url 'forecasting:create' %}" class="dropdown-item">Añadir consumo</a>
-                        </div>
-                    </li>
+{#                    <!-- Consumos del Usuario -->#}
+{#                    <li class="nav-item dropdown">#}
+{#                        <a href="#" class="nav-link dropdown-toggle" id="menu-consumo" data-toggle="dropdown"#}
+{#                           aria-haspopup="true" aria-expanded="false">#}
+{#                            Consumo#}
+{#                        </a>#}
+{#                        <div class="dropdown-menu" aria-labelledby="menu-consumo">#}
+{#                            <a href="{% url 'forecasting:all' %}" class="dropdown-item">Mis Consumos</a>#}
+{#                            <a href="{% url 'forecasting:for_user' username=user.username %}" class="dropdown-item">Mis#}
+{#                                Consumos (usuario)</a>#}
+{#                            <a href="{% url 'forecasting:create' %}" class="dropdown-item">Añadir consumo</a>#}
+{#                        </div>#}
+{#                    </li>#}
 
-                    <!-- Modelos de Consumo -->
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="menu-modelo" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Modelos
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="menu-modelo">
-                            <a href="{% url 'forecasting:all_MP' %}" class="dropdown-item">Mis Modelos</a>
-                            <a href="{% url 'forecasting:for_user_MP' username=user.username %}" class="dropdown-item">Mis
-                                Modelos (usuario)</a>
-                            <a href="{% url 'forecasting:create_MP' %}" class="dropdown-item">Crear Modelo</a>
-                        </div>
-                    </li>
+{#                    <!-- Modelos de Consumo -->#}
+{#                    <li class="nav-item dropdown">#}
+{#                        <a href="#" class="nav-link dropdown-toggle" id="menu-modelo" data-toggle="dropdown"#}
+{#                           aria-haspopup="true" aria-expanded="false">#}
+{#                            Modelos#}
+{#                        </a>#}
+{#                        <div class="dropdown-menu" aria-labelledby="menu-modelo">#}
+{#                            <a href="{% url 'forecasting:all_MP' %}" class="dropdown-item">Mis Modelos</a>#}
+{#                            <a href="{% url 'forecasting:for_user_MP' username=user.username %}" class="dropdown-item">Mis#}
+{#                                Modelos (usuario)</a>#}
+{#                            <a href="{% url 'forecasting:create_MP' %}" class="dropdown-item">Crear Modelo</a>#}
+{#                        </div>#}
+{#                    </li>#}
 
-                    <!-- Predicciones -->
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="menu-prediccion" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Predicciones
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="menu-prediccion">
-                            <a href="{% url 'forecasting:all_PP' %}" class="dropdown-item">Mis Predicciones</a>
-                            <a href="{% url 'forecasting:for_user_PP' username=user.username %}" class="dropdown-item">Mis
-                                Predicciones (usuario)</a>
-                            <a href="{% url 'forecasting:create_PP' %}" class="dropdown-item">Crear Predicción</a>
-                        </div>
-                    </li>
+{#                    <!-- Predicciones -->#}
+{#                    <li class="nav-item dropdown">#}
+{#                        <a href="#" class="nav-link dropdown-toggle" id="menu-prediccion" data-toggle="dropdown"#}
+{#                           aria-haspopup="true" aria-expanded="false">#}
+{#                            Predicciones#}
+{#                        </a>#}
+{#                        <div class="dropdown-menu" aria-labelledby="menu-prediccion">#}
+{#                            <a href="{% url 'forecasting:all_PP' %}" class="dropdown-item">Mis Predicciones</a>#}
+{#                            <a href="{% url 'forecasting:for_user_PP' username=user.username %}" class="dropdown-item">Mis#}
+{#                                Predicciones (usuario)</a>#}
+{#                            <a href="{% url 'forecasting:create_PP' %}" class="dropdown-item">Crear Predicción</a>#}
+{#                        </div>#}
+{#                    </li>#}
 
                     <!-- Cerrar sesión -->
                     <a class="nav-item nav-link" href="{% url 'accounts:logout' %}" class="btn btn-simple">Log out</a>
@@ -162,7 +164,7 @@
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" id="menu-tarifas" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">
-                        Tarifas
+                        Tarifas MR
                     </a>
                     <div class="dropdown-menu" aria-labelledby="menu-tarifas">
                         <a href="{% url 'forecasting:pvpc_precios' %}" class="dropdown-item">PVPC (crawler)</a>

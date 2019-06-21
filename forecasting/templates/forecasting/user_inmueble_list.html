@@ -5,13 +5,33 @@
 
     <div class="mt-4">
         <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
-        <h3 class="display-4 mb-5">Estos son los inmuebles que has añadido</h3>
+        <h3 class="display-4 mb-5">Estos son los inmuebles que has añadido:</h3>
 
-        <ul class="list-unstyled row justify-content-between">
-            {% for inmueble in inmueble_list %}
-                {% include "forecasting/_inmueble_list_item.html" %}
-            {% endfor %}
-        </ul>
+{#        <ul class="list-unstyled row justify-content-between">#}
+{#            {% for inmueble in inmueble_list %}#}
+{#                {% include "forecasting/_inmueble_list_item.html" %}#}
+{#            {% endfor %}#}
+{#        </ul>#}
+
+        <div class="row">
+            <div class="col-9">
+                <ul class="list-unstyled row justify-content-between">
+                    {% for inmueble in inmueble_list %}
+                        {% include "forecasting/_inmueble_list_item.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-3 my-3">
+                <p class="text-justify lead">Crea un nuevo Inmueble o sube un Consumo Parcial para añadir más datos a uno existente:</p>
+                <a class="btn btn-outline-success btn-block"
+                   href="{% url 'forecasting:create_tarifamercadoregulado' username=user.username %}"
+                   class="dropdown-item">Crear Inmueble</a>
+                <a class="btn btn-outline-success btn-block"
+                   href="{% url 'forecasting:create_tarifamercadoregulado' username=user.username %}"
+                   class="dropdown-item">Subir Consumo Parcial</a>
+            </div>
+        </div>
+
 
     </div>
 
