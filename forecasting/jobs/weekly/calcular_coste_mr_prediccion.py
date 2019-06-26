@@ -1,8 +1,11 @@
 from django_extensions.management.jobs import BaseJob
 import pandas as pd
+from django.conf import settings
 
 from ... import models
 from ...func_mr import crear_costes_mr_prediccion
+from ...funciones_basicas import id_random_generator
+
 
 
 class Job(BaseJob):
@@ -37,6 +40,16 @@ class Job(BaseJob):
                             df_c = pd.read_csv(prediccionconsumo.fichero_prediccion_consumo_string, index_col=0, parse_dates=True)
                             df_p = pd.read_csv(prediccionmr.ruta_prediccion, index_col=0, parse_dates=True)
                             coste_mr = crear_costes_mr_prediccion(df_c, df_p, prediccionmr.tipo)
+
+                            # En la función anterior les paso los df para que me los merge. Si voy a necesitar merger
+                            # aquí abajo, mejor no mandárselos directamente, me quedo con el merge, lo guardo y sólo
+                            # mando el merge y el tipo
+                            df_merge = pd.merge(df_c, df_p, how='inner', left_index=True, right_index=True)
+                            ruta_fich = settings.MEDIA_ROOT + '\\predicciones\\'
+                            ruta_pred = ruta_fich + 'prediccionMERGE' + id_random_generator() + '.csv'
+                            df_merge.to_csv(ruta_pred)
+                            prediccionconsumo.fichero_pConsumo_pPrecio_string = ruta_pred
+                            prediccionconsumo.save()
 
                             if prediccionmr.tipo == 'TPD':
                                 print('Tengo una predicción de precios de TPD')

@@ -1,0 +1,29 @@
+{% load static %}
+
+
+<li class="media my-2">
+    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill05.png' %}" alt="coste file icon">
+    <div class="media-body">
+        <h5 class="mt-0 mb-1"><em><strong>Nombre: {{ costeinmuebleml.nombre }}</strong></em></h5>
+        <h6 class="mt-0 mb-1"><strong>Precio: {{ costeinmuebleml.coste|floatformat:2 }}</strong> €</h6>
+        <h5 class="mt-0 mb-1"><em><strong>Empresa: {{ costeinmuebleml.empresa }}</strong></em></h5>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
+                data-target="#verCosteInmuebleTarifaMercadoLibreModal{{ costeinmuebleml.id }}">
+            Info
+        </button>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verCosteInmuebleTarifaMercadoLibreModal{{ costeinmuebleml.id }}"
+     tabindex="-1" role="dialog"
+     aria-labelledby="verCosteInmuebleTarifaMercadoLibreLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% include "forecasting/_costeinmueble_tarifamercadolibre_item.html" %}
+        </div>
+    </div>
+</div>

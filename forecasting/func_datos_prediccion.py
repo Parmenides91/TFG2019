@@ -208,3 +208,94 @@ def predicionconsumo_chart(df):
     fig = go.Figure(data=data, layout=layout)
     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
     return plot_div
+
+
+# Representar la Predicción de Consumo sobre la Predicción de Precios del Mercado Regulado
+def crear_graficas_superpuestas(df):
+    n_leyenda = 'Predicción'
+
+    trace1 = go.Scatter(
+        x=df.index,
+        y=df['Consumo_kWh'],
+        mode='lines+markers',
+        name='Consumo',
+        marker=dict(color='rgb(143,55,169)', size=6, opacity=0.4))
+
+    trace2 = go.Scatter(
+        x=df.index,
+        y=df['TPD'],
+        mode='lines+markers',
+        name='TPD',
+        marker=dict(color='rgb(0,255,0)', size=6, opacity=0.4))
+
+    trace3 = go.Scatter(
+        x=df.index,
+        y=df['EDP'],
+        mode='lines+markers',
+        name='EDP',
+        marker=dict(color='rgb(255,0,0)', size=6, opacity=0.4))
+
+    trace4 = go.Scatter(
+        x=df.index,
+        y=df['VE'],
+        mode='lines+markers',
+        name='VE',
+        marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
+
+    data = [trace1, trace2, trace3, trace4]
+
+    layout = go.Layout(
+        title='Predicciónes de Consumo y Precios Mercado Regulado',
+        showlegend=True,
+        # width = 800,
+        # height = 700,
+        hovermode='closest',
+        bargap=0,
+        legend=dict(
+            # orientation='h',
+            x=0.2, y=1.1,
+            traceorder='normal',
+            font=dict(
+                family='sans-serif',
+                size=12,
+                color='#000',
+            ),
+            bgcolor='#E2E2E2',
+            bordercolor='#FFFFFF',
+            borderwidth=2,
+        ),
+        margin=dict(
+            autoexpand=False,
+            l=100,
+            r=20,
+            t=110,
+        ),
+        xaxis=dict(
+            title='',
+            showline=True,
+            showgrid=True,
+            showticklabels=True,
+            linecolor='rgb(204, 204, 204)',
+            linewidth=2,
+            ticks='outside',
+            tickcolor='rgb(204, 204, 204)',
+            tickwidth=2,
+            ticklen=2,
+            tickfont=dict(
+                family='Arial',
+                size=12,
+                color='rgb(82, 82, 82)',
+            ),
+        ),
+        yaxis=dict(
+            title='kW/h',
+            showgrid=True,
+            zeroline=False,
+            showline=True,
+            showticklabels=True,
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div

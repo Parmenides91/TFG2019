@@ -2,6 +2,7 @@ from django_extensions.management.jobs import BaseJob
 
 from django.core.mail import send_mail
 from django.core.files import File
+from django.conf import settings
 
 from ... import models
 
@@ -15,32 +16,6 @@ class Job(BaseJob):
         #Método real de uso
         modelos = models.ModeloConsumo.objects.all()
         for modelo in modelos:
-            # # Método 1:
-            # print('Entramos a por los modelos a hacer predicciones, darling.')
-            # print('Fecha de creación:')
-            # print(modelo.created_at)
-            # print('Esa era la fecha.')
-            # print('A continuación te digo el fichero')
-            # # print(modelo.fichero_modelo_inmueble.name)
-            # print(modelo.fichero_modelo_inmueble)
-            # print('Ese es el fichero')
-            # # fich_modelo=modelo.fichero_modelo_inmueble
-            # fich_prediccion = crearPrediccion(modelo.fichero_modelo_inmueble)
-            # nueva_prediccion = models.PrediccionConsumo.objects.create(modelo_consumo_origen=modelo,
-            #                                                            fichero_prediccion_consumo=fich_prediccion)
-            # print('Create() hecho. Vamos a guardar todo.')
-            # nueva_prediccion.save()
-            # print('Guardado.')
-            #
-            # print('Ahora mando EMAILS.')
-            # send_mail(
-            #     'Creacion de Prediccion',
-            #     'Ha finalizado el proceso de creacion de sus predicciones.',
-            #     'from@example.com',
-            #     [modelo.inmueble_origen.user.email],
-            #     fail_silently=False,
-            # )
-
             # Método 2
             if modelo.inmueble_origen.modelo_actualizado and modelo.inmueble_origen.prediccion_actualizada:
                 # Ya ha sido creada la predicción más actual posible
@@ -63,7 +38,7 @@ class Job(BaseJob):
                 send_mail(
                     'Creacion de Prediccion',
                     'Ha finalizado el proceso de creacion de sus predicciones.',
-                    'from@example.com',
+                    settings.DEFAULT_FROM_EMAIL,
                     [modelo.inmueble_origen.user.email],
                     fail_silently=False,
                 )

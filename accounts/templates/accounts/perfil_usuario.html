@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+
+{% block content %}
+    <div class="container">
+        <p>Nombre de Usuario: {{ user.username }}</p>
+        <p>Correo electrónico: {{ user.email }}</p>
+    </div>
+{% endblock %}

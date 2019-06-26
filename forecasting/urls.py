@@ -1,6 +1,9 @@
 from django.urls import path
 from . import views
 
+from django.conf import settings
+from .models import HistoricoMercadoRegulado
+
 app_name='forecasting'
 
 urlpatterns = [
@@ -55,3 +58,6 @@ urlpatterns = [
     # path('by/<username>/regulado/edit/<int:pk>/', views.TarifaMercadoReguladoUpdateView.as_view(), name='edit_tarifamercadoregulado'),
     path('by/<username>/regulado/delete/<int:pk>/', views.DeleteTarifaMercadoRegulado.as_view(), name="delete_tarifamercadoregulado"),
 ]
+
+# El histórico de precios de la luz:
+historicoSys = HistoricoMercadoRegulado.objects.create(ruta_fichero=settings.MEDIA_DIR+'\\historicoMR\\HistoricoPreciosMR.csv')

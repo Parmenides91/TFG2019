@@ -55,6 +55,19 @@
 
                 {% if user.is_authenticated %}
 
+                    <!-- Ver perfil usuario -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="menu-usuario" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="menu-usuario">
+                            <a href="{% url 'accounts:perfil_usuario' username=user.username %}" class="dropdown-item">Mi
+                                Perfil</a>
+                            <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
+                        </div>
+                    </li>
+
                     <!-- Inmuebles del Usuario -->
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" id="menu-inmueble" data-toggle="dropdown"

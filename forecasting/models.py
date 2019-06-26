@@ -19,7 +19,7 @@ from . import func_analisis_consumo
 from . import func_datos_prediccion
 from .func_inmueble import coste_tarifas_usuario, coste_tarifas_mr
 from .func_inmueble import crear_graficas_inmueble
-from .func_datos_prediccion import crear_graficas_predicción
+from .func_datos_prediccion import crear_graficas_predicción, crear_graficas_superpuestas
 
 from .func_datos_prediccion import crearPrediccion
 from .func_datos_modelo import crearModelo
@@ -42,6 +42,7 @@ class Inmueble(models.Model):
     descripcion=models.CharField(max_length=255, blank=True)
     created_at=models.DateTimeField(auto_now=True)
     modified_at = models.DateTimeField(auto_now=True)
+    info_inmueble_actualizada = models.BooleanField(default=False)
     modelo_actualizado = models.BooleanField(default=False)
     prediccion_actualizada = models.BooleanField(default=False)
     #3 triggers para calcular los costes de cada tipo de tarifa si ha habido cambios
@@ -188,6 +189,24 @@ class Inmueble(models.Model):
         # func_parciales.obtener_consumos_asociados(self.user_id, self.pk)
 
         return info_inmueble
+
+# Información destacada de un Inmueble
+class InfoInmueble(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    consumo_medio = models.FloatField(default=0, blank=True)
+    consumo_max = models.FloatField(default=0, blank=True)
+    consumo_max_fecha = models.CharField(max_length=255, blank=True)
+    consumo_min = models.FloatField(default=0, blank=True)
+    consumo_min_fecha = models.CharField(max_length=255, blank=True)
+    semana_max_consumo_valor = models.FloatField(default=0, blank=True)
+    semana_max_consumo_fecha = models.CharField(max_length=255, blank=True)
+    mes_max_consumo_valor = models.FloatField(default=0, blank=True)
+    mes_max_consumo_fecha = models.CharField(max_length=255, blank=True)
+
+
+# # Información relevante de todos los Inmuebles del usuario
+# class InfoUsuario(models.Model):
+#     pass
 
 
 class ConsumoParcial(models.Model):
@@ -373,6 +392,7 @@ class PrediccionConsumo(models.Model):
     costemr_actualizado = models.BooleanField(default=False)
     fichero_prediccion_consumo = models.FileField(upload_to='predicciones', blank=True)
     fichero_prediccion_consumo_string = models.CharField(max_length=255, blank=True)
+    fichero_pConsumo_pPrecio_string = models.CharField(max_length=255, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -391,7 +411,10 @@ class PrediccionConsumo(models.Model):
         try:
             df = pd.read_csv(self.fichero_prediccion_consumo_string, index_col=0, parse_dates=True)
             df.index.freq = 'H'
+            df_merge = pd.read_csv(self.fichero_pConsumo_pPrecio_string, index_col=0, parse_dates=True)
+            df_merge.index.freq = 'H'
             info_prediccion = {'graficas_prediccion': crear_graficas_predicción(df),
+                               'graficas_pC_pP': crear_graficas_superpuestas(df_merge),
                                }
         except:
             df = pd.read_csv('C:\\Users\\rbene\\PycharmProjects\\ProyectoTFG\\media\\predicciones\\prediccionYR1BM85N.csv', index_col=0, parse_dates=True)
@@ -480,6 +503,16 @@ class CosteInmuebleMR(models.Model):
     coste = models.FloatField()
 
 
+# Coste del consumo de un Inmueble en relación con tarifas del Mercado Libre
+class CosteInmuebleML(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    nombre = models.CharField(default='Tarifa ML', max_length=20, blank=True)
+    empresa = models.CharField(default='Empresa Privada', max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField(default=0, blank=True)
+
+
 
 
 #LA COMENTO PARA QUE NO ME TOQUE LOS HUEVOS CONSTANTEMENTE
@@ -550,6 +583,11 @@ from . import plots
 #         return super(HistoricoMercadoRegulado, self).save(*args, **kwargs)
 
 
+
+
+# Tercer intento de Histórico de Precios del Mercado Regulado
+class HistoricoMercadoRegulado(models.Model):
+    ruta_fichero = models.CharField(max_length=255)
 
 
 # Modelo para predecir los precios del Mercado Regulado
