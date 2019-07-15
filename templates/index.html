@@ -1,121 +1,226 @@
 {% extends "base.html" %}
 
+{% load static %}
+
+
 {% block content %}
-    <!-- <h1>Welcome to T F G</h1> -->
-
-
 
     <div class="container">
+        <div class="jumbotron bg-white">
+            <h1 class="display-4"><strong>Optimización de la factura de la luz mediante la lectura de los Smart
+                Meters</strong></h1>
 
-        <!-- Presentación -->
-        <section class="contenedor-main row my-5">
-            <main class="col-md-8">
-                <h1 class="display-5 font-italic">Optimización de la factura de la luz mediante la lectura de los Smart
-                    Meters</h1>
-                <!-- <p class="lead my-3">Parrafada.</p> -->
-
-                <p><a href="#" class="text-success">Saber más...</a></p>
-            </main>
-            <aside class="col-md-4 align-self-center text-right">
-                <h3>Tutores:</h3>
-                <p>Fernando de la Prieta</p>
-                <p>Javierto Prieto</p>
-
-                <h4 class="mt-5">Alumno:</h4>
-                <p>Roberto Benéitez Vaquero</p>
-            </aside>
-        </section>
-
-
-        <!-- Caja anuncio acceso al PVPC -->
-        <div class="card border-success text-center">
-            <div class="card-header">
-                <h3>PVPC</h3>
+            <hr class="my-4 bg-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Tutores:</h5>
+                    <p class="my-1">
+                        <small>Fernando de la Prieta</small>
+                    </p>
+                    <p class="my-1">
+                        <small>Javier Prieto</small>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Alumno:</h5>
+                    <p>
+                        <small>Roberto Benéitez Vaquero</small>
+                    </p>
+                </div>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">Precio Voluntario Pequeño Consumidor</h5>
-                <p class="card-text">Consulta el precio de la tarifa PVPC y conoce la predicción del próximo día</p>
-                <a href="{% url 'forecasting:pvpc_precios' %}" class="btn btn-success">Consultar PVPC</a>
+
+        </div>
+    </div>
+
+
+    <!-- Dos cuadros -->
+    <div class="container">
+        <div class="row mb-2">
+
+            <div class="col-md-6">
+                <div class="card flex-md-row mb-4 box-shadow h-md-250">
+                    <div class="card-body d-flex flex-column align-items-start">
+                        <strong class="d-inline-block mb-2 text-info">Tarifas</strong>
+                        <h3 class="mb-0">
+                            <p href="" class="m-0 p-0text-dark">Precio Mercado Regulado</p>
+                        </h3>
+                        <div class="mb-1 text-muted">Actualizado a <em>{{ index_fecha }}</em></div>
+                        <p class="card-text mb-auto">
+                            Consulta el precio de las tarifas del precio voluntario para el pequeño consumidor.
+                        </p>
+                        <a href="{% url 'forecasting:pvpc_precios' %}" class="btn btn-info btn-sm">Ver precios</a>
+                    </div>
+                    <img src="" class="card-img-right flex-auto d-none d-md-block" data-src="" alt=""
+                         style="width: 200px; height: 250px;" src="">
+                </div>
             </div>
-            <div class="card-footer text-muted">
-                Actualizado a: {{ index_fecha }}
+
+            <div class="col-md-6">
+                <div class="card flex-md-row mb-4 box-shadow h-md-250">
+                    <div class="card-body d-flex flex-column align-items-start">
+                        <strong class="d-inline-block mb-2 text-info">Tarifas</strong>
+                        <h3 class="mb-0">
+                            <p href="" class="m-0 p-0text-dark">Tarifas Mercado Libre</p>
+                        </h3>
+                        {#                        <div class="mb-1 text-muted">Actualizado a <em>hoy</em></div>#}
+                        <p class="card-text mb-auto">
+                            Consulta algunas de las tarifas que ofertan actualmente las distribuidoras para conocerlas
+                            más en detalle.
+                        </p>
+                        <a href="" class="btn btn-info btn-sm">Ver tarifas</a>
+                    </div>
+                    <img src="" class="card-img-right flex-auto d-none d-md-block" data-src="" alt=""
+                         style="width: 200px; height: 250px;" src="">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="container my-5">
+        <div class="row text-center justify-content-between">
+            <div class="card-deck">
+                <div class="card border-info p-3">
+                    <img class="img-fluid align-self-center rounded-circle cajas-inicio"
+                         src="{% static 'img/sm02.png' %}" alt="CIRCULO" width="140"
+                         height="140">
+                    <h2>Smart Meters</h2>
+                    <p class="lead text-center">Aprende el funcionamiento de los Smart Meters y cómo su aplicación
+                        permite
+                        controlar y hacer más eficiente la factura de la luz.</p>
+                    <p>
+                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-outline-info" role="button">Conoce
+                            más</a>
+                    </p>
+                </div>
+
+
+                <div class="card border-info p-3">
+                    <img class="img-fluid align-self-center rounded-circle cajas-inicio"
+                         src="{% static 'img/factura01.png' %}" alt="CIRCULO" width="140"
+                         height="140">
+                    <h2>Factura</h2>
+                    <p class="lead text-center">Revisa el desglose de la factura de la luz y cómo se aplica cada tarifa
+                        individualmente.</p>
+                    <p>
+                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-outline-info" role="button">Conoce
+                            más</a>
+                    </p>
+                </div>
+
+
+                <div class="card border-info p-3">
+
+                    <img class="img-fluid align-self-center rounded-circle cajas-inicio"
+                         src="{% static 'img/power-plant01.png' %}" alt="CIRCULO"
+                         width="140" height="140">
+                    <h2>Energía</h2>
+                    <p class="lead text-center">Descubre cómo se genera la electricidad en España y cómo llega a cada
+                        uno de
+                        los usuarios, dependiendo de su contrato.</p>
+                    <p>
+                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-outline-info" role="button">Conoce
+                            más</a>
+                    </p>
+                </div>
             </div>
         </div>
-
-
-        <!-- Cajas información -->
-        <div class="row my-3">
-
-            <div class="col">
-                <div class="card border-success">
-                    <div class="card-body">
-                        <h3 class="card-title">Smart Meters</h3>
-                        <p class="card-text">¿Cómo funcionan los Smart Meters?</p>
-                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-dark">Ir</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card border-success">
-                    <div class="card-body">
-                        <h3 class="card-title">Factura de la luz</h3>
-                        <p class="card-text">Aprende cómo se desglosa la factura de la luz.</p>
-                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-dark">Ir</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card border-success">
-                    <div class="card-body">
-                        <h3 class="card-title">La energía en España</h3>
-                        <p class="card-text">Conoce la regulación eléctrica al detalle.</p>
-                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-dark">Ir</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-    <!-- Cajas información intento 2 -->
-        <!--
-        <div class="row my-3 justify-content-around">
-
-<div class="card-deck">
-                <div class="card border-success">
-                    <div class="card-body">
-                        <h3 class="card-title">Smart Meters</h3>
-                        <p class="card-text">¿Cómo funcionan los Smart Meters?</p>
-                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-danger">Ir</a>
-                    </div>
-                </div>
-
-
-
-                <div class="card border-success">
-                    <div class="card-body">
-                        <h3 class="card-title">Factura de la luz</h3>
-                        <p class="card-text">Aprende cómo se desglosa la factura de la luz.</p>
-                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-warning">Ir</a>
-                    </div>
-                </div>
-
-
-
-                <div class="card border-success">
-                    <div class="card-body">
-                        <h3 class="card-title">La energía en España</h3>
-                        <p class="card-text">Conoce la regulación eléctrica al detalle.</p>
-                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-info">Ir</a>
-                    </div>
-                </div>
-</div>
-        </div> -->
-
+    </div>
 
     </div>
+
+
+
+
+{#    <div class="container">#}
+{##}
+{#        <!-- Caja anuncio acceso al PVPC -->#}
+{#        <div class="card border-success text-center">#}
+{#            <div class="card-header">#}
+{#                <h3>PVPC</h3>#}
+{#            </div>#}
+{#            <div class="card-body">#}
+{#                <h5 class="card-title">Precio Voluntario Pequeño Consumidor</h5>#}
+{#                <p class="card-text">Consulta el precio de la tarifa PVPC y conoce la predicción del próximo día</p>#}
+{#                <a href="{% url 'forecasting:pvpc_precios' %}" class="btn btn-success">Consultar PVPC</a>#}
+{#            </div>#}
+{#            <div class="card-footer text-muted">#}
+{#                Actualizado a: {{ index_fecha }}#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{#        <!-- Cajas información -->#}
+{#        <div class="row my-3">#}
+{##}
+{#            <div class="col">#}
+{#                <div class="card border-success">#}
+{#                    <div class="card-body">#}
+{#                        <h3 class="card-title">Smart Meters</h3>#}
+{#                        <p class="card-text">¿Cómo funcionan los Smart Meters?</p>#}
+{#                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-dark">Ir</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col">#}
+{#                <div class="card border-success">#}
+{#                    <div class="card-body">#}
+{#                        <h3 class="card-title">Factura de la luz</h3>#}
+{#                        <p class="card-text">Aprende cómo se desglosa la factura de la luz.</p>#}
+{#                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-dark">Ir</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col">#}
+{#                <div class="card border-success">#}
+{#                    <div class="card-body">#}
+{#                        <h3 class="card-title">La energía en España</h3>#}
+{#                        <p class="card-text">Conoce la regulación eléctrica al detalle.</p>#}
+{#                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-dark">Ir</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{#        <!-- Cajas información intento 2 -->#}
+{##}
+{#        <div class="row my-3 justify-content-around">#}
+{##}
+{#            <div class="card-deck">#}
+{#                <div class="card border-success">#}
+{#                    <div class="card-body">#}
+{#                        <h3 class="card-title">Smart Meters</h3>#}
+{#                        <p class="card-text">¿Cómo funcionan los Smart Meters?</p>#}
+{#                        <a href="{% url 'forecasting:infoS' %}" class="btn btn-danger">Ir</a>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{##}
+{#                <div class="card border-success">#}
+{#                    <div class="card-body">#}
+{#                        <h3 class="card-title">Factura de la luz</h3>#}
+{#                        <p class="card-text">Aprende cómo se desglosa la factura de la luz.</p>#}
+{#                        <a href="{% url 'forecasting:infoF' %}" class="btn btn-warning">Ir</a>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{##}
+{#                <div class="card border-success">#}
+{#                    <div class="card-body">#}
+{#                        <h3 class="card-title">La energía en España</h3>#}
+{#                        <p class="card-text">Conoce la regulación eléctrica al detalle.</p>#}
+{#                        <a href="{% url 'forecasting:infoES' %}" class="btn btn-info">Ir</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{#    </div>#}
 
 
 {% endblock %}

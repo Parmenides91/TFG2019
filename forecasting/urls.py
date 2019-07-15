@@ -57,6 +57,13 @@ urlpatterns = [
     path('by/<username>/regulado/<int:pk>/', views.TarifaMercadoReguladoDetail.as_view(), name='single_tarifamercadoregulado'),
     # path('by/<username>/regulado/edit/<int:pk>/', views.TarifaMercadoReguladoUpdateView.as_view(), name='edit_tarifamercadoregulado'),
     path('by/<username>/regulado/delete/<int:pk>/', views.DeleteTarifaMercadoRegulado.as_view(), name="delete_tarifamercadoregulado"),
+    # Prueba de la Plantilla con un Index
+    path('prueba_index/', views.PruebaIndex.as_view(), name="pruebaIndex"),
+    # histórico de precios del mercado regulado
+    path('historico_mr/', views.HistoricoMRView.as_view(), name = "mr_precios"),
+    path("historico_mr/<int:yearS>/<int:monthS>/<int:dayS>/<int:yearF>/<int:monthF>/<int:dayF>/", views.HistoricoMRView.as_view(), name ="mr_precios"),
+    path("historico_mr/<int:yearS>/<int:monthS>/<int:dayS>/", views.HistoricoMRView.as_view(), name ="mr_precios"),
+    path("historico_mr/<int:yearS>-<int:monthS>-<int:dayS>/", views.HistoricoMRView.as_view(), name ="mr_precios"),
 ]
 
 # El histórico de precios de la luz:

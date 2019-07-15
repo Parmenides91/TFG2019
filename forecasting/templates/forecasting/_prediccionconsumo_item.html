@@ -122,13 +122,37 @@
                 <p class="h4">Mercado Regulado:</p>
             </li>
             <!-- items -->
-            {% if prediccionconsumo.costemrprediccion_set.exists %}
-                {% for costeprediccionmr in prediccionconsumo.costemrprediccion_set.all %}
-                    {% include "forecasting/_costeprediccionconsumo_tarifamercadoregulado_list_item.html" %}
-                {% endfor %}
-            {% else %}
-                <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Regulado.</p>
-            {% endif %}
+{#            {% if prediccionconsumo.costemrprediccion_set.exists %}#}
+{#                {% for costeprediccionmr in prediccionconsumo.costemrprediccion_set.all %}#}
+{#                    {% include "forecasting/_costeprediccionconsumo_tarifamercadoregulado_list_item.html" %}#}
+{#                {% endfor %}#}
+{#            {% else %}#}
+{#                <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Regulado.</p>#}
+{#            {% endif %}#}
+{#        Tarifa TPD#}
+        {% if prediccionconsumo.costetpdprediccion_set.exists %}
+            {% for costetpdprediccion in prediccionconsumo.costetpdprediccion_set.all %}
+                {% include "forecasting/_coste_tpd_prediccion_list_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la predicción de la tarifa TPD.</p>
+        {% endif %}
+{#        Tarifa EDP#}
+        {% if prediccionconsumo.costeedpprediccion_set.exists %}
+            {% for costeedpprediccion in prediccionconsumo.costeedpprediccion_set.all %}
+                {% include "forecasting/_coste_edp_prediccion_list_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la predicción de la tarifa EDP.</p>
+        {% endif %}
+{#        Tarifa VE#}
+        {% if prediccionconsumo.costeveprediccion_set.exists %}
+            {% for costeveprediccion in prediccionconsumo.costeveprediccion_set.all %}
+                {% include "forecasting/_coste_ve_prediccion_list_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la predicción de la tarifa VE.</p>
+        {% endif %}
         </ul>
     </li>
     <!-- Tercera Columna: Mercado Libre -->
@@ -142,3 +166,35 @@
         </ul>
     </li>
 </ul>
+
+
+<!-- Gráficas de la predicción de consumo con cada tarifa del mercado regulado -->
+<div class="row">
+    <div class="col-12">
+        {% if prediccionconsumo.costetpdprediccion_set.exists %}
+            {% for costetpdprediccion in prediccionconsumo.costetpdprediccion_set.all %}
+                {{ costetpdprediccion.representar_prediccion_tpd.grafica_coste_tpd|safe }}
+            {% endfor %}
+        {% else %}
+        {% endif %}
+    </div>
+{#    <div class="col-2">#}
+{#        Tarifa TPD#}
+{#    </div>#}
+    <div class="col-12">
+        {% if prediccionconsumo.costeedpprediccion_set.exists %}
+            {% for costeedpprediccion in prediccionconsumo.costeedpprediccion_set.all %}
+                {{ costeedpprediccion.representar_prediccion_edp.grafica_coste_edp|safe }}
+            {% endfor %}
+        {% else %}
+        {% endif %}
+    </div>
+    <div class="col-12">
+        {% if prediccionconsumo.costeveprediccion_set.exists %}
+            {% for costeveprediccion in prediccionconsumo.costeveprediccion_set.all %}
+                {{ costeveprediccion.representar_prediccion_ve.grafica_coste_ve|safe }}
+            {% endfor %}
+        {% else %}
+        {% endif %}
+    </div>
+</div>

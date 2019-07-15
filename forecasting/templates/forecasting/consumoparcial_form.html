@@ -6,13 +6,37 @@
 
 {% block content_consumoparcial %}
 
-<h4>CREAR NUEVO CONSUMO PARCIAL</h4>
-<form method="POST" action="{% url 'forecasting:create_consumoparcial' username=user.username %}" id="consumoparcialForm" enctype="multipart/form-data">
-	{% csrf_token %}
-	{% bootstrap_form form %}
-	{% buttons %}
-        <button type="submit" class="btn btn-primary btn-large">Subir Consumo Parcial</button>
-	{% endbuttons %}
-</form>
+
+    <div class="container">
+        <div class="card p-5 mb-4 border-info rounded">
+            <h4>Añade un nuevo consumo parcial</h4>
+            <hr>
+            <div class="row">
+            <div class="col-9">
+                <form method="POST" action="{% url 'forecasting:create_consumoparcial' username=user.username %}"
+                      id="consumoparcialForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-info btn-large my-2">Subir Consumo Parcial</button>
+                    {% endbuttons %}
+                </form>
+            </div>
+            <div class="col-3">
+                <img class="img-fluid card-img border-white" src="{% static 'icon/parcial001.svg' %}" alt="parcial icon">
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+{#<h4>CREAR NUEVO CONSUMO PARCIAL</h4>#}
+{#<form method="POST" action="{% url 'forecasting:create_consumoparcial' username=user.username %}" id="consumoparcialForm" enctype="multipart/form-data">#}
+{#	{% csrf_token %}#}
+{#	{% bootstrap_form form %}#}
+{#	{% buttons %}#}
+{#        <button type="submit" class="btn btn-primary btn-large">Subir Consumo Parcial</button>#}
+{#	{% endbuttons %}#}
+{#</form>#}
 
 {% endblock %}

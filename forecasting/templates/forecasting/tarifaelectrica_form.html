@@ -4,12 +4,41 @@
 
 
 {% block content_tarifaelectrica %}
-<h4>CREAR NUEVA TARIFA ELÉCTRICA</h4>
-<form method="POST" action="{% url 'forecasting:create_tarifaelectrica' username=user.username %}" id="tarifaelectricaForm" enctype="multipart/form-data">
-	{% csrf_token %}
-	{% bootstrap_form form %}
-	{% buttons %}
-		<button type="submit" class="btn btn-primary btn-large">Crear tarifa eléctrica</button>
-	{% endbuttons %}
-</form>
+    {% load static %}
+
+    <div class="container">
+        <div class="card p-5 mb-4 border-info rounded">
+            <h4>Crea una nueva tarifa personalizada</h4>
+            <hr>
+            <div class="row">
+                <div class="col-9">
+                    <form method="POST" action="{% url 'forecasting:create_tarifaelectrica' username=user.username %}"
+                          id="tarifaelectricaForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        {% buttons %}
+                            <button type="submit" class="btn btn-info btn-large my-2">Crear tarifa eléctrica</button>
+                        {% endbuttons %}
+                    </form>
+                </div>
+                <div class="col-3">
+                    <img class="img-fluid card-img border-white" src="{% static 'icon/tarifa02.png' %}"
+                         alt="inmueble icon">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    {#<h4>CREAR NUEVA TARIFA ELÉCTRICA</h4>#}
+    {#<form method="POST" action="{% url 'forecasting:create_tarifaelectrica' username=user.username %}" id="tarifaelectricaForm" enctype="multipart/form-data">#}
+    {#	{% csrf_token %}#}
+    {#	{% bootstrap_form form %}#}
+    {#	{% buttons %}#}
+    {#		<button type="submit" class="btn btn-primary btn-large">Crear tarifa eléctrica</button>#}
+    {#	{% endbuttons %}#}
+    {#</form>#}
+
 {% endblock %}

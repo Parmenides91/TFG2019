@@ -1,0 +1,19 @@
+<div class="row justify-content-around my-3">
+    <div class="row col-12 justify-content-end">
+        <div class="col-12">
+            <p class="h2 text-center"><em><u>Tarifa Por Defecto (TPD)</u></em></p>
+        </div>
+    </div>
+    <div class="row col-12">
+        <div class="col-10 border-right border-info">
+            <div class="bg-danger">
+                <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+                {{ costeinmuebletpd.representar_tpd.grafica_coste_tpd|safe }}
+            </div>
+        </div>
+        <div class="col-2 lead text-center align-self-center">
+            <p class="h4">Coste:</p>
+            <p class="h4"><strong><em>{{ costeinmuebletpd.coste|floatformat:2 }} €</em></strong></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+{% extends "forecasting/mr_chart_base.html" %}
+
+
+{% block pre_historicomr %}
+
+
+    <div class="jumbotron bg-light">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="display-1 ">Mercado Regulado</h1>
+                <hr>
+                <p class="text-muted font-italic lead">Consulta los precios de las tarifas del Mercado Regulado</p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block content_historicomr %}
+    <div class="container">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+        <p class="lead"><strong>Introduce una fecha para consultar el precio:</strong></p>
+        <input type="date" id="fechaPrecioPVPC" value="${item.value}"/>
+        <a href='' onclick="this.href=document.getElementById('fechaPrecioPVPC').value">Consultar</a>
+
+        <div class="col-md-12">{{ grafica_precio|safe }}</div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block post_historicomr %}
+{% endblock %}

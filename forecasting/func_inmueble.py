@@ -226,6 +226,7 @@ def coste_tarifas_usuario(df, tarifaelectrica):
     # return costes_dict
 
 
+# coste para el consumo de un inmueble con datos reales del mercado regulado
 def coste_tarifas_MR(df_c, df_p):
     # print(df_c.index)
     # df_c.index = pd.to_datetime(df_c['Fecha'])
@@ -254,3 +255,128 @@ def coste_tarifas_MR(df_c, df_p):
 # Cálculo del coste del consumo del inmueble mediante los precios del mercado regulado
 def coste_tarifas_mr(df):
     pass
+
+
+
+
+# Cálculo de coste de la tarifa TPD para un inmueble
+def calcular_coste_mr_inmueble(df_inmueble, df_precios, tipo):
+    df_merge = pd.merge(df_inmueble, df_precios, how='inner', left_index=True, right_index=True)
+
+    coste = 0
+
+    # print('CSV merge, información:\n {}'.format(df_merge.info()))
+
+    if tipo == 'TPD':
+        # Tarifa TPD.
+        print('Tarifa TPD, desde calcular_coste_mr_inmueble()')
+        for index, row in df_merge.iterrows():
+            coste += (row['TPD']) * row['Consumo_kWh']
+    elif tipo == 'EDP':
+        # Tarifa EDP.
+        print('Tarifa EDP, desde calcular_coste_mr_inmueble()')
+        for index, row in df_merge.iterrows():
+            coste += (row['EDP']) * row['Consumo_kWh']
+    elif tipo == 'VE':
+        # Tarifa VE.
+        print('Tarifa VE, desde calcular_coste_mr_inmueble()')
+        for index, row in df_merge.iterrows():
+            coste += (row['VE']) * row['Consumo_kWh']
+    else:
+        print('func_inmueble.py: caso no soportado - error.')
+
+    coste = coste / 1000  # porque viene en €/MW/h y el consumo está en kW/h
+
+    info_coste = {'valor': coste,
+                  'datos': df_merge}
+
+    return info_coste
+
+
+
+# Gráfica para mostrar cada tarifa superpuesta al consumo del inmueble
+def crear_graficas_superpuestas_inmueble(df, tipo):
+    n_leyenda = 'Inmueble'
+
+    trace1 = go.Scatter(
+        x=df.index,
+        y=df['Consumo_kWh'],
+        mode='lines+markers',
+        name='Consumo',
+        marker=dict(color='rgb(143,55,169)', size=6, opacity=0.4))
+
+    trace2 = go.Scatter(
+        x=df.index,
+        y=df[tipo],
+        mode='lines+markers',
+        name=tipo,
+        marker=dict(color='rgb(0,255,0)', size=6, opacity=0.4),
+        yaxis='y2')
+
+    data = [trace1, trace2]
+
+    layout = go.Layout(
+        # title='Consumo Inmueble - Precio del Mercado Regulado',
+        title='',
+        showlegend=True,
+        # width = 800,
+        # height = 700,
+        hovermode='closest',
+        bargap=0,
+        legend=dict(
+            # orientation='h',
+            x=0.2, y=1.1,
+            traceorder='normal',
+            font=dict(
+                family='sans-serif',
+                size=12,
+                color='#000',
+            ),
+            bgcolor='#E2E2E2',
+            bordercolor='#FFFFFF',
+            borderwidth=2,
+        ),
+        margin=dict(
+            # autoexpand=False,
+            # l=100,
+            # r=20,
+            # t=110,
+        ),
+        xaxis=dict(
+            title='',
+            showline=True,
+            showgrid=True,
+            showticklabels=True,
+            linecolor='rgb(204, 204, 204)',
+            linewidth=2,
+            ticks='outside',
+            tickcolor='rgb(204, 204, 204)',
+            tickwidth=2,
+            ticklen=2,
+            tickfont=dict(
+                family='Arial',
+                size=12,
+                color='rgb(82, 82, 82)',
+            ),
+        ),
+        yaxis=dict(
+            title='kW/h',
+            showgrid=True,
+            zeroline=False,
+            showline=True,
+            showticklabels=True,
+        ),
+        yaxis2=dict(
+            title='€/MW/h',
+            showgrid=True,
+            zeroline=False,
+            showline=True,
+            showticklabels=True,
+            overlaying='y',
+            side='right',
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False, auto_open=False)
+    return plot_div

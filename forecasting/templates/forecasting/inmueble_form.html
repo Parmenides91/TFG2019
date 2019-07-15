@@ -1,15 +1,31 @@
 {% extends "forecasting/inmueble_base.html" %}
 
 {% load bootstrap4 %}
+{% load static %}
 
 
 {% block content_inmueble %}
-<h4>CREAR NUEVO INMUEBLE</h4>
-<form method="POST" action="{% url 'forecasting:create_inmueble' username=user.username %}" id="inmuebleForm" enctype="multipart/form-data">
-	{% csrf_token %}
-	{% bootstrap_form form %}
-	{% buttons %}
-		<button type="submit" class="btn btn-primary btn-large">Crear inmueble</button>
-	{% endbuttons %}
-</form>
+
+    <div class="container">
+        <div class="card p-5 mb-4 border-info rounded">
+            <h4>Crea un nuevo inmueble</h4>
+            <hr>
+            <div class="row">
+            <div class="col-9">
+                <form method="POST" action="{% url 'forecasting:create_inmueble' username=user.username %}"
+                      id="inmuebleForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-info btn-large my-2">Crear inmueble</button>
+                    {% endbuttons %}
+                </form>
+            </div>
+            <div class="col-3">
+                <img class="img-fluid card-img border-white" src="{% static 'img/inmueble001.svg' %}" alt="inmueble icon">
+            </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

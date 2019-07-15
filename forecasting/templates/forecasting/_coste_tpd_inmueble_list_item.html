@@ -1,0 +1,29 @@
+{% load static %}
+
+
+<li class="media my-2">
+    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill05.png' %}" alt="coste file icon">
+    <div class="media-body">
+        <h5 class="mt-0 mb-1"><em><strong>Tipo de Tarifa: {{ costeinmuebletpd.tipo }}</strong></em></h5>
+        <h6 class="mt-0 mb-1"><strong>Precio: {{ costeinmuebletpd.coste|floatformat:2 }}</strong> €</h6>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
+                data-target="#verCosteTPDInmuebleModal{{ costeinmuebletpd.id }}">
+            Info
+        </button>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verCosteTPDInmuebleModal{{ costeinmuebletpd.id }}"
+     tabindex="-1" role="dialog"
+     aria-labelledby="verCosteTPDInmuebleLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% include "forecasting/_coste_tpd_inmueble_item.html" %}
+        </div>
+    </div>
+</div>
+{#</div>#}

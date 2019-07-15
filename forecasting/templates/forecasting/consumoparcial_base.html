@@ -2,12 +2,27 @@
 
 {% block content %}
 
-    <div class="jumbotron bg-light">
-        <div class="container">
-            <div class="page-header">
-                <h1 class="display-1 ">Consumos PARCIALES</h1>
-                <hr>
-                <p class="text-muted font-italic lead">Cosas relacionadas con consumos parciales</p>
+{#    <div class="jumbotron bg-light">#}
+{#        <div class="container">#}
+{#            <div class="page-header">#}
+{#                <h1 class="display-1 ">Consumos PARCIALES</h1>#}
+{#                <hr>#}
+{#                <p class="text-muted font-italic lead">Cosas relacionadas con consumos parciales</p>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+    <div class="container">
+        <div class="jumbotron bg-white">
+            <h1 class="display-4"><strong>Consumos parciales</strong></h1>
+            <hr class="bg-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="">Suba a la plataforma consumos adicionales para sus inmuebles</h5>
+                </div>
+                <div class="col-md-6">
+                    <h5 class=""><strong>{{ user.username }}</strong></h5>
+                </div>
             </div>
         </div>
     </div>

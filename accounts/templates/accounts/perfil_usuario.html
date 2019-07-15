@@ -1,11 +1,37 @@
 {% extends "base.html" %}
 
 {% load bootstrap4 %}
+{% load static %}
 
 
 {% block content %}
+
     <div class="container">
-        <p>Nombre de Usuario: {{ user.username }}</p>
-        <p>Correo electrónico: {{ user.email }}</p>
+
+        <p class="display-4 my-4">Información del Usuario:</p>
+
+        <div class="media">
+            <img class="align-self-start mr-4 " height="256" width="256" src="{% static 'img/user_icon.png' %}" alt="parcial icon">
+            <div class="media-body border-left border-info pl-4">
+                <h5 class="lead mt-4 mb-1">Nombre de Usuario:</h5>
+                <h5 class="lead mt-1 mb-4"><strong><em>{{ user.username }}</em></strong></h5>
+                <h5 class="lead mt-4 mb-1">E-mail:</h5>
+                <h5 class="lead mt-1 mb-4"><strong><em>{{ user.email }}</em></strong></h5>
+
+            </div>
+        </div>
+
+
+{#        <div class="card border-info mb-3">#}
+{#            <div class="card-header"><strong>Información del usuario</strong></div>#}
+{#            <div class="card-body text-info">#}
+{#                <h5 class="card-title">Nombre de Usuario:</h5>#}
+{#                <p class="card-text">{{ user.username }}</p>#}
+{#                <h5 class="card-title">Correo electrónico:</h5>#}
+{#                <p class="card-text">{{ user.email }}</p>#}
+{#            </div>#}
+{#        </div>#}
+
     </div>
+
 {% endblock %}

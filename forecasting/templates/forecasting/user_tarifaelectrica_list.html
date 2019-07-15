@@ -4,25 +4,67 @@
 
 {% block content_tarifaelectrica %}
 
-    <div class="mt-4">
-        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>
-        <h3 class="display-4 mb-5">Estas son las tarifas eléctricas que has creado hasta ahora:</h3>
+        <div class="mt-0 mb-2 pt-0 pb-3 px-4">
+        {% if tarifaelectrica_list.exists %}
+            <h3 class="mb-3">Listado de Personalizadas:</h3>
 
-        <div class="row">
-            <div class="col-9">
-                <ul class="list-unstyled row justify-content-between">
-                    {% for tarifaelectrica in tarifaelectrica_list %}
+            <div class="row">
+                <div class="col-9 border-right border-info">
+                    <ul class="list-unstyled row justify-content-start">
+                        {% for tarifaelectrica in tarifaelectrica_list %}
                         {% include "forecasting/_tarifaelectrica_list_item.html" %}
                     {% endfor %}
-                </ul>
+                    </ul>
+                </div>
+                <div class="col-3 my-3">
+                    <p class="text-justify lead">Crea una nueva tarifa personalizada y podrás ver su coste aplicado a cada uno de tus inmuebles.</p>
+                    <a class="btn btn-outline-info btn-block my-3"
+                       href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}"
+                       class="dropdown-item">Crear Personalizada</a>
+                </div>
             </div>
-            <div class="col-3 my-3">
-                <p class="text-justify lead">Crea una nueva tarifa personalizada y podrás ver su coste aplicado a cada uno de tus inmuebles.</p>
-                <a class="btn btn-outline-success btn-block"
-                   href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}"
-                   class="dropdown-item">Crear Tarifa Eléctrica</a>
+
+
+        {% else %}
+
+            <div class="row justify-content-center">
+                <h3 class="display-4 mb-5">Primero crea una tarifa personalizada</h3>
+                <div class="col-6 my-3">
+                    <p class="text-justify lead">Una vez que tengas tarifas personalizadas creadas se listarán aquí. Podrás ver el cálculo de su coste en cada Inmueble que hayas creado.</p>
+                    <a class="btn btn-outline-info btn-block"
+                       href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}"
+                       class="dropdown-item">Crear Personalizada</a>
+                </div>
             </div>
-        </div>
+
+        {% endif %}
+
+    </div>
+
+
+
+
+
+
+{#    <div class="mt-4">#}
+{#        <h2 class="display-3 font-italic font-weight-bold">{{ user.username }}</h2>#}
+{#        <h3 class="display-4 mb-5">Estas son las tarifas eléctricas que has creado hasta ahora:</h3>#}
+{##}
+{#        <div class="row">#}
+{#            <div class="col-9">#}
+{#                <ul class="list-unstyled row justify-content-between">#}
+{#                    {% for tarifaelectrica in tarifaelectrica_list %}#}
+{#                        {% include "forecasting/_tarifaelectrica_list_item.html" %}#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#            <div class="col-3 my-3">#}
+{#                <p class="text-justify lead">Crea una nueva tarifa personalizada y podrás ver su coste aplicado a cada uno de tus inmuebles.</p>#}
+{#                <a class="btn btn-outline-success btn-block"#}
+{#                   href="{% url 'forecasting:create_tarifaelectrica' username=user.username %}"#}
+{#                   class="dropdown-item">Crear Tarifa Eléctrica</a>#}
+{#            </div>#}
+{#        </div>#}
 
 
 {#        <ul class="list-unstyled row justify-content-between">#}

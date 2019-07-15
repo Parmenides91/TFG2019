@@ -1,17 +1,40 @@
 {% extends "base.html" %}
 
+{% load static %}
 {# at the terminal, run pip install django-bootstrap4 #}
 {% load bootstrap4 %}
 
+
+
 {% block content %}
-<div class="container">
-  <h1>Login</h1>
-  <form method="POST" class="form">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% buttons %}
-      <button type="submit" class="btn btn-primary">Login</button>
-    {% endbuttons %}
-  </form>
-</div>
+    <div class="container p-3">
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="marco-login col-md-4 border rounded center">
+                <div class="row justify-content-center my-3">
+                    <div class="col-6">
+                        <img class="img-fluid p-1" src="{% static 'img/USALseal.svg' %}" alt="">
+                    </div>
+
+                </div>
+                <h1 class="text-center">Inicio de Sesión</h1>
+                <hr>
+                <form method="POST" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-info btn-block mt-4 b-2">Login</button>
+                    {% endbuttons %}
+
+                    <p class="text-right my-0 py-0 font-italic"><small>Universidad de Salamanca</small></p>
+                </form>
+
+            </div>
+            <div class="col-md-4"></div>
+
+        </div>
+
+
+    </div>
 {% endblock %}

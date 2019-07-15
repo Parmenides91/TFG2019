@@ -1,14 +1,17 @@
 {% load static %}
 
 
-<li class="card border-success">
+<li class="card border-info">
     <img class="img-fluid card-img border-white" src="">
     <div class="card-body text-center">
-        <p>Predicción creada en: {{ prediccion.created_at }} </p>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#verPrediccionModal{{ prediccion.id }}">
-            Detalles
-        </button>
+{#        <p>Predicción creada en: {{ prediccion.created_at }} </p>#}
+        <p class="">Fecha de creación:</p>
+        <p class="lead"><em><strong>{{ prediccion.created_at }}</strong></em></p>
+{#        <!-- Button trigger modal -->#}
+{#        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#verPrediccionModal{{ prediccion.id }}">#}
+{#            Detalles#}
+{#        </button>#}
+        <a class="btn btn-info btn-sm btn-block" href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}">Ver en detalle</a>
     </div>
 </li>
 

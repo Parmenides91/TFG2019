@@ -6,15 +6,15 @@
 {% load humanize %}
 
 <div class="container">
-{#    <p class="display-1">{{ inmueble.nombre }}</p>#}
-{#    <hr>#}
-{#    <p class="display-3">{{ inmueble.descripcion }}</p>#}
-{#    <hr>#}
-{#    <p class="h5">Consumo Inmueble: {{ inmueble.filename1 }}</p>#}
-{#    <hr>#}
-{#    <p class="h5">Consumo Inmueble Parcial: {{ inmueble.filename2 }}</p>#}
-{#    <hr>#}
-
+    {#    <p class="display-1">{{ inmueble.nombre }}</p>#}
+    {#    <hr>#}
+    {#    <p class="display-3">{{ inmueble.descripcion }}</p>#}
+    {#    <hr>#}
+    {#    <p class="h5">Consumo Inmueble: {{ inmueble.filename1 }}</p>#}
+    {#    <hr>#}
+    {#    <p class="h5">Consumo Inmueble Parcial: {{ inmueble.filename2 }}</p>#}
+    {#    <hr>#}
+    <!--
     <div class="row mb-4">
         <div class="col-12">
             <p class="h2">{{ inmueble.nombre }}</p>
@@ -72,40 +72,39 @@
             {% endif %}
         </div>
     </div>
+-->
 
 
-
-
-
-
-{#Segundo Intento#}
-<div class="row mb-4">
+    {#Segundo Intento#}
+    <div class="row mb-4">
         <div class="col-12">
             <p class="h2">{{ inmueble.nombre }}</p>
-            <hr>
         </div>
-        <div class="col-8 bg-primary">
+        <div class="col-8">
+            {#        <div class="col-8 bg-primary">#}
             <p class="lead">{{ inmueble.descripcion }}</p>
-{#            <hr>#}
-{#            <p class="text-left text-muted my-0"><strong>Información:</strong></p>#}
-{#            {% if inmueble.modelo_actualizado %}#}
-{#                <p class="text-left text-muted">Dispone de una predicción basada en este Inmueble.</p>#}
-{#            {% else %}#}
-{#                <p class="text-left text-muted">Proximamente se creará una predicción de este consumo.</p>#}
-{#            {% endif %}#}
+            {#            <hr>#}
+            {#            <p class="text-left text-muted my-0"><strong>Información:</strong></p>#}
+            {#            {% if inmueble.modelo_actualizado %}#}
+            {#                <p class="text-left text-muted">Dispone de una predicción basada en este Inmueble.</p>#}
+            {#            {% else %}#}
+            {#                <p class="text-left text-muted">Proximamente se creará una predicción de este consumo.</p>#}
+            {#            {% endif %}#}
         </div>
-        <div class="col-2 bg-success">
+        {#        <div class="col-2 bg-success">#}
+        <div class="col-2 border-left border-info">
             <p class="text-muted text-right my-0">Creado: <em>{{ inmueble.created_at|naturalday }}</em></p>
             <p class="text-muted text-right my-0">Modificado: <em>{{ inmueble.modified_at|naturalday }}</em></p>
             <p class="text-muted text-right my-0">Usuario: <em>{{ inmueble.user.username }}</em></p>
         </div>
-        <div class="col-2 align-content-end bg-dark">
+        <div class="col-2 align-content-end">
+            {#        <div class="col-2 align-content-end bg-dark">#}
             {% if user.is_authenticated %}
-{#                <p class="text-right my-0"><strong>Acciones:</strong></p>#}
-                <a class="btn btn-primary btn-sm btn-block my-1"
+                {#                <p class="text-right my-0"><strong>Acciones:</strong></p>#}
+                <a class="btn btn-info btn-sm btn-block my-1"
                    href="{% url 'forecasting:create_tarifamercadoregulado' username=user.username %}"
                    class="dropdown-item">Subir Parcial</a>
-                <a class="btn btn-primary btn-sm btn-block my-1"
+                <a class="btn btn-info btn-sm btn-block my-1"
                    href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar
                     inmueble</a>
                 <a class="btn btn-secondary btn-sm btn-block my-1"
@@ -116,251 +115,428 @@
                     inmueble</a>
             {% endif %}
         </div>
-        <div class="col-8 bg-success">
-            <p class="text-left text-muted my-0"><strong>Datos del Inmueble:</strong></p>
+        {#        <div class="col-8">#}
+        {#            <p class="text-left text-muted my-0"><strong>Datos del Inmueble:</strong></p>#}
+        {#            {% if inmueble.infoinmueble_set.exists %}#}
+        {#                {% for infoInmueble in inmueble.infoinmueble_set.all %}#}
+        {#                    {% include "forecasting/_datos_inmueble.html" %}#}
+        {#                {% endfor %}#}
+        {#            {% endif %}#}
+        {#        </div>#}
+        {#        <div class="col-4">#}
+        {#            <p class="text-right text-muted my-0"><strong>Información:</strong></p>#}
+        {#            {% if inmueble.modelo_actualizado %}#}
+        {#                <p class="text-right text-muted">Dispone de una predicción basada en este Inmueble.</p>#}
+        {#            {% else %}#}
+        {#                <p class="text-right text-muted">Proximamente se creará una predicción de este consumo.</p>#}
+        {#            {% endif %}#}
+        {#        </div>#}
+        <div class="col-12">
+            <p class="text-left text-muted my-3"><strong>Datos del Inmueble:</strong></p>
             {% if inmueble.infoinmueble_set.exists %}
                 {% for infoInmueble in inmueble.infoinmueble_set.all %}
                     {% include "forecasting/_datos_inmueble.html" %}
                 {% endfor %}
             {% endif %}
         </div>
-        <div class="col-4 bg-danger">
-            <p class="text-right text-muted my-0"><strong>Información:</strong></p>
-            {% if inmueble.modelo_actualizado %}
-                <p class="text-right text-muted">Dispone de una predicción basada en este Inmueble.</p>
-            {% else %}
-                <p class="text-right text-muted">Proximamente se creará una predicción de este consumo.</p>
-            {% endif %}
-        </div>
+
     </div>
 
 
-
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <!-- Gráfica horaria del consumo del Inmueble -->
-{#    <div class="col-md-12">{{ inmueble.representar_inmueble.grafica_inmueble|safe }}</div>#}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    {#    <div class="col-md-12">{{ inmueble.representar_inmueble.grafica_inmueble|safe }}</div>#}
+    <div class="row">
+        <div class="col-12">
+{#            <p class="text-left text-muted my-3"><strong>Representación Gráfica del Inmueble:</strong></p>#}
+            <p class="display-4">Representación Gráfica del Inmueble:</p>
+        </div>
+        <div class="col-12">
+            {{ inmueble.representar_inmueble.graficas_inmueble.horas|safe }}
+        </div>
+    </div>
 
     <!-- Gráficas del consumo del Inmueble con distinta temporalidad -->
-    <nav class="">
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link active" id="nav-graf-horaria-tab" data-toggle="tab" href="#nav-graf-horaria"
-               role="tab" aria-controls="nav-graf-horaria" aria-selected="true">Horaria</a>
-            <a class="nav-item nav-link" id="nav-graf-diaria-tab" data-toggle="tab" href="#nav-graf-diaria" role="tab"
-               aria-controls="nav-graf-diaria" aria-selected="false">Diaria</a>
-            <a class="nav-item nav-link" id="nav-graf-semanal-tab" data-toggle="tab" href="#nav-graf-semanal" role="tab"
-               aria-controls="nav-graf-semanal" aria-selected="false">Semanal</a>
-            <a class="nav-item nav-link" id="nav-graf-mensual-tab" data-toggle="tab" href="#nav-graf-mensual" role="tab"
-               aria-controls="nav-graf-mensual" aria-selected="false">Mensual</a>
-        </div>
-    </nav>
-    <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-graf-horaria" role="tabpanel"
-             aria-labelledby="nav-graf-horaria-tab">
-            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.horas|safe }}</div>
-        </div>
-        <div class="tab-pane fade" id="nav-graf-diaria" role="tabpanel" aria-labelledby="nav-graf-diaria-tab">
-            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.dias|safe }}</div>
-        </div>
-        <div class="tab-pane fade" id="nav-graf-semanal" role="tabpanel" aria-labelledby="nav-graf-semanal-tab">
-            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.semanas|safe }}</div>
-        </div>
-        <div class="tab-pane fade" id="nav-graf-mensual" role="tabpanel" aria-labelledby="nav-graf-mensual-tab">
-            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.meses|safe }}</div>
-        </div>
-    </div>
+    {#    <nav class="">#}
+    {#        <div class="nav nav-tabs" id="nav-tab" role="tablist">#}
+    {#            <a class="nav-item nav-link active" id="nav-graf-horaria-tab" data-toggle="tab" href="#nav-graf-horaria"#}
+    {#               role="tab" aria-controls="nav-graf-horaria" aria-selected="true">Horaria</a>#}
+    {#            <a class="nav-item nav-link" id="nav-graf-diaria-tab" data-toggle="tab" href="#nav-graf-diaria" role="tab"#}
+    {#               aria-controls="nav-graf-diaria" aria-selected="false">Diaria</a>#}
+    {#            <a class="nav-item nav-link" id="nav-graf-semanal-tab" data-toggle="tab" href="#nav-graf-semanal" role="tab"#}
+    {#               aria-controls="nav-graf-semanal" aria-selected="false">Semanal</a>#}
+    {#            <a class="nav-item nav-link" id="nav-graf-mensual-tab" data-toggle="tab" href="#nav-graf-mensual" role="tab"#}
+    {#               aria-controls="nav-graf-mensual" aria-selected="false">Mensual</a>#}
+    {#        </div>#}
+    {#    </nav>#}
+    {#    <div class="tab-content" id="nav-tabContent">#}
+    {#        <div class="tab-pane fade show active" id="nav-graf-horaria" role="tabpanel"#}
+    {#             aria-labelledby="nav-graf-horaria-tab">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.horas|safe }}</div>#}
+    {#        </div>#}
+    {#        <div class="tab-pane fade" id="nav-graf-diaria" role="tabpanel" aria-labelledby="nav-graf-diaria-tab">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.dias|safe }}</div>#}
+    {#        </div>#}
+    {#        <div class="tab-pane fade" id="nav-graf-semanal" role="tabpanel" aria-labelledby="nav-graf-semanal-tab">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.semanas|safe }}</div>#}
+    {#        </div>#}
+    {#        <div class="tab-pane fade" id="nav-graf-mensual" role="tabpanel" aria-labelledby="nav-graf-mensual-tab">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.meses|safe }}</div>#}
+    {#        </div>#}
+    {#    </div>#}
+
+
+    <!-- Intento con JavaScript -->
+    {#    <div class="container">#}
+    {#        <div id="graf-consumo-horario">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.horas|safe }}</div>#}
+    {#        </div>#}
+    {#        <div id="graf-consumo-diario" style="display:none;">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.dias|safe }}</div>#}
+    {#        </div>#}
+    {#        <div id="graf-consumo-semanal" style="display:none;">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.semanas|safe }}</div>#}
+    {#        </div>#}
+    {#        <div id="graf-consumo-mensual" style="display:none; width: 500px; height: 250px">#}
+    {#            <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.meses|safe }}</div>#}
+    {#        </div>#}
+    {#        <button onclick="mostrarConsumoHorario()">Horario</button>#}
+    {#        <button onclick="mostrarConsumoDiario()">Diario</button>#}
+    {#        <button onclick="mostrarConsumoSemanal()">Semanal</button>#}
+    {#        <button onclick="mostrarConsumoMensual()">Mensual</button>#}
+    {#    </div>#}
+
+    <!-- Intento con acordeón -->
+    {#    <div id="accordion">#}
+    {#        <div class="card">#}
+    {#            <div class="card-header" id="headingOne">#}
+    {#                <h5 class="mb-0">#}
+    {#                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"#}
+    {#                            aria-controls="collapseOne">#}
+    {#                        Collapsible Group Item #1#}
+    {#                    </button>#}
+    {#                </h5>#}
+    {#            </div>#}
+    {##}
+    {#            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">#}
+    {#                <div class="card-body">#}
+    {#                    <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.dias|safe }}</div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#        <div class="card">#}
+    {#            <div class="card-header" id="headingTwo">#}
+    {#                <h5 class="mb-0">#}
+    {#                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"#}
+    {#                            aria-expanded="false" aria-controls="collapseTwo">#}
+    {#                        Collapsible Group Item #2#}
+    {#                    </button>#}
+    {#                </h5>#}
+    {#            </div>#}
+    {#            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">#}
+    {#                <div class="card-body">#}
+    {#                    <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.semanas|safe }}</div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#        <div class="card">#}
+    {#            <div class="card-header" id="headingThree">#}
+    {#                <h5 class="mb-0">#}
+    {#                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"#}
+    {#                            aria-expanded="false" aria-controls="collapseThree">#}
+    {#                        Collapsible Group Item #3#}
+    {#                    </button>#}
+    {#                </h5>#}
+    {#            </div>#}
+    {#            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">#}
+    {#                <div class="card-body">#}
+    {#                    <div class="col-md-12">{{ inmueble.representar_inmueble.graficas_inmueble.meses|safe }}</div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
 
 
     <!-- Análisis de los costes del Inmueble para las tarifas que hay -->
-    <ul class="row align-items-start list-unstyled">
-        <!-- Primera Columna: Tarifas Personalizadas -->
-        <li class="col-4 justify-content-around">
-            <ul class="row list-unstyled justify-content-center">
-                <!-- Título -->
-                <li class="media my-2 border-bottom border-dark">
-					<p class="h4">Tarifas Personalizadas:</p>
-				</li>
-                <!-- items -->
-                {% if inmueble.costeinmueblete_set.exists %}
-                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}
-                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted text-center">Crea alguna tarifa para mostrar aquí su coste.</p>
-                {% endif %}
-            </ul>
-        </li>
-        <!-- Segunda Columna: Mercado Regulado -->
-        <li class="col-4 justify-content-around">
-            <ul class="row list-unstyled justify-content-center">
-                <!-- Título -->
-                <li class="media my-2 border-bottom border-dark">
-					<p class="h4">Mercado Regulado:</p>
-				</li>
-                <!-- items -->
-                {% if inmueble.costeinmueblemr_set.exists %}
-                    {% for costeinmueblemr in inmueble.costeinmueblemr_set.all %}
-                        {% include "forecasting/_costeinmueble_tarifamercadoregulado_list_item.html" %}
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Regulado.</p>
-                {% endif %}
-            </ul>
-        </li>
-        <!-- Tercera Columna: Mercado Libre -->
-        <li class="col-4 justify-content-around">
-            <ul class="row list-unstyled justify-content-center">
-                <!-- Título -->
-                <li class="media my-2 border-bottom border-dark">
-					<p class="h4">Mercado Libre:</p>
-				</li>
-                <!-- items -->
-                {% if inmueble.costeinmuebleml_set.exists %}
-                    {% for costeinmuebleml in inmueble.costeinmuebleml_set.all %}
-                        {% include "forecasting/_costeinmueble_tarifamercadolibre_list_item.html" %}
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Libre.</p>
-                {% endif %}
-            </ul>
-        </li>
-    </ul>
+    {#    <ul class="row align-items-start list-unstyled">#}
+    {#        <!-- Primera Columna: Tarifas Personalizadas -->#}
+    {#        <li class="col-4 justify-content-around">#}
+    {#            <ul class="row list-unstyled justify-content-center">#}
+    {#                <!-- Título -->#}
+    {#                <li class="media my-2 border-bottom border-dark">#}
+    {#                    <p class="h4">Tarifas Personalizadas:</p>#}
+    {#                </li>#}
+    {#                <!-- items -->#}
+    {#                {% if inmueble.costeinmueblete_set.exists %}#}
+    {#                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
+    {#                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="text-muted text-center">Crea alguna tarifa para mostrar aquí su coste.</p>#}
+    {#                {% endif %}#}
+    {#            </ul>#}
+    {#        </li>#}
+    {#        <!-- Segunda Columna: Mercado Regulado -->#}
+    {#        <li class="col-4 justify-content-around">#}
+    {#            <ul class="row list-unstyled justify-content-center">#}
+    {#                <!-- Título -->#}
+    {#                <li class="media my-2 border-bottom border-dark">#}
+    {#                    <p class="h4">Mercado Regulado:</p>#}
+    {#                </li>#}
+    {#                <!-- items -->#}
+    {#                {% if inmueble.costeinmueblemr_set.exists %}#}
+    {#                    {% for costeinmueblemr in inmueble.costeinmueblemr_set.all %}#}
+    {#                        {% include "forecasting/_costeinmueble_tarifamercadoregulado_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Regulado.</p>#}
+    {#                {% endif %}#}
+    {#                <!-- Tarifa TPD -->#}
+    {#                {% if inmueble.costeinmuebletpd_set.exists %}#}
+    {#                    {% for costeinmuebletpd in inmueble.costeinmuebletpd_set.all %}#}
+    {#                        {% include "forecasting/_coste_tpd_inmueble_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la tarifa TPD.</p>#}
+    {#                {% endif %}#}
+    {#                <!-- Tarifa EDP -->#}
+    {#                {% if inmueble.costeinmuebleedp_set.exists %}#}
+    {#                    {% for costeinmuebleedp in inmueble.costeinmuebleedp_set.all %}#}
+    {#                        {% include "forecasting/_coste_edp_inmueble_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la tarifa EDP.</p>#}
+    {#                {% endif %}#}
+    {#                <!-- Tarifa VE -->#}
+    {#                {% if inmueble.costeinmuebleve_set.exists %}#}
+    {#                    {% for costeinmuebleve in inmueble.costeinmuebleve_set.all %}#}
+    {#                        {% include "forecasting/_coste_ve_inmueble_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la tarifa VE.</p>#}
+    {#                {% endif %}#}
+    {#            </ul>#}
+    {#        </li>#}
+    {#        <!-- Tercera Columna: Mercado Libre -->#}
+    {#        <li class="col-4 justify-content-around">#}
+    {#            <ul class="row list-unstyled justify-content-center">#}
+    {#                <!-- Título -->#}
+    {#                <li class="media my-2 border-bottom border-dark">#}
+    {#                    <p class="h4">Mercado Libre:</p>#}
+    {#                </li>#}
+    {#                <!-- items -->#}
+    {#                {% if inmueble.costeinmuebleml_set.exists %}#}
+    {#                    {% for costeinmuebleml in inmueble.costeinmuebleml_set.all %}#}
+    {#                        {% include "forecasting/_costeinmueble_tarifamercadolibre_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado Libre.</p>#}
+    {#                {% endif %}#}
+    {#            </ul>#}
+    {#        </li>#}
+    {#    </ul>#}
 
 
+    <!-- Dos columnas listando tarifas del Mercado Libre y Personalizadas -->
+    <p class="display-4">Principales Tarifas:</p>
+    <div class="row align-items-start my-3">
+        <!-- Primera Columna: Mercado Libre -->
+        <div class="row col-6">
+            <div class="col-12 text-center">
+                <p class="h4 my-2 pb-4 border-bottom border-info">Mercado Libre:</p>
+            </div>
+            <div class="col-12">
+                <ul class="row list-unstyled justify-content-around">
+                    <!-- items -->
+                    {% if inmueble.costeinmuebleml_set.exists %}
+                        {% for costeinmuebleml in inmueble.costeinmuebleml_set.all %}
+                            {% include "forecasting/_coste_ml_inmueble_list_item.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Próximamente aparecerá aquí el coste en el Mercado
+                            Libre.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <!-- Segunda Columna: Tarifas Personalizadas -->
+        <div class="col-6">
+            <div class="col-12 text-center">
+                <p class="h4 my-2 pb-4 border-bottom border-info">Tarifas Personalizadas:</p>
+            </div>
+            <div class="col-12">
+                <ul class="row list-unstyled justify-content-around">
+                    <!-- items -->
+                    {% if inmueble.costeinmueblete_set.exists %}
+                        {% for costeinmueblete in inmueble.costeinmueblete_set.all %}
+                            {% include "forecasting/_coste_te_inmueble_list_item.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Crea alguna tarifa para mostrar aquí su coste.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
 
 
+    <div class="my-3">
+        {#    <p class="h2 text-center">Mercado Regulado:</p>#}
+        <p class="display-4">Costes en el Mercado Regulado:</p>
+        <!-- Gráfica Tarifa TPD -->
+        {% if inmueble.costeinmuebletpd_set.exists %}
+            {% for costeinmuebletpd in inmueble.costeinmuebletpd_set.all %}
+                {% include "forecasting/_coste_tpd_inmueble_graf_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la tarifa TPD.</p>
+        {% endif %}
+        <!-- Gráfica Tarifa EDP -->
+        {% if inmueble.costeinmuebleedp_set.exists %}
+            {% for costeinmuebleedp in inmueble.costeinmuebleedp_set.all %}
+                {% include "forecasting/_coste_edp_inmueble_graf_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la tarifa EDP.</p>
+        {% endif %}
+        <!-- Gráfica Tarifa VE -->
+        {% if inmueble.costeinmuebleve_set.exists %}
+            {% for costeinmuebleve in inmueble.costeinmuebleve_set.all %}
+                {% include "forecasting/_coste_ve_inmueble_graf_item.html" %}
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">Próximamente aparecerá aquí el coste para la tarifa VE.</p>
+        {% endif %}
+    </div>
 
 
+    {#    {% if user.is_authenticated %}#}
+    {#        <a class="btn btn-primary"#}
+    {#           href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar#}
+    {#            inmueble</a>#}
+    {#        <a class="btn btn-primary"#}
+    {#           href="{% url 'forecasting:delete_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Eliminar#}
+    {#            inmueble</a>#}
+    {#        <a class="btn btn-secondary"#}
+    {#           href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al listado</a>#}
+    {#    {% endif %}#}
 
-{#    {% if user.is_authenticated %}#}
-{#        <a class="btn btn-primary"#}
-{#           href="{% url 'forecasting:edit_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Modificar#}
-{#            inmueble</a>#}
-{#        <a class="btn btn-primary"#}
-{#           href="{% url 'forecasting:delete_inmueble' username=inmueble.user.username pk=inmueble.pk %}">Eliminar#}
-{#            inmueble</a>#}
-{#        <a class="btn btn-secondary"#}
-{#           href="{% url 'forecasting:for_user_inmuebles' username=inmueble.user.username %}">Volver al listado</a>#}
-{#    {% endif %}#}
-
-{#    <p>Hello</p>#}
-{#    <!-- Listado de las predicciones que existen para este inmueble -->#}
-{#    <p class="display-3">Predicciones sobre este inmueble:</p>#}
-{#    <hr>#}
-{#    {% for modeloconsumo in inmueble.modeloconsumo_set.all %}#}
-{#        <p>Dentro del primer for</p>#}
-{#        {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}#}
-{#            <li class="media col-4 mt-2 mb-2">#}
-{#                <img class="mr-3" src="" alt="CSV file icon">#}
-{#                <div class="media-body">#}
-{#                    <h5 class="mt-0 mb-1">{{ prediccion.titulo }}</h5>#}
-{#                    <h6 class="mt-0 mb-1 text-muted">Creado: {{ prediccion.created_at }}</h6>#}
-{#                    <h6 class="mt-0 mb-1 text-muted">Fichero: {{ prediccion.fichero_prediccion_consumo_string }}</h6>#}
-{#                    <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar predicción</a>#}
-{#                </div>#}
-{#            </li>#}
-{#        {% endfor %}#}
-{#    {% endfor %}#}
-{#    <p>Hola</p>#}
+    {#    <p>Hello</p>#}
+    {#    <!-- Listado de las predicciones que existen para este inmueble -->#}
+    {#    <p class="display-3">Predicciones sobre este inmueble:</p>#}
+    {#    <hr>#}
+    {#    {% for modeloconsumo in inmueble.modeloconsumo_set.all %}#}
+    {#        <p>Dentro del primer for</p>#}
+    {#        {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}#}
+    {#            <li class="media col-4 mt-2 mb-2">#}
+    {#                <img class="mr-3" src="" alt="CSV file icon">#}
+    {#                <div class="media-body">#}
+    {#                    <h5 class="mt-0 mb-1">{{ prediccion.titulo }}</h5>#}
+    {#                    <h6 class="mt-0 mb-1 text-muted">Creado: {{ prediccion.created_at }}</h6>#}
+    {#                    <h6 class="mt-0 mb-1 text-muted">Fichero: {{ prediccion.fichero_prediccion_consumo_string }}</h6>#}
+    {#                    <a href="{% url 'forecasting:single_prediccionconsumo' pk=prediccion.pk %}" class="card-link">Consultar predicción</a>#}
+    {#                </div>#}
+    {#            </li>#}
+    {#        {% endfor %}#}
+    {#    {% endfor %}#}
+    {#    <p>Hola</p>#}
 
 
     <!-- Listado de las predicciones que existen para este inmueble. Versión de ventanas modales -->
-{#    <p class="display-3">Listado de las predicciones que existen para este inmueble. Versión de ventanas modales</p>#}
-{#    <p class="display-3">Predicciones disponibles sobre este inmueble:</p>#}
-    <p class="display-3">Predicciones asociadas al inmueble:</p>
+    {#    <p class="display-3">Listado de las predicciones que existen para este inmueble. Versión de ventanas modales</p>#}
+    {#    <p class="display-3">Predicciones disponibles sobre este inmueble:</p>#}
+    <p class="display-4">Predicciones asociadas al inmueble:</p>
     {% for modeloconsumo in inmueble.modeloconsumo_set.all %}
-        <ul class="list-unstyled row justify-content-between">
-        {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}
-            {% include "forecasting/_prediccion_inmueble_list_item.html" %}
-        {% endfor %}
+{#        <ul class="list-unstyled row justify-content-between">#}
+        <ul class="list-unstyled row justify-content-around">
+            {% for prediccion in modeloconsumo.prediccionconsumo_set.all %}
+                {% include "forecasting/_prediccion_inmueble_list_item.html" %}
+            {% endfor %}
         </ul>
     {% endfor %}
 
 
-{#    <!-- Listado de los costes del consumo aplicando las tarifas creadas por el usuario -->#}
-{#    <p class="display-3">Costes según las tarifas del usuario:</p>#}
-{#    <p>Primero</p>#}
-{#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario }}</p>#}
-{#    <p>Segundo</p>#}
-{#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0 }}</p>#}
-{#    <p>Tercero</p>#}
-{#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>#}
-{#    <p>Cuarto</p>#}
-{#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>#}
+    {#    <!-- Listado de los costes del consumo aplicando las tarifas creadas por el usuario -->#}
+    {#    <p class="display-3">Costes según las tarifas del usuario:</p>#}
+    {#    <p>Primero</p>#}
+    {#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario }}</p>#}
+    {#    <p>Segundo</p>#}
+    {#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0 }}</p>#}
+    {#    <p>Tercero</p>#}
+    {#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>#}
+    {#    <p>Cuarto</p>#}
+    {#    <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>#}
 
 
-{#    <!-- PRUEBA, listado -->#}
-{#    <p>Tarifa 1:</p>#}
-{#    {% if inmueble.unificar_consumos.costes_tarifas_usuario.0 %}#}
-{#        <p>Nombre de la Tarifa Eléctrica: {{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>#}
-{#        <p>Coste según Tarifa: {{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>#}
-{#    {% endif %}#}
-{##}
-{#    <p>Tarifa 2:</p>#}
-{#    {% if inmueble.unificar_consumos.costes_tarifas_usuario.1 %}#}
-{#        <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>#}
-{#        <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>#}
-{#    {% endif %}#}
+    {#    <!-- PRUEBA, listado -->#}
+    {#    <p>Tarifa 1:</p>#}
+    {#    {% if inmueble.unificar_consumos.costes_tarifas_usuario.0 %}#}
+    {#        <p>Nombre de la Tarifa Eléctrica: {{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>#}
+    {#        <p>Coste según Tarifa: {{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>#}
+    {#    {% endif %}#}
+    {##}
+    {#    <p>Tarifa 2:</p>#}
+    {#    {% if inmueble.unificar_consumos.costes_tarifas_usuario.1 %}#}
+    {#        <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Tarifa }}</p>#}
+    {#        <p>{{ inmueble.unificar_consumos.costes_tarifas_usuario.0.Coste }}</p>#}
+    {#    {% endif %}#}
 
 
-{#    <!-- Listado de los Costes de un Inmueble a  partir de una Tarifa Eléctrica -->#}
-{#    <p>Listado de Costes:</p>#}
-{#    <ul class="list-unstyled row justify-content-between">#}
-{#    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
-{#        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
-{#    {% endfor %}#}
-{#    </ul>#}
+    {#    <!-- Listado de los Costes de un Inmueble a  partir de una Tarifa Eléctrica -->#}
+    {#    <p>Listado de Costes:</p>#}
+    {#    <ul class="list-unstyled row justify-content-between">#}
+    {#    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
+    {#        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
+    {#    {% endfor %}#}
+    {#    </ul>#}
 
 
-{#    <!-- Análisis de los costes del Inmueble para las tarifas que hay -->#}
-{#    <ul class="row align-items-start list-unstyled">#}
-{##}
-{#        <!-- Primera Columna: Tarifas Personalizadas -->#}
-{#        <li class="col-4 justify-content-around bg-danger">#}
-{#            <ul class="row list-unstyled justify-content-center">#}
-{#                <!-- Título -->#}
-{#                <li class="media my-2 border-bottom border-dark">#}
-{#					<p class="h4">Tarifas Personalizadas:</p>#}
-{#				</li>#}
-{#                <!-- items -->#}
-{#                {% if inmueble.costeinmueblete_set.exists %}#}
-{#                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
-{#                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
-{#                    {% endfor %}#}
-{#                {% else %}#}
-{#                    <p class="h4 text-muted">Crea alguna tarifa para mostrar aquí su coste.</p>#}
-{#                {% endif %}#}
-{#            </ul>#}
-{#        </li>#}
-{##}
-{#        <!-- Segunda Columna: Mercado Regulado -->#}
-{#        <li class="col-4 justify-content-around bg-warning">#}
-{#            <ul class="row list-unstyled justify-content-center">#}
-{#                <!-- Título -->#}
-{#                <li class="media my-2 border-bottom border-dark">#}
-{#					<p class="h4">Mercado Regulado:</p>#}
-{#				</li>#}
-{#                <!-- items -->#}
-{##}
-{#            </ul>#}
-{#        </li>#}
-{##}
-{#        <!-- Tercera Columna: Mercado Libre -->#}
-{#        <li class="col-4 justify-content-around bg-success">#}
-{#            <ul class="row list-unstyled justify-content-center">#}
-{#                <!-- Título -->#}
-{#                <li class="media my-2 border-bottom border-dark">#}
-{#					<p class="h4">Mercado Libre:</p>#}
-{#				</li>#}
-{#                <!-- items -->#}
-{##}
-{#            </ul>#}
-{#        </li>#}
-{#    #}
-{#    </ul>#}
-
-
-
-
+    {#    <!-- Análisis de los costes del Inmueble para las tarifas que hay -->#}
+    {#    <ul class="row align-items-start list-unstyled">#}
+    {##}
+    {#        <!-- Primera Columna: Tarifas Personalizadas -->#}
+    {#        <li class="col-4 justify-content-around bg-danger">#}
+    {#            <ul class="row list-unstyled justify-content-center">#}
+    {#                <!-- Título -->#}
+    {#                <li class="media my-2 border-bottom border-dark">#}
+    {#					<p class="h4">Tarifas Personalizadas:</p>#}
+    {#				</li>#}
+    {#                <!-- items -->#}
+    {#                {% if inmueble.costeinmueblete_set.exists %}#}
+    {#                    {% for costeinmueblete in inmueble.costeinmueblete_set.all %}#}
+    {#                        {% include "forecasting/_costeinmueble_tarifaelectrica_list_item.html" %}#}
+    {#                    {% endfor %}#}
+    {#                {% else %}#}
+    {#                    <p class="h4 text-muted">Crea alguna tarifa para mostrar aquí su coste.</p>#}
+    {#                {% endif %}#}
+    {#            </ul>#}
+    {#        </li>#}
+    {##}
+    {#        <!-- Segunda Columna: Mercado Regulado -->#}
+    {#        <li class="col-4 justify-content-around bg-warning">#}
+    {#            <ul class="row list-unstyled justify-content-center">#}
+    {#                <!-- Título -->#}
+    {#                <li class="media my-2 border-bottom border-dark">#}
+    {#					<p class="h4">Mercado Regulado:</p>#}
+    {#				</li>#}
+    {#                <!-- items -->#}
+    {##}
+    {#            </ul>#}
+    {#        </li>#}
+    {##}
+    {#        <!-- Tercera Columna: Mercado Libre -->#}
+    {#        <li class="col-4 justify-content-around bg-success">#}
+    {#            <ul class="row list-unstyled justify-content-center">#}
+    {#                <!-- Título -->#}
+    {#                <li class="media my-2 border-bottom border-dark">#}
+    {#					<p class="h4">Mercado Libre:</p>#}
+    {#				</li>#}
+    {#                <!-- items -->#}
+    {##}
+    {#            </ul>#}
+    {#        </li>#}
+    {#    #}
+    {#    </ul>#}
 
 
 </div>

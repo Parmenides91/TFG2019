@@ -1,13 +1,28 @@
 {% load static %}
 
 
-<li class="card col-sm-3 mx-3 my-3 border-white">
-    <img class="img-fluid card-img border-white" src="{% static 'icon/tarifa02.png' %}" alt="tarifaelectrica icon">
+<li class="card col-sm-3 mx-3 my-3 border-info rounded pt-3">
+    <a href="{% url 'forecasting:single_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}" style="text-decoration:none;">
+        <img class=" img-fluid card-img border-white px-2 py-2" src="{% static 'icon/tarifa02.png' %}" alt="tarifaelectrica icon">
+    </a>
+    <hr>
     <div class="card-body text-center">
         <a href="{% url 'forecasting:single_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}"
-           class="h5 font-weight-bold">{{ tarifaelectrica.nombre }}</a>
+           class="h5 font-weight-bold text-secondary">{{ tarifaelectrica.nombre }}</a>
+        {#            <p class="h5 font-weight-bold text-secondary">{{ inmueble.nombre }}</p>#}
     </div>
+
 </li>
+
+
+
+{#<li class="card col-sm-3 mx-3 my-3 border-white">#}
+{#    <img class="img-fluid card-img border-white" src="{% static 'icon/tarifa02.png' %}" alt="tarifaelectrica icon">#}
+{#    <div class="card-body text-center">#}
+{#        <a href="{% url 'forecasting:single_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}"#}
+{#           class="h5 font-weight-bold">{{ tarifaelectrica.nombre }}</a>#}
+{#    </div>#}
+{#</li>#}
 
 
 {#<li class="card col-sm-3 mx-3 my-3 border-success">#}

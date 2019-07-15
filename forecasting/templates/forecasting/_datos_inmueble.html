@@ -1,35 +1,80 @@
+<div class="row justify-content-between">
 
-<div class="row col-12 justify-content-around">
-    <div class="col-3">
-        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.consumo_max|floatformat:2 }} kW/h</strong></p>
-        <p class="h6 text-center my-0">Consumo máx</p>
-        <p class="text-center text-muted"><em>{{ infoInmueble.consumo_max_fecha }}</em></p>
+    <div class="card-deck">
+        <div class="card card-body col-2 border-info rounded">
+            <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30">
+                <strong>{{ infoInmueble.consumo_max|floatformat:2 }} kW/h</strong></p>
+            <p class="h6 text-center my-0">Consumo máx</p>
+            <p class="text-center text-muted"><em>{{ infoInmueble.consumo_max_fecha }}</em></p>
+        </div>
+
+
+        <div class="card card-body col-2 border-info rounded">
+            <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30">
+                <strong>{{ infoInmueble.consumo_medio|floatformat:2 }} kW/h</strong></p>
+            <p class="h6 text-center my-0">Consumo medio</p>
+        </div>
+
+
+        <div class="card card-body col-2 border-info rounded">
+            <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30">
+                <strong>{{ infoInmueble.consumo_min|floatformat:2 }} kW/h</strong></p>
+            <p class="h6 text-center my-0">Consumo mín</p>
+            <p class="text-center text-muted"><em>{{ infoInmueble.consumo_min_fecha }}</em></p>
+        </div>
+
+
+        <div class="card card-body col-2 border-info rounded">
+            <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30">
+                <strong>{{ infoInmueble.semana_max_consumo_valor|floatformat:2 }} kW</strong></p>
+            <p class="h6 text-center my-0">Semana mayor consumo</p>
+            <p class="text-center text-muted"><em>{{ infoInmueble.semana_max_consumo_fecha }}</em></p>
+        </div>
+
+
+        <div class="card card-body col-2 border-info rounded">
+            <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30">
+                <strong>{{ infoInmueble.mes_max_consumo_valor|floatformat:2 }} kW</strong></p>
+            <p class="h6 text-center my-0">Mes mayor consumo</p>
+            <p class="text-center text-muted"><em>{{ infoInmueble.mes_max_consumo_fecha }}</em></p>
+        </div>
     </div>
 
-    <div class="col-3">
-
-        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.consumo_medio|floatformat:2 }} kW/h</strong></p>
-        <p class="h6 text-center my-0">Consumo medio</p>
-    </div>
-
-    <div class="col-3">
-        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.consumo_min|floatformat:2 }} kW/h</strong></p>
-        <p class="h6 text-center my-0">Consumo mín</p>
-        <p class="text-center text-muted"><em>{{ infoInmueble.consumo_min_fecha }}</em></p>
-    </div>
 </div>
 
-<div class="row col-12 justify-content-between">
-    <div class="col-6">
-        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.semana_max_consumo_valor|floatformat:2 }} kW</strong></p>
-        <p class="h6 text-center my-0">Semana mayor consumo</p>
-        <p class="text-center text-muted"><em>{{ infoInmueble.semana_max_consumo_fecha }}</em></p>
-    </div>
-    <div class="col-6">
-        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.mes_max_consumo_valor|floatformat:2 }} kW</strong></p>
-        <p class="h6 text-center my-0">Mes mayor consumo</p>
-        <p class="text-center text-muted"><em>{{ infoInmueble.mes_max_consumo_fecha }}</em></p>
-    </div>
-</div>
+
+{##}
+{#<div class="row col-12 justify-content-around">#}
+{#    <div class="col-3">#}
+{#        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.consumo_max|floatformat:2 }} kW/h</strong></p>#}
+{#        <p class="h6 text-center my-0">Consumo máx</p>#}
+{#        <p class="text-center text-muted"><em>{{ infoInmueble.consumo_max_fecha }}</em></p>#}
+{#    </div>#}
+{##}
+{#    <div class="col-3">#}
+{##}
+{#        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.consumo_medio|floatformat:2 }} kW/h</strong></p>#}
+{#        <p class="h6 text-center my-0">Consumo medio</p>#}
+{#    </div>#}
+{##}
+{#    <div class="col-3">#}
+{#        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.consumo_min|floatformat:2 }} kW/h</strong></p>#}
+{#        <p class="h6 text-center my-0">Consumo mín</p>#}
+{#        <p class="text-center text-muted"><em>{{ infoInmueble.consumo_min_fecha }}</em></p>#}
+{#    </div>#}
+{#</div>#}
+{##}
+{#<div class="row col-12 justify-content-between">#}
+{#    <div class="col-6">#}
+{#        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.semana_max_consumo_valor|floatformat:2 }} kW</strong></p>#}
+{#        <p class="h6 text-center my-0">Semana mayor consumo</p>#}
+{#        <p class="text-center text-muted"><em>{{ infoInmueble.semana_max_consumo_fecha }}</em></p>#}
+{#    </div>#}
+{#    <div class="col-6">#}
+{#        <p class="lead text-center mb-0" src="" alt="14.52" width="30" height="30"><strong>{{ infoInmueble.mes_max_consumo_valor|floatformat:2 }} kW</strong></p>#}
+{#        <p class="h6 text-center my-0">Mes mayor consumo</p>#}
+{#        <p class="text-center text-muted"><em>{{ infoInmueble.mes_max_consumo_fecha }}</em></p>#}
+{#    </div>#}
+{#</div>#}
 
 

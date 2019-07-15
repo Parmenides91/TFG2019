@@ -23,6 +23,7 @@ from . models import ModeloPred
 from . import func_datos_modelo
 from . import func_parciales
 from .funciones_basicas import limpiarCSV, id_random_generator
+from .func_mr import representar_precios_mr
 
 import csv
 
@@ -43,6 +44,7 @@ class InmuebleList(SelectRelatedMixin, generic.ListView):
 
 #listado de los inmuebles de un usuario en concreto
 # (aquí creo que va la comprobación de si el usuario que está en el contexto de la página es el que está tratando de acceder a ver el listado de inmuebles)
+
 class UserInmuebles(generic.ListView):
     model=models.Inmueble
     template_name = "forecasting/user_inmueble_list.html"
@@ -216,10 +218,10 @@ class DeletePrediccionConsumo(LoginRequiredMixin, DeleteView):
     model = models.PrediccionConsumo
     success_url = reverse_lazy('home')
 
-    #Aviso al Inmueble que la predicción ha dejado de estar actualizada (porque me la he cargado, claramente)
-    def delete(self, request, *args, **kwargs):
-        self.object.modelo_consumo_origen.inmueble_origen.prediccion_actualizada=False
-        return super(DeletePrediccionConsumo, self).delete(*args, **kwargs)
+    # #Aviso al Inmueble que la predicción ha dejado de estar actualizada (porque me la he cargado, claramente)
+    # def delete(self, request, *args, **kwargs):
+    #     # self.object.modelo_consumo_origen.inmueble_origen.prediccion_actualizada=False
+    #     return super(DeletePrediccionConsumo, self).delete(*args, **kwargs)
 
 
 # TARIFA ELÉCTRICA
@@ -755,6 +757,55 @@ class PVPCView(TemplateView):
         return context
 
 
+# Clase para ver el histórico de precios desde del .csv de histórico
+class HistoricoMRView(TemplateView):
+    template_name='forecasting/mr_chart.html'
+
+    def get_context_data(self, **kwargs):
+
+        if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
+            #Me viene fecha de inicio y de final
+            principioYear = self.kwargs['yearS']
+            principioMonth = self.kwargs['monthS']
+            principioDay = self.kwargs['dayS']
+            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+            # principio = principio.isoformat('T')
+            finalYear = self.kwargs['yearF']
+            finalMonth = self.kwargs['monthF']
+            finalDay = self.kwargs['dayF']
+            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+            # final = final.isoformat('T')
+
+        elif (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS')):
+            #Me viene sólo un día
+            principioYear = self.kwargs['yearS']
+            principioMonth = self.kwargs['monthS']
+            principioDay = self.kwargs['dayS']
+            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+            # principio = principio.isoformat('T')
+            final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)
+            final += timedelta(days=1)
+            # final = final.isoformat('T')
+
+        else:
+            #No me viene fecha
+            ahora = datetime.now().__format__('%Y-%m-%d')
+            # principio = ahora + 'T02:00:00'
+            principio = ahora + ' 02:00:00'
+
+            finalYear = datetime.now().__format__('%Y')
+            finalMonth = datetime.now().__format__('%m')
+            finalDay = datetime.now().__format__('%d')
+            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+            final += timedelta(days=1)
+            # final = final.isoformat('T')
+
+        context = super(HistoricoMRView, self).get_context_data(**kwargs)
+        context['grafica_precio'] = representar_precios_mr(principio, final)
+        return context
+
+
+
 class InformacionSmartMeters(TemplateView):
     template_name = 'forecasting/info_smartmeters.html'
 
@@ -764,3 +815,6 @@ class InformacionFactura(TemplateView):
 class InformacionEnergiaSpain(TemplateView):
     template_name = 'forecasting/info_energia_spain.html'
 
+
+class PruebaIndex(TemplateView):
+    template_name = 'forecasting/aaaa.html'

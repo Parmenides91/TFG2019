@@ -1,12 +1,26 @@
 {% load static %}
 
 
-{#<li class="card col-sm-3 mx-3 my-3 border-success">#}
-<li class="card col-sm-3 mx-3 my-3 border-white">
-    <img class="img-fluid card-img border-white" src="{% static 'icon/house03.png' %}" alt="inmueble icon">
+<li class="card col-sm-3 mx-3 my-3 border-info rounded pt-3">
+    <a href="{% url 'forecasting:single_inmueble' username=inmueble.user.username pk=inmueble.pk %}" style="text-decoration:none;">
+        <img class=" img-fluid card-img border-white" src="{% static 'img/inmueble001.svg' %}" alt="inmueble icon">
+    </a>
+    <hr>
     <div class="card-body text-center">
         <a href="{% url 'forecasting:single_inmueble' username=inmueble.user.username pk=inmueble.pk %}"
-           class="h5 font-weight-bold">{{ inmueble.nombre }}</a>
+           class="h5 font-weight-bold text-secondary">{{ inmueble.nombre }}</a>
+        {#            <p class="h5 font-weight-bold text-secondary">{{ inmueble.nombre }}</p>#}
     </div>
+
 </li>
+
+
+{#<li class="card col-sm-3 mx-3 my-3 border-info rounded pt-3">#}
+{#    <img class="img-fluid card-img border-white" src="{% static 'img/inmueble001.svg' %}" alt="inmueble icon">#}
+{#    <hr>#}
+{#    <div class="card-body text-center">#}
+{#        <a href="{% url 'forecasting:single_inmueble' username=inmueble.user.username pk=inmueble.pk %}"#}
+{#           class="h5 font-weight-bold text-secondary">{{ inmueble.nombre }}</a>#}
+{#    </div>#}
+{#</li>#}
 

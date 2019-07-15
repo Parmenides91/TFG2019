@@ -1,33 +1,61 @@
-
 {% load static %}
 {% load humanize %}
 
 <div class="media my-5">
-    <img class="align-self-center mr-3" src="{% static 'icon/tarifa02.png' %}" alt="">
+    <img class="align-self-center mr-4" src="{% static 'icon/tarifa02.png' %}" alt="">
     <div class="media-body row">
-        <div class="col-9">
+        <div class="col-12">
             <h2>Tarifa Eléctrica Personalizada: <em>{{ tarifaelectrica.nombre }}</em></h2>
             <hr>
-            <p class="lead">Creado: <strong>{{ tarifaelectrica.created_at|naturalday }}</strong></p>
-            <p class="lead">Periodo de gracia: <strong>{{ tarifaelectrica.hora_ini_periodo_gracia }} - {{ tarifaelectrica.hora_fin_periodo_gracia }}</strong>
-            <p class="lead">Precio periodo de gracia: <strong>{{ tarifaelectrica.precio_periodo_gracia }} €</strong></p>
-            <p class="lead">Precio normal: <strong>{{ tarifaelectrica.precio_periodo_general }} €</strong></p>
+        </div>
+        <div class="col-9 border-right border-info">
+            {#            <h2>Tarifa Eléctrica Personalizada: <em>{{ tarifaelectrica.nombre }}</em></h2>#}
+            {#            <hr>#}
+            <div class="row">
+
+                <div class="col-6">
+                    <h5 class="lead mt-4 mb-1">Período de gracia:</h5>
+                    <h5 class="lead mt-1 mb-4"><strong><em>{{ tarifaelectrica.hora_ini_periodo_gracia }}
+                        - {{ tarifaelectrica.hora_fin_periodo_gracia }}</em></strong></h5>
+                    <h5 class="lead mt-4 mb-1">Precio período de gracia:</h5>
+                    <h5 class="lead mt-1 mb-4"><strong><em>{{ tarifaelectrica.precio_periodo_gracia }} €</em></strong>
+                    </h5>
+                    <h5 class="lead mt-4 mb-1">Precio normal:</h5>
+                    <h5 class="lead mt-1 mb-4"><strong><em>{{ tarifaelectrica.precio_periodo_general }}</em></strong>
+                    </h5>
+                </div>
+
+                <div class="col-6">
+                    <h5 class="lead mt-4 mb-1">Creación:</h5>
+                    <h5 class="lead mt-1 mb-4"><strong><em>{{ tarifaelectrica.created_at|naturalday }}</em></strong>
+                    </h5>
+                    <h5 class="lead mt-4 mb-1">Propietario:</h5>
+                    <h5 class="lead mt-1 mb-4"><strong><em>{{ tarifaelectrica.user }}</em></strong>
+                    </h5>
+                </div>
+            </div>
+
+
+            {#            <p class="lead">Creado: <strong>{{ tarifaelectrica.created_at|naturalday }}</strong></p>#}
+            {#            <p class="lead">Periodo de gracia: <strong>{{ tarifaelectrica.hora_ini_periodo_gracia }}#}
+            {#                - {{ tarifaelectrica.hora_fin_periodo_gracia }}</strong>#}
+            {#            <p class="lead">Precio periodo de gracia: <strong>{{ tarifaelectrica.precio_periodo_gracia }} €</strong></p>#}
+            {#            <p class="lead">Precio normal: <strong>{{ tarifaelectrica.precio_periodo_general }} €</strong></p>#}
         </div>
         <div class="col-3 align-self-end">
             {% if user.is_authenticated %}
                 <a class="btn btn-danger btn-sm btn-block"
-           href="{% url 'forecasting:delete_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}">Eliminar
-            tarifa eléctrica</a>
+                   href="{% url 'forecasting:delete_tarifaelectrica' username=tarifaelectrica.user.username pk=tarifaelectrica.pk %}">Eliminar
+                    tarifa eléctrica</a>
                 <a class="btn btn-secondary btn-sm btn-block"
-           href="{% url 'forecasting:for_user_tarifaselectricas' username=tarifaelectrica.user.username %}">Volver al
-            listado</a>
+                   href="{% url 'forecasting:for_user_tarifaselectricas' username=tarifaelectrica.user.username %}">Volver
+                    al
+                    listado</a>
             {% endif %}
         </div>
     </div>
 
 </div>
-
-
 
 
 {##}

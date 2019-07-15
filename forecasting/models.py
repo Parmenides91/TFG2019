@@ -18,8 +18,8 @@ from . import func_inmueble
 from . import func_analisis_consumo
 from . import func_datos_prediccion
 from .func_inmueble import coste_tarifas_usuario, coste_tarifas_mr
-from .func_inmueble import crear_graficas_inmueble
-from .func_datos_prediccion import crear_graficas_predicción, crear_graficas_superpuestas
+from .func_inmueble import crear_graficas_inmueble, crear_graficas_superpuestas_inmueble
+from .func_datos_prediccion import crear_graficas_predicción, crear_graficas_superpuestas, crear_graficas_superpuestas_predicciones
 
 from .func_datos_prediccion import crearPrediccion
 from .func_datos_modelo import crearModelo
@@ -53,6 +53,9 @@ class Inmueble(models.Model):
     consumo_inmueble_string = models.CharField(max_length=255, blank=True)
     # consumo_inmueble = models.BinaryField()
     consumo_inmueble_parcial=models.FileField(upload_to='consumosInmuebles', blank = True)
+    coste_tpd_actualizado = models.BooleanField(default=False)
+    coste_edp_actualizado = models.BooleanField(default=False)
+    coste_ve_actualizado = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre
@@ -393,6 +396,15 @@ class PrediccionConsumo(models.Model):
     fichero_prediccion_consumo = models.FileField(upload_to='predicciones', blank=True)
     fichero_prediccion_consumo_string = models.CharField(max_length=255, blank=True)
     fichero_pConsumo_pPrecio_string = models.CharField(max_length=255, blank=True)
+    modelo_tpd_actualizado = models.BooleanField(default=False)
+    prediccion_tpd_actualizada = models.BooleanField(default=False)
+    coste_tpd_actualizado = models.BooleanField(default=False)
+    modelo_edp_actualizado = models.BooleanField(default=False)
+    prediccion_edp_actualizada = models.BooleanField(default=False)
+    coste_edp_actualizado = models.BooleanField(default=False)
+    modelo_ve_actualizado = models.BooleanField(default=False)
+    prediccion_ve_actualizada = models.BooleanField(default=False)
+    coste_ve_actualizado = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -491,7 +503,7 @@ class TarifaMercadoRegulado(models.Model):
         rango_fechas = {'rango':cadena}
         return rango_fechas
 
-
+# Estoy sustituyendo esta clase por las tres de abajo, por lo que te la vas a pdoer cargar en breves, creo
 #Coste del consumo de un Inmueble en relación con los precios del Mercado Regulado
 class CosteInmuebleMR(models.Model):
     inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
@@ -501,6 +513,60 @@ class CosteInmuebleMR(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     actualizado = models.BooleanField(default=True)
     coste = models.FloatField()
+    ruta_costes = models.CharField(max_length=255, blank=True)
+
+
+# Coste del consumo del inmueble para la tarifa TPD
+class CosteInmuebleTPD(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    tipo = models.CharField(default='TPD', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField()
+    ruta_costes = models.CharField(max_length=255, blank=True)
+
+    # Representar las predicciones
+    @property
+    def representar_tpd(self):
+        print('Ruta del fichero: {}'.format(self.ruta_costes))
+        df = pd.read_csv(self.ruta_costes, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+        info_tpd = {'grafica_coste_tpd': crear_graficas_superpuestas_inmueble(df, 'TPD'), }
+        return info_tpd
+
+# Coste del consumo del inmueble para la tarifa EDP
+class CosteInmuebleEDP(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    tipo = models.CharField(default='EDP', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField()
+    ruta_costes = models.CharField(max_length=255, blank=True)
+
+    # Representar las predicciones
+    @property
+    def representar_edp(self):
+        df = pd.read_csv(self.ruta_costes, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+        info_edp = {'grafica_coste_edp': crear_graficas_superpuestas_inmueble(df, 'EDP'), }
+        return info_edp
+
+# Coste del consumo del inmueble para la tarifa VE
+class CosteInmuebleVE(models.Model):
+    inmueble_asociado = models.ForeignKey(Inmueble, on_delete=models.CASCADE)
+    tipo = models.CharField(default='VE', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField()
+    ruta_costes = models.CharField(max_length=255, blank=True)
+
+    # Representar las predicciones
+    @property
+    def representar_ve(self):
+        df = pd.read_csv(self.ruta_costes, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+        info_ve = {'grafica_coste_ve': crear_graficas_superpuestas_inmueble(df, 'VE'), }
+        return info_ve
 
 
 # Coste del consumo de un Inmueble en relación con tarifas del Mercado Libre
@@ -588,6 +654,207 @@ from . import plots
 # Tercer intento de Histórico de Precios del Mercado Regulado
 class HistoricoMercadoRegulado(models.Model):
     ruta_fichero = models.CharField(max_length=255)
+
+# Cárgate esta clse, que ya no la usas. Has ppasado a tener tres modelos
+# Modelo para predecir los precios del Mercado Regulado, desde histórico
+class ModeloMR(models.Model):
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE, default=1)
+    tipo = models.CharField(default ='TTT', max_length=3, blank=False)
+    ruta_modelo = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now=True)
+    # prediccionmr_actualizada = models.BooleanField(default=False)
+    prediccionTPF_actualizada = models.BooleanField(default=False)
+    prediccionEDP_actualizada = models.BooleanField(default=False)
+    prediccionVE_actualizada = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
+# Modelo de la tarifa TPD del mercado regulado
+class ModeloTPD(models.Model):
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    tipo = models.CharField(default ='TPD', max_length=3, blank=False)
+    ruta_modelo_tpd = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now=True)
+    prediccion_tpd_actualizada = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
+# Modelo de la tarifa TPD del mercado regulado
+class ModeloEDP(models.Model):
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    tipo = models.CharField(default ='EDP', max_length=3, blank=False)
+    ruta_modelo_edp = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now=True)
+    prediccion_edp_actualizada = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
+# Modelo de la tarifa VE del mercado regulado
+class ModeloVE(models.Model):
+    prediccionconsumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    tipo = models.CharField(default ='VE', max_length=3, blank=False)
+    ruta_modelo_ve = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now=True)
+    prediccion_ve_actualizada = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+# Prediccion de la tarifa TPD del mercado regulado
+class PrediccionTPD(models.Model):
+    modelo_origen = models.ForeignKey(ModeloTPD, on_delete=models.CASCADE)
+    tipo = models.CharField(default='TPD', max_length=3, blank=False)
+    coste_actualizado = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    ruta_prediccion = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    # Representar la predicción
+    @property
+    def representar_prediccionmr(self):
+        df = pd.read_csv(self.ruta_prediccion, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+
+        # info_prediccion = {'graficas_prediccion_mr': crear_graficas_prediccion_mr(df),
+        #                    }
+
+        info_prediccion = {}
+        return info_prediccion
+
+
+# Prediccion de la tarifa EDP del mercado regulado
+class PrediccionEDP(models.Model):
+    modelo_origen = models.ForeignKey(ModeloEDP, on_delete=models.CASCADE)
+    tipo = models.CharField(default='EDP', max_length=3, blank=False)
+    coste_actualizado = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    ruta_prediccion = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    # Representar la predicción
+    @property
+    def representar_prediccionmr(self):
+        df = pd.read_csv(self.ruta_prediccion, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+
+        # info_prediccion = {'graficas_prediccion_mr': crear_graficas_prediccion_mr(df),
+        #                    }
+
+        info_prediccion = {}
+        return info_prediccion
+
+
+# Prediccion de la tarifa VE del mercado regulado
+class PrediccionVE(models.Model):
+    modelo_origen = models.ForeignKey(ModeloVE, on_delete=models.CASCADE)
+    tipo = models.CharField(default='VE', max_length=3, blank=False)
+    coste_actualizado = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    ruta_prediccion = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    # Representar la predicción
+    @property
+    def representar_prediccionmr(self):
+        df = pd.read_csv(self.ruta_prediccion, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+
+        # info_prediccion = {'graficas_prediccion_mr': crear_graficas_prediccion_mr(df),
+        #                    }
+
+        info_prediccion = {}
+        return info_prediccion
+
+
+
+# Coste de una predicción de consumo en base a una predicción de precio de TPD + gráfica de las predicciones
+class CosteTPDPrediccion(models.Model):
+    prediccion_consumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    prediccion_mr_asociada = models.ForeignKey(PrediccionTPD, on_delete=models.CASCADE)
+    tipo = models.CharField(default='TPD', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField()
+    ruta_predicciones = models.CharField(max_length=255, blank=True)
+
+    # Representar las predicciones
+    @property
+    def representar_prediccion_tpd(self):
+        df = pd.read_csv(self.ruta_predicciones, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+        info_prediccion = {'grafica_coste_tpd': crear_graficas_superpuestas_predicciones(df, 'TPD'),}
+        return info_prediccion
+
+# Coste de una predicción de consumo en base a una predicción de precio de EDP + gráfica de las predicciones
+class CosteEDPPrediccion(models.Model):
+    prediccion_consumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    prediccion_mr_asociada = models.ForeignKey(PrediccionEDP, on_delete=models.CASCADE)
+    tipo = models.CharField(default='EDP', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField()
+    ruta_predicciones = models.CharField(max_length=255, blank=True)
+
+    # Representar las predicciones
+    @property
+    def representar_prediccion_edp(self):
+        df = pd.read_csv(self.ruta_predicciones, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+        info_prediccion = {'grafica_coste_edp': crear_graficas_superpuestas_predicciones(df, 'EDP'), }
+        return info_prediccion
+
+# Coste de una predicción de consumo en base a una predicción de precio de VE + gráfica de las predicciones
+class CosteVEPrediccion(models.Model):
+    prediccion_consumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    prediccion_mr_asociada = models.ForeignKey(PrediccionVE, on_delete=models.CASCADE)
+    tipo = models.CharField(default='VE', max_length=3, blank=False)
+    created_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField()
+    ruta_predicciones = models.CharField(max_length=255, blank=True)
+
+    # Representar las predicciones
+    @property
+    def representar_prediccion_ve(self):
+        df = pd.read_csv(self.ruta_predicciones, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+        info_prediccion = {'grafica_coste_ve': crear_graficas_superpuestas_predicciones(df, 'VE'), }
+        return info_prediccion
+
+
+
+# Predicción de precios del Mercado Regulado, desde histórico
+class PrediccionMR(models.Model):
+    modelo_mr_origen = models.ForeignKey(ModeloMR, on_delete=models.CASCADE)
+    tipo = models.CharField(default='TTT', max_length=3, blank=False)
+    costemr_actualizado = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    ruta_prediccion = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    # Representar la predicción
+    @property
+    def representar_prediccionmr(self):
+        df = pd.read_csv(self.ruta_prediccion, index_col=0, parse_dates=True)
+        df.index.freq = 'H'
+
+        # info_prediccion = {'graficas_prediccion_mr': crear_graficas_prediccion_mr(df),
+        #                    }
+
+        info_prediccion = {}
+        return info_prediccion
+
 
 
 # Modelo para predecir los precios del Mercado Regulado
