@@ -1,2 +1,12 @@
+.idea/
+__pycache__/
+docs/
 media/modelos/
 media/modelosMR/
+venv/
+ConsumoInmueble.csv
+DATOSluz.csv
+LaPrediccion.csv
+consumoINMUEBLE1.csv
+mediaC1Mmarzo.csv
+personNN.csv
