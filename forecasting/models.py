@@ -1,3 +1,15 @@
+"""
+.. module:: models
+    :synopsis: Contiene los modelos necesarios para la app forecasting
+
+.. moduleauthor:: Roberto Benéitez Vaquero
+
+
+"""
+
+
+
+
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
@@ -37,6 +49,10 @@ User = get_user_model()
 
 # Create your models here.
 class Inmueble(models.Model):
+    """
+    Clase para Inmueble. Recoge la información principal de la vivienda de un usuario.
+    """
+
     user=models.ForeignKey(User, related_name="inmuebles", on_delete=models.CASCADE)
     nombre=models.CharField(max_length=30, unique=True)
     descripcion=models.CharField(max_length=255, blank=True)
@@ -76,15 +92,19 @@ class Inmueble(models.Model):
     @property
     def representar_inmueble(self):
         """
-        if self.consumo_inmueble==None and self.consumo_inmueble_parcial:
-            self.consumo_inmueble=self.consumo_inmueble_parcial
-            self.consumo_inmueble.save()
-            self.consumo_inmueble_parcial.delete()
-        elif self.consumo_inmueble and self.consumo_inmueble_parcial:
-            pass
-        else:
-            pass
+        Prepara la representación del consumo del inmueble.
+        :return: info_inmueble
         """
+        # """
+        # if self.consumo_inmueble==None and self.consumo_inmueble_parcial:
+        #     self.consumo_inmueble=self.consumo_inmueble_parcial
+        #     self.consumo_inmueble.save()
+        #     self.consumo_inmueble_parcial.delete()
+        # elif self.consumo_inmueble and self.consumo_inmueble_parcial:
+        #     pass
+        # else:
+        #     pass
+        # """
 
         # """Prueba de que crear las predicciones funciona"""
         # modelos = ModeloConsumo.objects.all()
@@ -176,12 +196,12 @@ class Inmueble(models.Model):
         df.index.freq = 'H'
         # df = pd.read_csv(self.consumo_inmueble, delimiter=';', decimal=',')
         #df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
-        """
-        try:
-            df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
-        except:
-            pass
-        """
+        # """
+        # try:
+        #     df2 = pd.read_csv(self.consumo_inmueble_parcial, delimiter=';', decimal=',')
+        # except:
+        #     pass
+        # """
 
         info_inmueble = {'grafica_inmueble': func_inmueble.consumo_chart(df),
                          'graficas_inmueble': crear_graficas_inmueble(df)
@@ -264,11 +284,11 @@ class Consumo(models.Model):
         info_consumo = {}
 
         # Gráfica del Consumo
-        """
-        info_consumo = {'grafica_consumo':func_analisis_consumo.consumo_chart(df),
-                        'PVPCprecioPPP':func_analisis_consumo.peaje_por_defecto(df)}
-        self.coste_tarifa_PPP = info_consumo.get('PVPCprecioPPP')
-        """
+        # """
+        # info_consumo = {'grafica_consumo':func_analisis_consumo.consumo_chart(df),
+        #                 'PVPCprecioPPP':func_analisis_consumo.peaje_por_defecto(df)}
+        # self.coste_tarifa_PPP = info_consumo.get('PVPCprecioPPP')
+        # """
         info_consumo = {'grafica_consumo': func_analisis_consumo.consumo_chart(df),
                         #'PVPCprecios': func_analisis_consumo.obtener_precios_mercado_regulado(df),
                         }
@@ -280,97 +300,97 @@ class Consumo(models.Model):
         return info_consumo
 
 
-    """
-    @property
-    def consumo_chart(self):
-        df = pd.read_csv(self.fichero_consumo, delimiter = ';', decimal=',')
-        df = df.drop(["CUPS", "Metodo_obtencion"], axis=1)
-        ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H') #secuencia de horas
-        #df['Hora'] = df['Hora'].astype(str) + ':00'
-        #df['Fecha'] = df['Fecha'] + ' ' + df['Hora']
-        df['Fecha'] = ristra
-        df = df.drop(["Hora"], axis=1)
-        df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%Y %H:%M')
+    # """
+    # @property
+    # def consumo_chart(self):
+    #     df = pd.read_csv(self.fichero_consumo, delimiter = ';', decimal=',')
+    #     df = df.drop(["CUPS", "Metodo_obtencion"], axis=1)
+    #     ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H') #secuencia de horas
+    #     #df['Hora'] = df['Hora'].astype(str) + ':00'
+    #     #df['Fecha'] = df['Fecha'] + ' ' + df['Hora']
+    #     df['Fecha'] = ristra
+    #     df = df.drop(["Hora"], axis=1)
+    #     df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%Y %H:%M')
+    #
+    #     n_leyenda = 'Consumo de ' + self.user.username
+    #
+    #     trace1 = go.Scatter(
+    #         x=df['Fecha'],
+    #         y=df['Consumo_kWh'],
+    #         mode='lines+markers',
+    #         name=n_leyenda,
+    #         marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
+    #
+    #     data = [trace1, ]
+    #
+    #     layout = go.Layout(
+    #         title='Consumo',
+    #         showlegend=True,
+    #         # width = 800,
+    #         # height = 700,
+    #         hovermode='closest',
+    #         bargap=0,
+    #         legend=dict(
+    #             # orientation='h',
+    #             x=0.2, y=1.1,
+    #             traceorder='normal',
+    #             font=dict(
+    #                 family='sans-serif',
+    #                 size=12,
+    #                 color='#000',
+    #             ),
+    #             bgcolor='#E2E2E2',
+    #             bordercolor='#FFFFFF',
+    #             borderwidth=2,
+    #         ),
+    #         margin=dict(
+    #             autoexpand=False,
+    #             l=100,
+    #             r=20,
+    #             t=110,
+    #         ),
+    #         xaxis=dict(
+    #             title='',
+    #             showline=True,
+    #             showgrid=True,
+    #             showticklabels=True,
+    #             linecolor='rgb(204, 204, 204)',
+    #             linewidth=2,
+    #             ticks='outside',
+    #             tickcolor='rgb(204, 204, 204)',
+    #             tickwidth=2,
+    #             ticklen=2,
+    #             tickfont=dict(
+    #                 family='Arial',
+    #                 size=12,
+    #                 color='rgb(82, 82, 82)',
+    #             ),
+    #         ),
+    #         yaxis=dict(
+    #             title='kW/h',
+    #             showgrid=True,
+    #             zeroline=False,
+    #             showline=True,
+    #             showticklabels=True,
+    #         )
+    #     )
+    #
+    #     fig = go.Figure(data=data, layout=layout)
+    #     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    #     return plot_div
+    # """
 
-        n_leyenda = 'Consumo de ' + self.user.username
-
-        trace1 = go.Scatter(
-            x=df['Fecha'],
-            y=df['Consumo_kWh'],
-            mode='lines+markers',
-            name=n_leyenda,
-            marker=dict(color='rgb(0,0,255)', size=6, opacity=0.4))
-
-        data = [trace1, ]
-
-        layout = go.Layout(
-            title='Consumo',
-            showlegend=True,
-            # width = 800,
-            # height = 700,
-            hovermode='closest',
-            bargap=0,
-            legend=dict(
-                # orientation='h',
-                x=0.2, y=1.1,
-                traceorder='normal',
-                font=dict(
-                    family='sans-serif',
-                    size=12,
-                    color='#000',
-                ),
-                bgcolor='#E2E2E2',
-                bordercolor='#FFFFFF',
-                borderwidth=2,
-            ),
-            margin=dict(
-                autoexpand=False,
-                l=100,
-                r=20,
-                t=110,
-            ),
-            xaxis=dict(
-                title='',
-                showline=True,
-                showgrid=True,
-                showticklabels=True,
-                linecolor='rgb(204, 204, 204)',
-                linewidth=2,
-                ticks='outside',
-                tickcolor='rgb(204, 204, 204)',
-                tickwidth=2,
-                ticklen=2,
-                tickfont=dict(
-                    family='Arial',
-                    size=12,
-                    color='rgb(82, 82, 82)',
-                ),
-            ),
-            yaxis=dict(
-                title='kW/h',
-                showgrid=True,
-                zeroline=False,
-                showline=True,
-                showticklabels=True,
-            )
-        )
-
-        fig = go.Figure(data=data, layout=layout)
-        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
-        return plot_div
-    """
-
-    """
-    @property
-    def contra_peaje_por_defecto(self):
-        if self.coste_tarifa_PPP == 0:
-            #data = pd.read_csv(self.fichero_consumo, delimiter = ';', decimal=',')
-            #self.coste_tarifa_PPP = func_tarifas.peaje_por_defecto(data)
-            self.coste_tarifa_PPP = func_tarifas.peaje_por_defecto(self.fichero_consumo)
-            return self.coste_tarifa_PPP
-        else:
-            return self.coste_tarifa_PPP
-    """
+    # """
+    # @property
+    # def contra_peaje_por_defecto(self):
+    #     if self.coste_tarifa_PPP == 0:
+    #         #data = pd.read_csv(self.fichero_consumo, delimiter = ';', decimal=',')
+    #         #self.coste_tarifa_PPP = func_tarifas.peaje_por_defecto(data)
+    #         self.coste_tarifa_PPP = func_tarifas.peaje_por_defecto(self.fichero_consumo)
+    #         return self.coste_tarifa_PPP
+    #     else:
+    #         return self.coste_tarifa_PPP
+    # """
 
 from django.conf import settings
 
@@ -405,6 +425,8 @@ class PrediccionConsumo(models.Model):
     modelo_ve_actualizado = models.BooleanField(default=False)
     prediccion_ve_actualizada = models.BooleanField(default=False)
     coste_ve_actualizado = models.BooleanField(default=False)
+    costes_ml_actualizado = models.BooleanField(default=False)
+    costes_personalizadas_actualizado = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -831,6 +853,15 @@ class CosteVEPrediccion(models.Model):
         return info_prediccion
 
 
+# Coste del consumo de una Predicción de consumo en relación con tarifas del Mercado Libre
+class CostePrediccionML(models.Model):
+    prediccion_consumo_asociada = models.ForeignKey(PrediccionConsumo, on_delete=models.CASCADE)
+    nombre = models.CharField(default='Tarifa ML', max_length=20, blank=True)
+    empresa = models.CharField(default='Empresa Privada', max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    coste = models.FloatField(default=0, blank=True)
+
 
 # Predicción de precios del Mercado Regulado, desde histórico
 class PrediccionMR(models.Model):
@@ -903,7 +934,7 @@ class CostePrediccionTE(models.Model):
     tarifaelectrica_asociada = models.ForeignKey(TarifaElectrica, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     modified_at = models.DateTimeField(auto_now=True)
-    actualizado = models.BooleanField(default=True)
+    actualizado = models.BooleanField(default=True) # realmente no me vale para nada ???
     coste = models.FloatField()
 
 

@@ -2,6 +2,21 @@
 
 {% block content %}
 
+    <div class="container">
+        <div class="jumbotron bg-white">
+            <h1 class="display-4"><strong>Mercado Regulado</strong></h1>
+            <hr class="bg-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="">Consulta los precios de las tarifas del Mercado Regulado</h5>
+                </div>
+                <div class="col-md-6">
+                    <h5 class=""><strong>{{ user.username }}</strong></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
   {% block pre_historicomr %}{% endblock %}
   {% block content_historicomr %}{% endblock %}
   {% block post_historicomr %}{% endblock %}

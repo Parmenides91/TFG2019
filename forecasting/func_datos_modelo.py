@@ -22,6 +22,13 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 
 
 def crearModelo(fichero):
+    """
+    Creación del modelo de predicción del consumo de un Inmueble.
+
+    :param fichero: ruta del fichero de consumo del Inmueble.
+    :return: ruta donde queda almacenado el modelo creado.
+    """
+
     # print('Has llegado a la función, baby.')
     # df = pd.read_csv(fichero, delimiter=';', decimal=',')
     # ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')

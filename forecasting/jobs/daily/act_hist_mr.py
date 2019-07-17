@@ -12,6 +12,10 @@ from ...funciones_basicas import id_random_generator
 
 
 class Job(BaseJob):
+    """
+    Tarea automática que mantiene actualizado el histórico de precios del mercado regulado.
+    """
+
     help = "Actualiza el fichero que contiene el histórico de precios del Mercado Regulado"
 
     def execute(self):

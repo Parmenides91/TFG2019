@@ -11,6 +11,9 @@ SEMANAS_ATRAS = 8
 
 
 class Job(BaseJob):
+    """
+    Tarea automática que se encarga de crear los modelos predictivos necesarios para la tarifa VE del mercado regulado.
+    """
     help = "Crea un modelo para la tarifa VE del mercado regulado."
 
     def execute(self):

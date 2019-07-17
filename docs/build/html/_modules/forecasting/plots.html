@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.plots &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.plots</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objs</span> <span class="k">as</span> <span class="nn">go</span>
+
+<span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="k">import</span> <span class="n">plot</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+
+<span class="k">class</span> <span class="nc">ESIOS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class constructor</span>
+<span class="sd">        :param token: string given by the SIOS to you when asked to: Consultas Sios &lt;consultasios@ree.es&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The token is unique: You should ask for yours to: Consultas Sios &lt;consultasios@ree.es&gt;</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The token is unique: You should ask for yours to: Consultas Sios &lt;consultasios@ree.es&gt;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_geo_id</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8741</span><span class="p">]</span>  <span class="c1"># España y Peninsula</span>
+
+        <span class="c1"># standard format of a date for a query</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span>
+
+        <span class="c1"># dictionary of available series</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__offer_indicators_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_indicators_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_series</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Getting the indicators...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_indicators</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__get_headers__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares the CURL headers</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Prepare the arguments of the call</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Accept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;application/json; application/vnd.esios-api-v1+json&#39;</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;application/json&#39;</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;api.esios.ree.es&#39;</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Token token=</span><span class="se">\&quot;</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\&quot;</span><span class="s1">&#39;</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Cookie&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">headers</span>
+
+    <span class="k">def</span> <span class="nf">get_indicators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the indicators and their name.</span>
+<span class="sd">        The indicators are the indices assigned to the available data series</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;indicators.pickle&#39;</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+            <span class="c1"># read the existing indicators file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
+                <span class="n">all_indicators</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offer_indicators_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_indicators_list</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create the indicators file querying the info to ESIOS</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            curl &quot;https://api.esios.ree.es/offer_indicators&quot; -X GET</span>
+<span class="sd">            -H &quot;Accept: application/json; application/vnd.esios-api-v1+json&quot;</span>
+<span class="sd">            -H &quot;Content-Type: application/json&quot;</span>
+<span class="sd">            -H &quot;Host: api.esios.ree.es&quot;</span>
+<span class="sd">            -H &quot;Authorization: Token token=\&quot;5c7f9ca844f598ab7b86bffcad08803f78e9fc5bf3036eef33b5888877a04e38\&quot;&quot;</span>
+<span class="sd">            -H &quot;Cookie: &quot;</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">all_indicators</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+            <span class="c1"># This is how the URL is built</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://api.esios.ree.es/offer_indicators&#39;</span>
+
+            <span class="c1"># Perform the call</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__get_headers__</span><span class="p">())</span>
+            <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">readall</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+            <span class="c1"># fill the dictionary</span>
+            <span class="n">indicators</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__offer_indicators_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;indicators&#39;</span><span class="p">]:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">id_</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">indicators</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__offer_indicators_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">name</span><span class="p">,</span> <span class="n">id_</span><span class="p">])</span>
+
+            <span class="n">all_indicators</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;indicadores de curvas de oferta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">indicators</span>
+
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            curl &quot;https://api.esios.ree.es/indicators&quot; -X GET</span>
+<span class="sd">            -H &quot;Accept: application/json; application/vnd.esios-api-v1+json&quot;</span>
+<span class="sd">            -H &quot;Content-Type: application/json&quot; -H &quot;Host: api.esios.ree.es&quot;</span>
+<span class="sd">            -H &quot;Authorization: Token token=\&quot;5c7f9ca844f598ab7b86bffcad08803f78e9fc5bf3036eef33b5888877a04e38\&quot;&quot;</span>
+<span class="sd">            -H &quot;Cookie: &quot;</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://api.esios.ree.es/indicators&#39;</span>
+
+            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__get_headers__</span><span class="p">())</span>
+            <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">readall</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+            <span class="c1"># continue filling the dictionary</span>
+            <span class="n">indicators</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_indicators_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;indicators&#39;</span><span class="p">]:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">id_</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">indicators</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_indicators_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">name</span><span class="p">,</span> <span class="n">id_</span><span class="p">])</span>
+
+            <span class="n">all_indicators</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;indicadores de análisis &#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">indicators</span>
+
+            <span class="c1"># save the indictators</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+                <span class="n">dta</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_indicators</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offer_indicators_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_indicators_list</span><span class="p">]</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dta</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_indicators</span>
+
+    <span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indicators_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of names of the given indicator indices</span>
+<span class="sd">        :param indicators_list:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indicators_list</span><span class="p">:</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_indicators_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;indicadores.xlsx&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the list of indicators in an excel file for easy consultation</span>
+<span class="sd">        :param fname:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offer_indicators_list</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_indicators_list</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;Indicador&#39;</span><span class="p">])</span>
+
+        <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_query_json__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indicator</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a JSON series</span>
+<span class="sd">        :param indicator: series indicator</span>
+<span class="sd">        :param start: Start date</span>
+<span class="sd">        :param end: End date</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This is how the URL is built</span>
+
+        <span class="c1">#  https://www.esios.ree.es/es/analisis/1293?vis=2&amp;start_date=21-06-2016T00%3A00&amp;end_date=21-06-2016T23%3A50&amp;compare_start_date=20-06-2016T00%3A00&amp;groupby=minutes10&amp;compare_indicators=545,544#JSON</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://api.esios.ree.es/indicators/&#39;</span> <span class="o">+</span> <span class="n">indicator</span> <span class="o">+</span> <span class="s1">&#39;?start_date=&#39;</span> <span class="o">+</span> <span class="n">start</span> <span class="o">+</span> <span class="s1">&#39;&amp;end_date=&#39;</span> <span class="o">+</span> <span class="n">end</span>
+
+        <span class="c1"># Perform the call</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__get_headers__</span><span class="p">())</span>
+        <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">readall</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indicator</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param indicator: Series indicator</span>
+<span class="sd">        :param start: Start date</span>
+<span class="sd">        :param end: End date</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check types: Pass to string for the url</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">indicator</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">indicator</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">indicator</span><span class="p">)</span>
+
+        <span class="c1"># get the JSON data</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_query_json__</span><span class="p">(</span><span class="n">indicator</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+        <span class="c1"># transform the data</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;indicator&#39;</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span>  <span class="c1"># dictionary of values</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">hdr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  <span class="c1"># headers</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">hdr</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">object</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)):</span>  <span class="c1"># iterate the data entries</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hdr</span><span class="p">)):</span>  <span class="c1"># iterate the headers</span>
+                    <span class="n">h</span> <span class="o">=</span> <span class="n">hdr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">h</span><span class="p">]</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">hdr</span><span class="p">)</span>  <span class="c1"># make the DataFrame</span>
+
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime_utc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime_utc&#39;</span><span class="p">])</span>  <span class="c1"># convert to datetime</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;datetime_utc&#39;</span><span class="p">)</span>  <span class="c1"># Set the index column</span>
+
+            <span class="k">del</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># to avoid the index name bullshit</span>
+
+            <span class="k">return</span> <span class="n">df</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_multiple_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indicators</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get multiple series data</span>
+<span class="sd">        :param indicators: List of indicators</span>
+<span class="sd">        :param start: Start date</span>
+<span class="sd">        :param end: End date</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">df_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indicators</span><span class="p">)):</span>
+
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__indicators_name__</span><span class="p">[</span><span class="n">indicators</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parsing &#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Assign the first indicator</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">indicators</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;geo_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allowed_geo_id</span><span class="p">)]</span>  <span class="c1"># select by geography</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># merge the newer indicators</span>
+                <span class="n">df_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">indicators</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">df_new</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">df_new</span> <span class="o">=</span> <span class="n">df_new</span><span class="p">[</span><span class="n">df_new</span><span class="p">[</span><span class="s1">&#39;geo_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">allowed_geo_id</span><span class="p">)]</span>  <span class="c1"># select by geography</span>
+                    <span class="n">df_new</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#                    df = df.join(df_new[[name, &#39;datetime&#39;]], how=&#39;left&#39;, lsuffix=&#39;d&#39;+name)</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_new</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+                <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_new</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_list</span><span class="p">,</span> <span class="n">names</span>
+
+
+<span class="c1"># Para conocer el precio entre las fechas que se soliciten</span>
+<div class="viewcode-block" id="precios_pvpc"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.plots.precios_pvpc">[docs]</a><span class="k">def</span> <span class="nf">precios_pvpc</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtiene los precios directamente de Red Eléctrica de España en el rango de fechas solicitado.</span>
+
+<span class="sd">    :param a: fecha de inicio para solicitar precios.</span>
+<span class="sd">    :param b: fecha final para solicitar precios.</span>
+<span class="sd">    :return: dataframe con las fechas como índice y columnas los precios de cada una de las tarifas del mercado regulado solicitadas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#start_ = &#39;2019-05-04T02:00:00&#39;</span>
+    <span class="c1">#end_ = &#39;2019-05-05T01:00:00&#39;</span>
+    <span class="n">start_</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="n">end_</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="c1"># The token is unique: You should ask for yours to: Consultas Sios &lt;consultasios@ree.es&gt;</span>
+
+    <span class="n">token</span> <span class="o">=</span> <span class="s1">&#39;859b2fc71fb5898354fe9e4b597f42b6fb30cd4c7ebc59aaefdeb95acf835659&#39;</span>
+    <span class="n">esios</span> <span class="o">=</span> <span class="n">ESIOS</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="c1"># esios.save_indicators_table()</span>
+
+    <span class="c1">#    indicators_ = [600, 672, 673, 674, 675, 676, 677, 680, 681, 682, 683, 767, 1192, 1193, 1293]</span>
+    <span class="n">indicators_</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1013</span><span class="p">)</span>  <span class="c1"># Precio de Regulación Secundaria subir</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1014</span><span class="p">)</span>  <span class="c1"># Precio de Regulación Secundaria bajar</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1015</span><span class="p">)</span>  <span class="c1"># Precio mercado SPOT Diario</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1293</span><span class="p">)</span>  <span class="c1"># Demanda real</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">esios</span><span class="o">.</span><span class="n">get_names</span><span class="p">(</span><span class="n">indicators_</span><span class="p">)</span>
+    <span class="n">dfmul</span><span class="p">,</span> <span class="n">df_list</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">esios</span><span class="o">.</span><span class="n">get_multiple_series</span><span class="p">(</span><span class="n">indicators_</span><span class="p">,</span> <span class="n">start_</span><span class="p">,</span> <span class="n">end_</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">dfmul</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>  <span class="c1"># get the actual series and neglect the rest of the info</span>
+
+    <span class="c1"># precios = {&#39;PPD&#39;:df[names[0]].values,</span>
+    <span class="c1">#            &#39;EDP&#39;:df[names[1]].values,</span>
+    <span class="c1">#            &#39;VE&#39;:df[names[2]].values,}</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;TPD&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;EDP&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="s1">&#39;VE&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">}</span>
+    <span class="n">daframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    if tipo == &#39;PPD&#39;:</span>
+<span class="sd">        return df[names[0]].values</span>
+<span class="sd">    elif tipo == &#39;EDP&#39;:</span>
+<span class="sd">        return df[names[1]].values</span>
+<span class="sd">    else:</span>
+<span class="sd">        return df[names[2]].values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># return precios</span>
+    <span class="k">return</span> <span class="n">daframe</span></div>
+
+
+<span class="c1"># Para pintar los precios de las fechas que se le pasen</span>
+<div class="viewcode-block" id="chart_precios_pvpc"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.plots.chart_precios_pvpc">[docs]</a><span class="k">def</span> <span class="nf">chart_precios_pvpc</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepara una gráfica lista para representar con los precios de la tarifas del mercado regulado solicitados en el rango temporal deseado.</span>
+
+<span class="sd">    :param a: fecha de inicio para solicitar precios.</span>
+<span class="sd">    :param b: fecha final para solicitar precios.</span>
+<span class="sd">    :return: gráfica lista para representarse con los datos de las tres tarifas del mercado regulado.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># start_ = &#39;2019-06-13T02:00:00&#39;</span>
+    <span class="c1"># end_ = &#39;2019-06-14T01:00:00&#39;</span>
+    <span class="c1"># start_ = &#39;2017-12-31T02:00:00&#39;</span>
+    <span class="c1"># end_ = &#39;2019-06-14T01:00:00&#39;</span>
+    <span class="n">start_</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="n">end_</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="c1"># The token is unique: You should ask for yours to: Consultas Sios &lt;consultasios@ree.es&gt;</span>
+
+    <span class="n">token</span> <span class="o">=</span> <span class="s1">&#39;859b2fc71fb5898354fe9e4b597f42b6fb30cd4c7ebc59aaefdeb95acf835659&#39;</span>
+    <span class="n">esios</span> <span class="o">=</span> <span class="n">ESIOS</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="c1"># esios.save_indicators_table()</span>
+
+    <span class="c1">#    indicators_ = [600, 672, 673, 674, 675, 676, 677, 680, 681, 682, 683, 767, 1192, 1193, 1293]</span>
+    <span class="n">indicators_</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1013</span><span class="p">)</span>  <span class="c1"># Precio de Regulación Secundaria subir</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1014</span><span class="p">)</span>  <span class="c1"># Precio de Regulación Secundaria bajar</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1015</span><span class="p">)</span>  <span class="c1"># Precio mercado SPOT Diario</span>
+    <span class="n">indicators_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1293</span><span class="p">)</span>  <span class="c1"># Demanda real</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">esios</span><span class="o">.</span><span class="n">get_names</span><span class="p">(</span><span class="n">indicators_</span><span class="p">)</span>
+    <span class="n">dfmul</span><span class="p">,</span> <span class="n">df_list</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">esios</span><span class="o">.</span><span class="n">get_multiple_series</span><span class="p">(</span><span class="n">indicators_</span><span class="p">,</span> <span class="n">start_</span><span class="p">,</span> <span class="n">end_</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">dfmul</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>  <span class="c1"># get the actual series and neglect the rest of the info</span>
+
+    <span class="c1">#t = np.linspace(-1, 1, 2000)</span>
+    <span class="c1">#y = (t**2) + (0.5 * np.random.randn(2000))</span>
+    <span class="c1">#x = [&#39;2019-05-04T00:00:00&#39;,&#39;2019-05-04T01:00:00&#39;, &#39;2019-05-04T02:00:00&#39;, &#39;2019-05-04T03:00:00&#39;,&#39;2019-05-04T04:00:00&#39;, &#39;2019-05-04T05:00:00&#39;, &#39;2019-05-04T06:00:00&#39;,&#39;2019-05-04T07:00:00&#39;, &#39;2019-05-04T08:00:00&#39;, &#39;2019-05-04T09:00:00&#39;,&#39;2019-05-04T10:00:00&#39;, &#39;2019-05-04T11:00:00&#39;, &#39;2019-05-04T12:00:00&#39;,&#39;2019-05-04T13:00:00&#39;, &#39;2019-05-04T14:00:00&#39;, &#39;2019-05-04T15:00:00&#39;,&#39;2019-05-04T16:00:00&#39;, &#39;2019-05-04T17:00:00&#39;, &#39;2019-05-04T18:00:00&#39;,&#39;2019-05-04T19:00:00&#39;, &#39;2019-05-04T20:00:00&#39;, &#39;2019-05-04T21:00:00&#39;,&#39;2019-05-04T22:00:00&#39;, &#39;2019-05-04T23:00:00&#39;,]</span>
+    <span class="c1">#dt.T</span>
+    <span class="c1">#ristra = (df[names[0]].index).to_series()</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;TPD&#39;</span><span class="p">:</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;EDP&#39;</span><span class="p">:</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,}</span>
+    <span class="n">daframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+    <span class="n">csvPrecios</span> <span class="o">=</span> <span class="n">daframe</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;historicoMR.csv&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ristra = (df[names[0]].index).tz_convert(&#39;Etc/GMT-1&#39;)</span>
+    <span class="n">ristra</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="c1">#ristra.to_series(keep_tz=False)</span>
+    <span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">ristra</span><span class="p">,</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Tarifa por defecto&#39;</span><span class="p">,</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;rgb(255,0,0)&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">trace2</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">ristra</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Eficiencia 2 periodos&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(0,111,255)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">trace3</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">ristra</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Vehículo eléctrico&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(77,255,0)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">trace1</span><span class="p">,</span> <span class="n">trace2</span><span class="p">,</span> <span class="n">trace3</span><span class="p">,]</span>
+
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Tarifas PVPC&#39;</span><span class="p">,</span>
+        <span class="n">showlegend</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="c1">#width = 800,</span>
+        <span class="c1">#height = 700,</span>
+        <span class="n">hovermode</span> <span class="o">=</span> <span class="s1">&#39;closest&#39;</span><span class="p">,</span>
+        <span class="n">bargap</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">legend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="c1">#orientation=&#39;h&#39;,</span>
+            <span class="n">x</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+            <span class="n">traceorder</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+            <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">family</span><span class="o">=</span><span class="s1">&#39;sans-serif&#39;</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#000&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">bgcolor</span><span class="o">=</span><span class="s1">&#39;#E2E2E2&#39;</span><span class="p">,</span>
+            <span class="n">bordercolor</span><span class="o">=</span><span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+            <span class="n">borderwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">margin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">autoexpand</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mi">110</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">xaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">showline</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">showgrid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">showticklabels</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">linecolor</span> <span class="o">=</span> <span class="s1">&#39;rgb(204, 204, 204)&#39;</span><span class="p">,</span>
+            <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">ticks</span> <span class="o">=</span> <span class="s1">&#39;outside&#39;</span><span class="p">,</span>
+            <span class="n">tickcolor</span> <span class="o">=</span> <span class="s1">&#39;rgb(204, 204, 204)&#39;</span><span class="p">,</span>
+            <span class="n">tickwidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">ticklen</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">tickfont</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">family</span> <span class="o">=</span> <span class="s1">&#39;Arial&#39;</span><span class="p">,</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;rgb(82, 82, 82)&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">yaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;€ MW/h&#39;</span><span class="p">,</span>
+            <span class="n">showgrid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">zeroline</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">showline</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">showticklabels</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">layout</span> <span class="o">=</span> <span class="n">layout</span><span class="p">)</span>
+    <span class="n">plot_div</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">include_plotlyjs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plot_div</span></div>
+
+
+
+
+
+<span class="c1"># Pintar gráficas de los ficheros de consumo</span>
+<span class="k">def</span> <span class="nf">graf_consumo</span><span class="p">():</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2000</span><span class="p">))</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2000</span><span class="p">))</span>
+
+    <span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;points&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(0,0,0)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">trace2</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Histogram2d</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;density&#39;</span><span class="p">,</span>
+        <span class="n">nbinsx</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nbinsy</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">colorscale</span><span class="o">=</span><span class="s1">&#39;Jet&#39;</span><span class="p">,</span> <span class="n">reversescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">showscale</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">trace3</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x density&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">),</span>
+        <span class="n">yaxis</span><span class="o">=</span><span class="s1">&#39;y2&#39;</span>
+    <span class="p">)</span>
+    <span class="n">trace4</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;y density&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">),</span>
+        <span class="n">xaxis</span><span class="o">=</span><span class="s1">&#39;x2&#39;</span>
+    <span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">trace1</span><span class="p">,</span> <span class="n">trace2</span><span class="p">,</span> <span class="n">trace3</span><span class="p">,</span> <span class="n">trace4</span><span class="p">]</span>
+
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span>
+        <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">],</span>
+            <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">],</span>
+            <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">t</span><span class="o">=</span><span class="mi">50</span>
+        <span class="p">),</span>
+        <span class="n">hovermode</span><span class="o">=</span><span class="s1">&#39;closest&#39;</span><span class="p">,</span>
+        <span class="n">bargap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">xaxis2</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">yaxis2</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+    <span class="n">plot_div</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">include_plotlyjs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plot_div</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

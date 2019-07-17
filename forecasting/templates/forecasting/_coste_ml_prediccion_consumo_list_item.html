@@ -1,0 +1,39 @@
+{% load static %}
+
+
+<li class="media my-2">
+    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill05.png' %}" alt="coste file icon">
+    <div class="media-body">
+        <div class="row">
+            <div class="col-7">
+                <h5 class="mt-0 mb-1">
+{#                    <small>Nombre:</small>#}
+                    <em><strong>{{ costeprediccionml.nombre }}</strong></em></h5>
+                <h6 class="mt-0 mb-1"><small>Coste: </small><em><strong>{{ costeprediccionml.coste|floatformat:2 }}</strong> €</em></h6>
+                <h5 class="mt-0 mb-1">
+{#                    <small>Empresa:</small>#}
+                    <em><strong>{{ costeprediccionml.empresa }}</strong></em></h5>
+            </div>
+{#            <div class="col-4 align-items-start">#}
+                <div class="col-5 align-self-center">
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                        data-target="#verCosteMLPrediccionConsumoModal{{ costeprediccionml.id }}">
+                    Información
+                </button>
+            </div>
+        </div>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verCosteMLPrediccionConsumoModal{{ costeprediccionml.id }}"
+     tabindex="-1" role="dialog"
+     aria-labelledby="verCosteMLPrediccionConsumoLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% include "forecasting/_coste_ml_prediccion_consumo_item.html" %}
+        </div>
+    </div>
+</div>

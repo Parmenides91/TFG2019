@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.jobs.daily.crear_modelo_consumo &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.jobs.daily.crear_modelo_consumo</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django_extensions.management.jobs</span> <span class="k">import</span> <span class="n">BaseJob</span>
+
+<span class="kn">from</span> <span class="nn">django.core.mail</span> <span class="k">import</span> <span class="n">send_mail</span>
+<span class="kn">from</span> <span class="nn">django.core.files</span> <span class="k">import</span> <span class="n">File</span>
+<span class="kn">from</span> <span class="nn">django.core.files.base</span> <span class="k">import</span> <span class="n">ContentFile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">models</span>
+<span class="c1"># from ...models import Inmueble, ModeloConsumo</span>
+
+<span class="kn">from</span> <span class="nn">...func_datos_modelo</span> <span class="k">import</span> <span class="n">creacion_modelo</span><span class="p">,</span> <span class="n">crearModelo</span>
+
+
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../../../modules/forecasting-docs/forecasting.html#forecasting.jobs.daily.crear_modelo_consumo.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">BaseJob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tarea automática que crea los modelos de predicción para las predicciones de consumo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Creación diaria automática de los modelos necesarios para el usuario.&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Procedo a acceder a la BBDD a por los inmuebles.&#39;</span><span class="p">)</span>
+        <span class="n">inmuebles</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">inmueble</span> <span class="ow">in</span> <span class="n">inmuebles</span><span class="p">:</span>
+            <span class="c1"># # Método 1</span>
+            <span class="c1"># nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble,</span>
+            <span class="c1">#                                                    fichero_modelo_inmueble=crearModelo(</span>
+            <span class="c1">#                                                        inmueble.consumo_inmueble))</span>
+            <span class="c1"># nuevo_modelo.save()</span>
+            <span class="c1"># el_file=File(nuevo_modelo.fichero_modelo_inmueble)</span>
+            <span class="c1"># nuevo_modelo.fichero_modelo_inmueble.save(&#39;ElModelo&#39;, el_file)</span>
+            <span class="c1"># print(nuevo_modelo.fichero_modelo_inmueble.name)</span>
+
+            <span class="c1"># # Método 2</span>
+            <span class="c1"># nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble)</span>
+            <span class="c1"># el_mode=crearModelo(inmueble.consumo_inmueble)</span>
+            <span class="c1"># # el_file = ContentFile(el_mode)</span>
+            <span class="c1"># # nuevo_modelo.fichero_modelo_inmueble.save(&#39;ElModelo&#39;, el_file)</span>
+            <span class="c1"># nuevo_modelo.fichero_modelo_inmueble.save(&#39;ElModelo&#39;, el_mode)</span>
+            <span class="c1"># nuevo_modelo.save()</span>
+            <span class="c1"># print(&#39;fichero_modelo_inmueble&#39;)</span>
+            <span class="c1"># print(nuevo_modelo.fichero_modelo_inmueble)</span>
+            <span class="c1"># print(&#39;fichero_modelo_inmueble.name&#39;)</span>
+            <span class="c1"># print(nuevo_modelo.fichero_modelo_inmueble.name)</span>
+            <span class="c1"># print(&#39;fichero_modelo_inmueble.file&#39;)</span>
+            <span class="c1"># print(nuevo_modelo.fichero_modelo_inmueble.file)</span>
+            <span class="c1"># print(&#39;fichero_modelo_inmueble&#39;)</span>
+            <span class="c1"># print(nuevo_modelo.fichero_modelo_inmueble)</span>
+
+            <span class="c1"># # Método 3</span>
+            <span class="c1"># nuevo_modelo = models.ModeloConsumo.objects.create(inmueble_origen=inmueble)</span>
+            <span class="c1"># ruta_modelo = crearModelo(inmueble.consumo_inmueble)</span>
+            <span class="c1"># nuevo_modelo.fichero_modelo_inmueble = ruta_modelo</span>
+            <span class="c1"># nuevo_modelo.save()</span>
+
+            <span class="c1"># Método 4</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">inmueble</span><span class="o">.</span><span class="n">modelo_actualizado</span><span class="p">:</span>
+                <span class="c1"># Hay que crear un modelo porque el consumo del inmueble ha sido modificado o acaba de ser creado</span>
+                <span class="c1"># Me cargo el viejo, si es que existe.</span>
+                <span class="n">previo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloConsumo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">inmueble_origen</span><span class="o">=</span><span class="n">inmueble</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">previo</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">previo</span><span class="o">.</span><span class="n">fichero_modelo_inmueble_string</span><span class="p">):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">previo</span><span class="o">.</span><span class="n">fichero_modelo_inmueble_string</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="n">previo</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="c1"># Creo un modelo nuevo</span>
+                <span class="c1"># ruta_modelo = crearModelo(inmueble.consumo_inmueble)</span>
+                <span class="n">ruta_modelo</span> <span class="o">=</span> <span class="n">crearModelo</span><span class="p">(</span><span class="n">inmueble</span><span class="o">.</span><span class="n">consumo_inmueble_string</span><span class="p">)</span>
+                <span class="n">nuevo_modelo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloConsumo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">inmueble_origen</span><span class="o">=</span><span class="n">inmueble</span><span class="p">,</span>
+                                                                   <span class="n">user</span><span class="o">=</span><span class="n">inmueble</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                                                                   <span class="n">fichero_modelo_inmueble</span><span class="o">=</span><span class="n">ruta_modelo</span><span class="p">)</span>
+                <span class="n">nuevo_modelo</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                <span class="c1"># Aviso de que el modelo ya se ha creado con los cambios que se hubieran hecho en el Inmueble</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">modelo_actualizado</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                <span class="c1"># Aviso al usuario</span>
+                <span class="n">send_mail</span><span class="p">(</span>
+                    <span class="s1">&#39;Creacion Modelo&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Se ha creado el nuevo modelo.&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;from@example.com&#39;</span><span class="p">,</span>
+                    <span class="p">[</span><span class="n">inmueble</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">],</span>
+                    <span class="n">fail_silently</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># El modelo que existe es correcto y no se requieren más acciones</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No hace falta crear un modelo nuevo.&#39;</span><span class="p">)</span>
+                <span class="k">pass</span></div>
+
+
+            <span class="c1"># # Aviso al usuario</span>
+            <span class="c1"># send_mail(</span>
+            <span class="c1">#     &#39;Creacion Modelo&#39;,</span>
+            <span class="c1">#     &#39;Se ha creado el nuevo modelo.&#39;,</span>
+            <span class="c1">#     &#39;from@example.com&#39;,</span>
+            <span class="c1">#     [inmueble.user.email],</span>
+            <span class="c1">#     fail_silently=False,</span>
+            <span class="c1"># )</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

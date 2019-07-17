@@ -7,6 +7,10 @@ from ...func_mr import crearPrediccionMRunico
 
 
 class Job(BaseJob):
+    """
+    Tarea automática encargada de crear los modelos predictivos para la tarifa TDP.
+    """
+
     help = "Crea predicciones de TPD con su modelo."
 
     def execute(self):

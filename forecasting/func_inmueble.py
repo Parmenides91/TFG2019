@@ -1,3 +1,15 @@
+"""
+.. module:: funciones
+    :synopsis: Funciones para trabajar con el Inmueble.
+
+.. moduleauthor:: Roberto Beneitez Vaquero
+
+
+"""
+
+
+
+
 #from . import models
 from . import plots
 from . import models
@@ -9,6 +21,12 @@ import pandas as pd
 
 #Reparte juego para crear las gráficas en distintas fases temporales
 def crear_graficas_inmueble(df):
+    """
+    Crea las distintas gráficas de consumo para el inmueble.
+
+    :param df: dataframe con los datos de consumo.
+    :return: diccionario con las gráficas separadas en distintos rangos temporales.
+    """
     grafs_dict = {'horas': crear_grafica_generica(df, 'horario'),
                   'dias': crear_grafica_generica(df.resample('D').sum(), 'diario'),
                   'semanas': crear_grafica_generica(df.resample('W').sum(), 'semanal'),
@@ -17,6 +35,13 @@ def crear_graficas_inmueble(df):
 
 #Gráfica genérica
 def crear_grafica_generica(df, tipo):
+    """
+    Genera cada gráfica individual de un consumo.
+
+    :param df: dataframe con los datos de consumo en el rango temporal deseado
+    :param tipo: rango temporal en el que se encuentran los datos
+    :return: contenedor para representar la gráfica en html
+    """
     n_leyenda = 'Consumo '+tipo
 
     trace1 = go.Scatter(
@@ -176,6 +201,13 @@ def consumo_chart(df):
 
 # Cálculo del coste del consumo del inmueble mediante las tarifas personalizadas que haya creado el usuario
 def coste_tarifas_usuario(df, tarifaelectrica):
+    """
+    Cálculo del coste del consumo de un Inmueble en base a una tarifa personalizada del usuario.
+
+    :param df: consumo del inmueble
+    :param tarifaelectrica: tarifa personalizada del usuario.
+    :return: coste en € del consumo.
+    """
     # df = pd.read_csv(fichero, index_col=['Fecha'], parse_dates=True)
     # df.index.freq = 'H'
 
@@ -261,6 +293,15 @@ def coste_tarifas_mr(df):
 
 # Cálculo de coste de la tarifa TPD para un inmueble
 def calcular_coste_mr_inmueble(df_inmueble, df_precios, tipo):
+    """
+    Cálculo del coste del consumo de un Inmueble en base a los precios del mercado regulado.
+    Creación de un dataframe con ambos datos.
+
+    :param df_inmueble: consumo del inmueble.
+    :param df_precios: precios para una tarifa en concreto del mercado regulado.
+    :param tipo: tarifa del mercado regulado en concreto.
+    :return: diccionario con el coste calculado y los datos de consumo y precios juntos.
+    """
     df_merge = pd.merge(df_inmueble, df_precios, how='inner', left_index=True, right_index=True)
 
     coste = 0
@@ -296,6 +337,13 @@ def calcular_coste_mr_inmueble(df_inmueble, df_precios, tipo):
 
 # Gráfica para mostrar cada tarifa superpuesta al consumo del inmueble
 def crear_graficas_superpuestas_inmueble(df, tipo):
+    """
+    Creación de la gráfica de consumo del inmueble superpuesta al precio de una tarifa.
+
+    :param df: consumo del inmueble.
+    :param tipo: tarifa en concreto del mercado regulado.
+    :return: contenedor con las gráfica lista para su representación.
+    """
     n_leyenda = 'Inmueble'
 
     trace1 = go.Scatter(

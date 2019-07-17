@@ -109,6 +109,14 @@ def obtener_precios_mercado_regulado(df):
 
 
 def calcular_coste_tarifa_MR(df, precios, tipo):
+    """
+    Cálculo del coste de las distintas tarifas del mercado regulado para un Inmueble.
+
+    :param df: consumo.
+    :param precios: precios del mercado regulado.
+    :param tipo: tipo de tarifa del mercado regulado.
+    :return: coste en € del consumo.
+    """
     if tipo == 'PPD':
         # # Método 1:
         # coste_PPD = 0

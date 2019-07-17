@@ -14,6 +14,13 @@ from .plots import chart_precios_pvpc
 
 # Recopilo los precios de las fechas que se necesitan y los dejo listos para pintar
 def representar_precios_mr(fecha_inicio, fecha_fin):
+    """
+    Recoge los precios de las tres tarifas del mercado regulado en las fechas solicitadas.
+
+    :param fecha_inicio: Fecha de inicio de precios.
+    :param fecha_fin: Fecha de fin de precios.
+    :return: contenedor con la representación lista para visualizarse.
+    """
 
     historicos = models.HistoricoMercadoRegulado.objects.all()
     graf_precios_mr = None
@@ -53,6 +60,13 @@ def representar_precios_mr(fecha_inicio, fecha_fin):
 
 # Representación de los precios obtenidos del histórico
 def representar_precios_historicos(df):
+    """
+    Crea la gráfica de las tarifas del mercado regulado.
+
+    :param df: precios de las tarifas.
+    :return: contenedor con la gráfica lista para representar.
+    """
+
     trace1 = go.Scatter(
         x=df.index,
         y=df['TPD'],
@@ -136,6 +150,14 @@ def representar_precios_historicos(df):
 
 # Para el Job que genera los modelos de cada tarifa
 def crearModelosMRunicos(df, tipo):
+    """
+    Crea los modelos predictivos para las distintas tarifas del mercado regulado.
+
+    :param df: precios de una tarifa.
+    :param tipo: tarifa en concreto.
+    :return: ruta de acceso al modelo creado.
+    """
+
     df.index.freq = 'h'
 
     # Limpio los datos
@@ -215,6 +237,15 @@ def crearModeloMR(df, tipo):
 
 # Para el Job que crea predicciones de precio de las tarifas del Mercado Regulado desde cada modelo
 def crearPrediccionMRunico(modelo, tipo, rango):
+    """
+    Crea las predicciones de precios para cada tarifa del mercado regulado.
+
+    :param modelo: ruta del modelo a partir del cual crear la predicción.
+    :param tipo: tarifa en concreto de la que se creará la predicción
+    :param rango: franja temporal en la que crear la predicción.
+    :return: ruta del fichero que contiene la predicción creada.
+    """
+
     loaded = SARIMAXResults.load(modelo)
 
     inicio = pd.to_datetime(rango.get('principio'))
@@ -287,6 +318,16 @@ def crearPrediccionMR(fichero_modelo, tipo):
 
 # Calcula el coste de una predicción de consumo en base a la predicción TPD realizada y también me da los datos de ambas predicciones juntas para poder pitnarlas juntas
 def calcular_coste_preCons_prePrec(df_consumo, df_precios, tipo):
+    """
+    Cálculo del coste de una predicción de consumo en base a una predicción de precios para una tarifa en concreto del mercado regulado.
+    También prepara los datos de ambas predicciones juntas.
+
+    :param df_consumo: consumo predicho.
+    :param df_precios: precios predichos para una tarifa en concreto.
+    :param tipo: tarifa en concreto.
+    :return: coste en € y ruta a los datos de ambas predicciones juntas.
+    """
+
     df_merge = pd.merge(df_consumo, df_precios, how='inner', left_index=True, right_index=True)
 
     coste = 0

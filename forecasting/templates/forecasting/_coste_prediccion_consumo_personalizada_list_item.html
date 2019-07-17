@@ -1,0 +1,52 @@
+{% load static %}
+
+
+{#<li class="media my-2">#}
+{#    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill04.png' %}" alt="coste file icon">#}
+{#    <div class="media-body">#}
+{#        <h5 class="mt-0 mb-1"><em><strong>{{ costeprediccionte.tarifaelectrica_asociada.nombre }}</strong></em></h5>#}
+{#        <h6 class="mt-0 mb-1"><strong>{{ costeprediccionte.coste|floatformat:2 }}</strong> €</h6>#}
+{#        <!-- Button trigger modal -->#}
+{#        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"#}
+{#                data-target="#verCostePrediccionConsumoTarifaElectricaModal{{ costeprediccionte.tarifaelectrica_asociada.id }}">#}
+{#            Consultar#}
+{#        </button>#}
+{#    </div>#}
+{#</li>#}
+
+
+<li class="media my-2">
+    <img class="img-fluid border-white mr-3" src="{% static 'icon/bill04.png' %}" alt="coste file icon">
+    <div class="media-body">
+        <div class="row">
+            <div class="col-7">
+                <h5 class="mt-0 mb-1">
+{#                    <small>Nombre:</small>#}
+                    <em><strong>{{ costeprediccionte.tarifaelectrica_asociada.nombre }}</strong></em></h5>
+                <h6 class="mt-0 mb-1"><small>Coste: </small><em><strong>{{ costeprediccionte.coste|floatformat:2 }}</strong> €</em></h6>
+                <h5 class="mt-0 mb-1">
+            </div>
+{#            <div class="col-4 align-items-start">#}
+                <div class="col-5 align-self-center">
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                        data-target="#verCostePrediccionConsumoTarifaElectricaModal{{ costeprediccionte.tarifaelectrica_asociada.id }}">
+                    Consultar
+                </button>
+            </div>
+        </div>
+    </div>
+</li>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verCostePrediccionConsumoTarifaElectricaModal{{ costeprediccionte.tarifaelectrica_asociada.id }}"
+     tabindex="-1" role="dialog"
+     aria-labelledby="verCostePrediccionConsumoTarifaElectricaLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            {% include "forecasting/_coste_prediccion_consumo_personalizada_item.html" %}
+        </div>
+    </div>
+</div>
+{#</div>#}

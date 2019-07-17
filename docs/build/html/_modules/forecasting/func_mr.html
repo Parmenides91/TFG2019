@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.func_mr &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.func_mr</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tsa.statespace.sarimax</span> <span class="k">import</span> <span class="n">SARIMAX</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tsa.statespace.sarimax</span> <span class="k">import</span> <span class="n">SARIMAXResults</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objs</span> <span class="k">as</span> <span class="nn">go</span>
+<span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="k">import</span> <span class="n">plot</span>
+
+<span class="kn">from</span> <span class="nn">.funciones_basicas</span> <span class="k">import</span> <span class="n">id_random_generator</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">.plots</span> <span class="k">import</span> <span class="n">chart_precios_pvpc</span>
+
+
+
+<span class="c1"># Recopilo los precios de las fechas que se necesitan y los dejo listos para pintar</span>
+<div class="viewcode-block" id="representar_precios_mr"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.func_mr.representar_precios_mr">[docs]</a><span class="k">def</span> <span class="nf">representar_precios_mr</span><span class="p">(</span><span class="n">fecha_inicio</span><span class="p">,</span> <span class="n">fecha_fin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recoge los precios de las tres tarifas del mercado regulado en las fechas solicitadas.</span>
+
+<span class="sd">    :param fecha_inicio: Fecha de inicio de precios.</span>
+<span class="sd">    :param fecha_fin: Fecha de fin de precios.</span>
+<span class="sd">    :return: contenedor con la representación lista para visualizarse.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">historicos</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">HistoricoMercadoRegulado</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">graf_precios_mr</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">historico</span> <span class="ow">in</span> <span class="n">historicos</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">historico</span><span class="o">.</span><span class="n">ruta_fichero</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">indexfreq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span>
+        <span class="n">ini_mr</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">first_valid_index</span><span class="p">()</span>
+        <span class="n">fin_mr</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">last_valid_index</span><span class="p">()</span>
+
+        <span class="n">fecha_inicio</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">fecha_inicio</span><span class="p">)</span>
+        <span class="n">fecha_fin</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">fecha_fin</span><span class="p">)</span>
+
+        <span class="c1"># print(&#39;Primera fecha del histórico: {}&#39;.format(ini_mr))</span>
+        <span class="c1"># print(&#39;Última fecha del histórico: {}&#39;.format(fin_mr))</span>
+        <span class="c1"># print(&#39;Inicio precios solicitados: {}&#39;.format(fecha_inicio))</span>
+        <span class="c1"># print(&#39;Fin precios solicitados: {}&#39;.format(fecha_fin))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">fecha_inicio</span> <span class="o">&gt;</span> <span class="n">ini_mr</span> <span class="ow">and</span> <span class="n">fecha_inicio</span> <span class="o">&lt;</span> <span class="n">fin_mr</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fecha_fin</span> <span class="o">&gt;</span> <span class="n">ini_mr</span> <span class="ow">and</span> <span class="n">fecha_fin</span> <span class="o">&lt;</span> <span class="n">fin_mr</span><span class="p">):</span>
+            <span class="c1"># Tengo el rango que me piden en el histórico</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tengo el rango que me piden en el histórico&#39;</span><span class="p">)</span>
+            <span class="n">df_select</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">fecha_inicio</span><span class="p">:</span> <span class="n">fecha_fin</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Procedo a organizar su representación&#39;</span><span class="p">)</span>
+            <span class="n">graf_precios_mr</span> <span class="o">=</span> <span class="n">representar_precios_historicos</span><span class="p">(</span><span class="n">df_select</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No tengo el rango que me piden. Se lo solicito al crawler</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No tengo el rango que me piden. Se lo solicito al crawler&#39;</span><span class="p">)</span>
+            <span class="n">fecha_inicio</span> <span class="o">=</span> <span class="n">fecha_inicio</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+            <span class="n">fecha_fin</span> <span class="o">=</span> <span class="n">fecha_fin</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+            <span class="n">graf_precios_mr</span> <span class="o">=</span> <span class="n">chart_precios_pvpc</span><span class="p">(</span><span class="n">fecha_inicio</span><span class="p">,</span> <span class="n">fecha_fin</span><span class="p">)</span>
+
+        <span class="k">break</span> <span class="c1"># no debería haber más históricos, y de haberlos todos iban a hacer referencia al mismo fichero</span>
+
+    <span class="k">return</span> <span class="n">graf_precios_mr</span></div>
+
+
+
+<span class="c1"># Representación de los precios obtenidos del histórico</span>
+<div class="viewcode-block" id="representar_precios_historicos"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.func_mr.representar_precios_historicos">[docs]</a><span class="k">def</span> <span class="nf">representar_precios_historicos</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crea la gráfica de las tarifas del mercado regulado.</span>
+
+<span class="sd">    :param df: precios de las tarifas.</span>
+<span class="sd">    :return: contenedor con la gráfica lista para representar.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;TPD&#39;</span><span class="p">],</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Tarifa por defecto&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(255,0,0)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">trace2</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;EDP&#39;</span><span class="p">],</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Eficiencia 2 periodos&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(0,111,255)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">trace3</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;VE&#39;</span><span class="p">],</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Vehículo eléctrico&#39;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(77,255,0)&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">trace1</span><span class="p">,</span> <span class="n">trace2</span><span class="p">,</span> <span class="n">trace3</span><span class="p">,</span> <span class="p">]</span>
+
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Tarifas Mercado Regulado&#39;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># width = 800,</span>
+        <span class="c1"># height = 700,</span>
+        <span class="n">hovermode</span><span class="o">=</span><span class="s1">&#39;closest&#39;</span><span class="p">,</span>
+        <span class="n">bargap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">legend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="c1"># orientation=&#39;h&#39;,</span>
+            <span class="n">x</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+            <span class="n">traceorder</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+            <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">family</span><span class="o">=</span><span class="s1">&#39;sans-serif&#39;</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#000&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">bgcolor</span><span class="o">=</span><span class="s1">&#39;#E2E2E2&#39;</span><span class="p">,</span>
+            <span class="n">bordercolor</span><span class="o">=</span><span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+            <span class="n">borderwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">autoexpand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">l</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+            <span class="n">t</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">showticklabels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;rgb(204, 204, 204)&#39;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">ticks</span><span class="o">=</span><span class="s1">&#39;outside&#39;</span><span class="p">,</span>
+            <span class="n">tickcolor</span><span class="o">=</span><span class="s1">&#39;rgb(204, 204, 204)&#39;</span><span class="p">,</span>
+            <span class="n">tickwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">ticklen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">tickfont</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">family</span><span class="o">=</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;rgb(82, 82, 82)&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;€ MW/h&#39;</span><span class="p">,</span>
+            <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">showticklabels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+    <span class="n">plot_div</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">include_plotlyjs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plot_div</span></div>
+
+
+
+<span class="c1"># Para el Job que genera los modelos de cada tarifa</span>
+<div class="viewcode-block" id="crearModelosMRunicos"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.func_mr.crearModelosMRunicos">[docs]</a><span class="k">def</span> <span class="nf">crearModelosMRunicos</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tipo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crea los modelos predictivos para las distintas tarifas del mercado regulado.</span>
+
+<span class="sd">    :param df: precios de una tarifa.</span>
+<span class="sd">    :param tipo: tarifa en concreto.</span>
+<span class="sd">    :return: ruta de acceso al modelo creado.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span>
+
+    <span class="c1"># Limpio los datos</span>
+    <span class="n">filt_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">tipo</span><span class="p">]</span>
+    <span class="n">low</span> <span class="o">=</span> <span class="o">.</span><span class="mi">05</span>
+    <span class="n">high</span> <span class="o">=</span> <span class="o">.</span><span class="mi">95</span>
+    <span class="n">quant_df_low</span> <span class="o">=</span> <span class="n">filt_df</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
+    <span class="n">quant_df_high</span> <span class="o">=</span> <span class="n">filt_df</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
+
+    <span class="c1"># Quito valores que distorsionen</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">quant_df_low</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_df_low</span>
+        <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">quant_df_high</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_df_high</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;TPD&#39;</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">tipo</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">24</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+        <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">modelosMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+        <span class="n">ruta_modelo</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;modeloMR_&#39;</span> <span class="o">+</span> <span class="n">tipo</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ruta_modelo</span><span class="p">)</span>
+        <span class="c1"># return model</span>
+        <span class="k">return</span> <span class="n">ruta_modelo</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;EDP&#39;</span><span class="p">):</span>
+        <span class="c1"># model = SARIMAX(df[tipo], order=(1, 0, 0), seasonal_order=(2, 0, 0, 24)).fit()</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">tipo</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+        <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">modelosMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+        <span class="n">ruta_modelo</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;modeloMR_&#39;</span> <span class="o">+</span> <span class="n">tipo</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ruta_modelo</span><span class="p">)</span>
+        <span class="c1"># return model</span>
+        <span class="k">return</span> <span class="n">ruta_modelo</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;VE&#39;</span><span class="p">):</span>
+        <span class="c1"># model = SARIMAX(df[tipo], order=(2, 0, 0), seasonal_order=(2, 0, 0, 24)).fit()</span>
+        <span class="c1"># model = SARIMAX(df[tipo], order=(2, 1, 0), seasonal_order=(2, 0, 1, 24)).fit()</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">tipo</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+        <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">modelosMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+        <span class="n">ruta_modelo</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;modeloMR_&#39;</span> <span class="o">+</span> <span class="n">tipo</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ruta_modelo</span><span class="p">)</span>
+        <span class="c1"># return model</span>
+        <span class="k">return</span> <span class="n">ruta_modelo</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Algo ha salido mal.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Algo ha salido mal.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1"># Creo que ya me puedo cargar esta función, uso la de arriba.</span>
+<span class="c1"># Para el Job que genera los modelos</span>
+<span class="k">def</span> <span class="nf">crearModeloMR</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">tipo</span><span class="p">):</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span>
+
+    <span class="c1"># Limpio los datos</span>
+    <span class="n">filt_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">tipo</span><span class="p">]</span>
+    <span class="n">low</span> <span class="o">=</span> <span class="o">.</span><span class="mi">05</span>
+    <span class="n">high</span> <span class="o">=</span> <span class="o">.</span><span class="mi">95</span>
+    <span class="n">quant_df_low</span> <span class="o">=</span> <span class="n">filt_df</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
+    <span class="n">quant_df_high</span> <span class="o">=</span> <span class="n">filt_df</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">quant_df_low</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_df_low</span>
+        <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">quant_df_high</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">tipo</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_df_high</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">SARIMAX</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">tipo</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">seasonal_order</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">24</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+    <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">modelosMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+    <span class="n">ruta_modelo</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;modeloMR&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ruta_modelo</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Esto es lo que te paso:&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ruta_modelo</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ruta_modelo</span>
+
+
+<span class="c1"># Para el Job que crea predicciones de precio de las tarifas del Mercado Regulado desde cada modelo</span>
+<div class="viewcode-block" id="crearPrediccionMRunico"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.func_mr.crearPrediccionMRunico">[docs]</a><span class="k">def</span> <span class="nf">crearPrediccionMRunico</span><span class="p">(</span><span class="n">modelo</span><span class="p">,</span> <span class="n">tipo</span><span class="p">,</span> <span class="n">rango</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crea las predicciones de precios para cada tarifa del mercado regulado.</span>
+
+<span class="sd">    :param modelo: ruta del modelo a partir del cual crear la predicción.</span>
+<span class="sd">    :param tipo: tarifa en concreto de la que se creará la predicción</span>
+<span class="sd">    :param rango: franja temporal en la que crear la predicción.</span>
+<span class="sd">    :return: ruta del fichero que contiene la predicción creada.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">loaded</span> <span class="o">=</span> <span class="n">SARIMAXResults</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">modelo</span><span class="p">)</span>
+
+    <span class="n">inicio</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">rango</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;principio&#39;</span><span class="p">))</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">rango</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;final&#39;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;TPD&#39;</span><span class="p">:</span>
+        <span class="n">predicciones</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="s1">&#39;SARIMA(3,1,1)(2,0,1,24) Predicciones&#39;</span><span class="p">)</span>
+        <span class="n">ristra</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span> <span class="n">ristra</span><span class="p">,</span> <span class="n">tipo</span><span class="p">:</span> <span class="n">predicciones</span><span class="p">}</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">prediccionesMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+        <span class="n">ruta_pred</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;prediccionMR_&#39;</span> <span class="o">+</span> <span class="n">tipo</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ruta_pred</span>
+    <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;EDP&#39;</span><span class="p">:</span>
+        <span class="n">predicciones</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="s1">&#39;SARIMA(1,0,0)(2,0,0,24) Predicciones&#39;</span><span class="p">)</span>
+        <span class="n">ristra</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span> <span class="n">ristra</span><span class="p">,</span> <span class="n">tipo</span><span class="p">:</span> <span class="n">predicciones</span><span class="p">}</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">prediccionesMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+        <span class="n">ruta_pred</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;prediccionMR_&#39;</span> <span class="o">+</span> <span class="n">tipo</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ruta_pred</span>
+    <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span>
+        <span class="n">predicciones</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="s1">&#39;SARIMA(2,0,0)(2,0,0,24) Predicciones&#39;</span><span class="p">)</span>
+        <span class="n">ristra</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span> <span class="n">ristra</span><span class="p">,</span> <span class="n">tipo</span><span class="p">:</span> <span class="n">predicciones</span><span class="p">}</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">prediccionesMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+        <span class="n">ruta_pred</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;prediccionMR_&#39;</span> <span class="o">+</span> <span class="n">tipo</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ruta_pred</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Creación de modelos para tarifas que no se tienen en cuenta: NOPE.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Creación de Predicciones unicas mercado regulado: error&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1"># Creo que lo he sustituido por el de arriba, chico.</span>
+<span class="c1"># Para el Job que genera las predicciones</span>
+<span class="k">def</span> <span class="nf">crearPrediccionMR</span><span class="p">(</span><span class="n">fichero_modelo</span><span class="p">,</span> <span class="n">tipo</span><span class="p">):</span>
+    <span class="n">loaded</span> <span class="o">=</span> <span class="n">SARIMAXResults</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fichero_modelo</span><span class="p">)</span>
+
+    <span class="n">DIAS_A_PREDECIR</span> <span class="o">=</span> <span class="mi">7</span>
+
+    <span class="n">inicio</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># Hoy</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DIAS_A_PREDECIR</span><span class="p">):</span>
+        <span class="n">final</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="n">final</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># x DÍAS EN ADELANTE</span>
+
+    <span class="n">inicio</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># fuerzo un día en concreto because boobs</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># fuerzo un día en concreto because boobs</span>
+
+    <span class="n">predicciones</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">dynamic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="s1">&#39;levels&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;SARIMA(2,1,1)(2,0,1,24) Predicciones&#39;</span><span class="p">)</span>
+
+    <span class="n">ristra</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">inicio</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">final</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span> <span class="n">ristra</span><span class="p">,</span> <span class="n">tipo</span><span class="p">:</span> <span class="n">predicciones</span><span class="p">}</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">prediccionesMR</span><span class="se">\\</span><span class="s1">&#39;</span>
+    <span class="n">ruta_pred</span> <span class="o">=</span> <span class="n">ruta_fich</span> <span class="o">+</span> <span class="s1">&#39;prediccion&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_pred</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ruta_pred</span>
+
+
+<span class="c1"># Calcula el coste de una predicción de consumo en base a la predicción TPD realizada y también me da los datos de ambas predicciones juntas para poder pitnarlas juntas</span>
+<div class="viewcode-block" id="calcular_coste_preCons_prePrec"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.func_mr.calcular_coste_preCons_prePrec">[docs]</a><span class="k">def</span> <span class="nf">calcular_coste_preCons_prePrec</span><span class="p">(</span><span class="n">df_consumo</span><span class="p">,</span> <span class="n">df_precios</span><span class="p">,</span> <span class="n">tipo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cálculo del coste de una predicción de consumo en base a una predicción de precios para una tarifa en concreto del mercado regulado.</span>
+<span class="sd">    También prepara los datos de ambas predicciones juntas.</span>
+
+<span class="sd">    :param df_consumo: consumo predicho.</span>
+<span class="sd">    :param df_precios: precios predichos para una tarifa en concreto.</span>
+<span class="sd">    :param tipo: tarifa en concreto.</span>
+<span class="sd">    :return: coste en € y ruta a los datos de ambas predicciones juntas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df_merge</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_consumo</span><span class="p">,</span> <span class="n">df_precios</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">coste</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;TPD&#39;</span><span class="p">:</span>
+        <span class="c1"># Tarifa TPD.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tarifa TPD.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merge</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">coste</span> <span class="o">+=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;TPD&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;EDP&#39;</span><span class="p">:</span>
+        <span class="c1"># Tarifa EDP.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tarifa EDP.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merge</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">coste</span> <span class="o">+=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;EDP&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span>
+         <span class="c1"># Tarifa VE.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tarifa VE.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merge</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+             <span class="n">coste</span> <span class="o">+=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;VE&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;func_mr.py: caso no soportado - error.&#39;</span><span class="p">)</span>
+
+    <span class="n">coste</span> <span class="o">=</span> <span class="n">coste</span> <span class="o">/</span> <span class="mi">1000</span>  <span class="c1"># porque viene en €/MW/h y el consumo está en kW/h</span>
+
+    <span class="n">info_coste</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;valor&#39;</span><span class="p">:</span> <span class="n">coste</span><span class="p">,</span>
+                  <span class="s1">&#39;datos&#39;</span><span class="p">:</span><span class="n">df_merge</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">info_coste</span></div>
+
+
+<span class="c1"># creo que te puedes cargar esta función porque usas la de arriba, chico.</span>
+<span class="c1"># para crear un coste asociado a un consumo predicho con un precio predicho</span>
+<span class="k">def</span> <span class="nf">crear_costes_mr_prediccion</span><span class="p">(</span><span class="n">df_consumo</span><span class="p">,</span> <span class="n">df_precios</span><span class="p">,</span> <span class="n">tipo</span><span class="p">):</span>
+    <span class="c1">#deberían tener exactamente las mismas fechas como index, así que se genera una nueva columna con el precio</span>
+    <span class="n">df_merge</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_consumo</span><span class="p">,</span> <span class="n">df_precios</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">coste</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;TPD&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merge</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">coste</span> <span class="o">+=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;TPD&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Realmente no deberías estar aquí #1&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;EDP&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merge</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">coste</span> <span class="o">+=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;EDP&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Realmente no deberías estar aquí #2&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merge</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">coste</span> <span class="o">+=</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;VE&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Realmente no deberías estar aquí #3&#39;</span><span class="p">)</span>
+
+    <span class="n">coste</span> <span class="o">=</span> <span class="n">coste</span> <span class="o">/</span> <span class="mi">1000</span> <span class="c1"># porque viene en €/MW/h y el consumo está en kW/h</span>
+
+    <span class="k">return</span> <span class="n">coste</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -7,7 +7,7 @@
 </div>
 
 <div class="modal-body">
-    <p class="h3">{{ costeinmueblete.tarifaelectrica_asociada.nombre }}</p>
+    <p class="h3"><em>{{ costeinmueblete.tarifaelectrica_asociada.nombre }}</em></p>
     <p class="my-0">Periodo de gracia:
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.hora_ini_periodo_gracia }}</strong> -
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.hora_fin_periodo_gracia }}</strong></p>
@@ -15,7 +15,7 @@
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.precio_periodo_gracia }}</strong> €</p>
     <p class="my-0">Precio normal:
         <strong>{{ costeinmueblete.tarifaelectrica_asociada.precio_periodo_general }}</strong> €</p>
-    <a class="btn btn-success btn-sm btn-block my-3" href="{% url 'forecasting:single_tarifaelectrica' username=costeinmueblete.tarifaelectrica_asociada.user.username pk=costeinmueblete.tarifaelectrica_asociada.pk %}">Detalles de la Tarifa</a>
+    <a class="btn btn-info btn-sm btn-block my-3" href="{% url 'forecasting:single_tarifaelectrica' username=costeinmueblete.tarifaelectrica_asociada.user.username pk=costeinmueblete.tarifaelectrica_asociada.pk %}">Consultar Detalles de la Tarifa</a>
 </div>
 
 <div class="modal-footer">

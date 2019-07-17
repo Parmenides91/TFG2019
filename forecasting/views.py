@@ -1,3 +1,13 @@
+"""
+.. module:: view
+    :synopsis: Contiene todas las vistas de la app forecasting.
+
+.. moduleauthor:: Roberto Benéitez Vaquero
+
+
+"""
+
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
@@ -39,6 +49,10 @@ User = get_user_model()
 # INMUEBLES
 #listado de los inmuebles, en general (probablemente me lo puedo cargar, porque sólo quiero listar por usuario)
 class InmuebleList(SelectRelatedMixin, generic.ListView):
+    """
+    Listado de los Inmuebles.
+    """
+
     model=models.Inmueble
     select_related = ("user", )
 
@@ -46,6 +60,10 @@ class InmuebleList(SelectRelatedMixin, generic.ListView):
 # (aquí creo que va la comprobación de si el usuario que está en el contexto de la página es el que está tratando de acceder a ver el listado de inmuebles)
 
 class UserInmuebles(generic.ListView):
+    """
+    Listado de los Inmuebles para un usuario en concreto.
+    """
+
     model=models.Inmueble
     template_name = "forecasting/user_inmueble_list.html"
 
@@ -64,16 +82,20 @@ class UserInmuebles(generic.ListView):
 
 #muestra un inmueble individual
 class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
+    """
+    Muestra de los datos para un Inmueble en concreto.
+    """
+
     model = models.Inmueble
     select_related = ("user",)
 
-    """
-    def pintarParcial(self):
-        parciales=self.inmueble.consumosparciales.all()
-        for parcial in parciales:
-            df=pd.read_csv(parcial, delimiter=';', decimal=',')
-        return df
-    """
+    # """
+    # def pintarParcial(self):
+    #     parciales=self.inmueble.consumosparciales.all()
+    #     for parcial in parciales:
+    #         df=pd.read_csv(parcial, delimiter=';', decimal=',')
+    #     return df
+    # """
 
     def get_ConsumoParcial(self, model, select_related):
         func_parciales.obtener_consumos_asociados(select_related, model.pk)
@@ -82,18 +104,18 @@ class InmuebleDetail(SelectRelatedMixin, generic.DetailView):
         queryset = super().get_queryset()
         return queryset.filter(user__username__iexact = self.kwargs.get("username"))
 
-    """
-    def get(self, request, *args, **kwargs):
-        try:
-            consumosparciales = models.ConsumoParcial.objects.filter(
-                user=self.request.user,
-                inmueble_asociado=self.inmueble_asociado.pk
-            ).get()
-        except:
-            pass
-
-        return super().get(request, *args, **kwargs)
-    """
+    # """
+    # def get(self, request, *args, **kwargs):
+    #     try:
+    #         consumosparciales = models.ConsumoParcial.objects.filter(
+    #             user=self.request.user,
+    #             inmueble_asociado=self.inmueble_asociado.pk
+    #         ).get()
+    #     except:
+    #         pass
+    #
+    #     return super().get(request, *args, **kwargs)
+    # """
 
 FECHA_INICIO_PRECIOS=datetime(2019, 1, 1, 0, 0, 0).isoformat('T') # 2019-01-01 00:00:00
 FECHA_FIN_PRECIOS=(datetime.now().__format__('%Y-%m-%d') ) + 'T00:00:00' # HOY
@@ -114,6 +136,10 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 #crear un nuevo inmueble
 class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    """
+    Creación de un Inmueble
+    """
+
     fields = ('nombre', 'descripcion', 'consumo_inmueble')
     model = models.Inmueble
 
@@ -153,17 +179,25 @@ class CreateInmueble(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView)
 
 #modificar un inmueble ya creado
 class InmuebleUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Modificación de los datos de un Inmueble.
+    """
+
     model = models.Inmueble
     fields=['nombre','descripcion']
     template_name_suffix = '_form_update'
 
 
 #eliminar un inmueble
-"""
-    Esta vista requiere atención:
-    - Debería redirigir al listado de los inmuebles que tenga el usuario. Hay que pasarle por argumento el username
-"""
+# """
+#     Esta vista requiere atención:
+#     - Debería redirigir al listado de los inmuebles que tenga el usuario. Hay que pasarle por argumento el username
+# """
 class DeleteInmueble(LoginRequiredMixin, DeleteView):
+    """
+    Eliminación de un Inmueble
+    """
+
     model = models.Inmueble
     success_url = reverse_lazy('home')
     #success_url = reverse_lazy('forecasting:create_inmueble', kwargs={"username": self.user.username})
@@ -172,6 +206,10 @@ class DeleteInmueble(LoginRequiredMixin, DeleteView):
 # CONSUMOS PARCIALES
 #crear un nuevo consumo parcial
 class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    """
+    Creación de un consumo parcial asociado a un Inmueble en concreto.
+    """
+
     fields = ('inmueble_asociado', 'fichero_consumo_parcial',)
     model = models.ConsumoParcial
 
@@ -201,6 +239,10 @@ class CreateConsumoParcial(LoginRequiredMixin, SelectRelatedMixin, generic.Creat
 # PREDICCIONES DE CONSUMO
 #ver una predicción de consumo concreta
 class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
+    """
+    Visualización de los datos de una predicción de consumo en concreto.
+    """
+
     model = models.PrediccionConsumo
     select_related = ("modelo_consumo_origen",)
 
@@ -212,9 +254,13 @@ class PrediccionConsumoDetail(SelectRelatedMixin, generic.DetailView):
         queryset = super().get_queryset()
         return queryset.filter(id__iexact=self.kwargs.get("pk"))
 
-#TODO debería redigirigr al inmueble
+#TOD debería redigirigr al inmueble
 #Para eliminar manualmente las predicciones de consumo
 class DeletePrediccionConsumo(LoginRequiredMixin, DeleteView):
+    """
+    Eliminación de una predicción de consumo en concreto.
+    """
+
     model = models.PrediccionConsumo
     success_url = reverse_lazy('home')
 
@@ -227,6 +273,10 @@ class DeletePrediccionConsumo(LoginRequiredMixin, DeleteView):
 # TARIFA ELÉCTRICA
 #crear una tarifa eléctrica
 class CreateTarifaElectrica(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
+    """
+    Creación de una tarifa eléctrica personalizada para el usuario.
+    """
+
     fields = ('nombre', 'hora_ini_periodo_gracia', 'hora_fin_periodo_gracia', 'precio_periodo_gracia', 'precio_periodo_general')
     model = models.TarifaElectrica
 
@@ -238,6 +288,10 @@ class CreateTarifaElectrica(LoginRequiredMixin, SelectRelatedMixin, generic.Crea
 
 #Listar las tarifas eléctricas de un usuario
 class UserTarifasElectricas(generic.ListView):
+    """
+    Listado de las tarifas eléctricas personalizadas de un usuario en concreto.
+    """
+
     model=models.TarifaElectrica
     template_name = "forecasting/user_tarifaelectrica_list.html"
 
@@ -260,6 +314,10 @@ class UserTarifasElectricas(generic.ListView):
 
 #muestra una tarifa eléctrica
 class TarifaElectricaDetail(SelectRelatedMixin, generic.DetailView):
+    """
+    Muestra de la información de una tarifa eléctrica personalizada  en concreto.
+    """
+
     model = models.TarifaElectrica
     select_related = ("user",)
 
@@ -269,16 +327,24 @@ class TarifaElectricaDetail(SelectRelatedMixin, generic.DetailView):
 
 #modificar una tarifa eléctrica
 class TarifaElectricaUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Modificación de una tarifa eléctrica personalizada.
+    """
+
     model = models.TarifaElectrica
     fields=['nombre', 'hora_ini_uno', 'duracion_uno', 'precio_uno', 'hora_ini_dos', 'duracion_dos', 'precio_dos']
     template_name_suffix = '_form_update'
 
 #eliminar una tarifa eléctrica
 class DeleteTarifaElectrica(LoginRequiredMixin, DeleteView):
+    """
+    Eliminación de una tarifa eléctrica personalizada.
+    """
+
     model = models.TarifaElectrica
     success_url = reverse_lazy('home')
 
-
+#eliminar
 # TARIFA MERCADO REGULADO - histórico subido por el usuario
 #Crear/subir un histórico de tarifas del Mercado Regulado
 class CreateTarifaMercadoRegulado(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
@@ -291,6 +357,7 @@ class CreateTarifaMercadoRegulado(LoginRequiredMixin, SelectRelatedMixin, generi
         self.object.save()
         return super().form_valid(form)
 
+#eliminar
 #Listar las tarifas eléctricas de un usuario
 class UserTarifasMercadoRegulado(generic.ListView):
     model=models.TarifaMercadoRegulado
@@ -308,6 +375,7 @@ class UserTarifasMercadoRegulado(generic.ListView):
         context=super().get_context_data(**kwargs)
         return context
 
+#eliminar
 #Muetra una Tarifa del Mercado Regulado
 class TarifaMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
     model = models.TarifaMercadoRegulado
@@ -323,6 +391,7 @@ class TarifaMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):
 #     fields=['fichero_precios']
 #     template_name_suffix = '_form_update'
 
+#eliminar
 #Elimina una tarifa del mercado regulado
 class DeleteTarifaMercadoRegulado(LoginRequiredMixin, DeleteView):
     model = models.TarifaMercadoRegulado
@@ -385,12 +454,13 @@ class DeleteTarifaMercadoRegulado(LoginRequiredMixin, DeleteView):
 
 
 
-
+#eliminar
 # CONSUMOS
 class ConsumoList(SelectRelatedMixin, generic.ListView):
     model = models.Consumo
     select_related = ("user",)
 
+#eliminar
 class UserConsumos(generic.ListView):
     model = models.Consumo
     template_name = "forecasting/user_consumo_list.html"
@@ -409,6 +479,7 @@ class UserConsumos(generic.ListView):
         context["consumo_user"] = self.consumo_user
         return context
 
+#eliminar
 class ConsumoDetail(SelectRelatedMixin, generic.DetailView):
     model = models.Consumo
     select_related = ("user",)
@@ -417,6 +488,7 @@ class ConsumoDetail(SelectRelatedMixin, generic.DetailView):
         queryset = super().get_queryset()
         return queryset.filter(user__username__iexact = self.kwargs.get("username"))
 
+#eliminar
 class CreateConsumo(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
     fields = ('titulo', 'fichero_consumo')
     model = models.Consumo
@@ -427,7 +499,7 @@ class CreateConsumo(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
         self.object.save()
         return super().form_valid(form)
 
-
+#eliminar
 class DeleteConsumo(LoginRequiredMixin, DeleteView):
     model = models.Consumo
     success_url = reverse_lazy('forecasting:all')
@@ -435,13 +507,14 @@ class DeleteConsumo(LoginRequiredMixin, DeleteView):
 
 
 
-
+#eliminar
 # MODELOS DE PREDICCIÓN
 class ModeloPredList(SelectRelatedMixin, generic.ListView):
     model = models.ModeloPred
     #select_related = ("consumo_origen",)
     select_related = ("user", )
 
+#eliminar
 class UserModelosPred(generic.ListView):
     model = models.ModeloPred
     template_name = "forecasting/user_modelopred_list.html"
@@ -461,6 +534,7 @@ class UserModelosPred(generic.ListView):
         context["modelopred_user"] = self.modelopred_user
         return context
 
+#eliminar
 class ModeloPredDetail(SelectRelatedMixin, generic.DetailView):
     model = models.ModeloPred
     select_related = ("created_by",)
@@ -478,6 +552,7 @@ class ModeloPredDetail(SelectRelatedMixin, generic.DetailView):
         #return queryset.filter(pk__iexact = self.kwargs.get("pk"))
         return queryset.filter(created_by__username__iexact = self.kwargs.get("username"))
 
+#eliminar
 class CreateModeloPred(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
     fields = ('titulo', 'consumo_origen')
     model = models.ModeloPred
@@ -491,17 +566,19 @@ class CreateModeloPred(LoginRequiredMixin, SelectRelatedMixin, generic.CreateVie
         self.object.save()
         return super().form_valid(form)
 
+#eliminar
 class DeleteModeloPred(LoginRequiredMixin, DeleteView):
     model = models.ModeloPred
     success_url = reverse_lazy('forecasting:all_MP')
 
 
-
+#eliminar
 # PREDICCIONES
 class PrediccionList(SelectRelatedMixin, generic.ListView):
     model = models.Prediccion
     select_related = ("user", )
 
+#eliminar
 class UserPredicciones(generic.ListView):
     model = models.Prediccion
     template_name = "forecasting/user_prediccion_list.html"
@@ -519,6 +596,7 @@ class UserPredicciones(generic.ListView):
         context["prediccion_user"] = self.prediccion_user
         return context
 
+#eliminar
 class PrediccionDetail(SelectRelatedMixin, generic.DetailView):
     model = models.Prediccion
     select_related = ("created_by",)
@@ -527,6 +605,7 @@ class PrediccionDetail(SelectRelatedMixin, generic.DetailView):
         queryset = super().get_queryset()
         return queryset.filter(created_by__username__iexact = self.kwargs.get("username"))
 
+#eliminar
 class CreatePrediccion(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
     fields = ('titulo', 'modelopred_origen')
     model = models.Prediccion
@@ -538,11 +617,12 @@ class CreatePrediccion(LoginRequiredMixin, SelectRelatedMixin, generic.CreateVie
         self.object.save()
         return super().form_valid(form)
 
+#eliminar
 class DeletePrediccion(LoginRequiredMixin, DeleteView):
     model = models.Prediccion
     success_url = reverse_lazy('forecasting:all_PP')
 
-
+#eliminar
 def crear_fic_mod(request, pk):
     #model = models.ModeloPred
     #mo_actual = model.filter(pk = pk)
@@ -575,40 +655,40 @@ def crear_fic_mod(request, pk):
         writer.writerows(csvData)
     csvFile.close()
 
-    """
-    # Abro y preparo el dataframe
-    c_o = ModeloPred.objects.get(pk=pk).consumo_origen.fichero_consumo
-    df = pd.read_csv(c_o, delimiter=';', decimal=',')
-    ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')
-    df['Fecha'] = ristra
-    df = df.drop(['CUPS', 'Hora', 'Metodo_obtencion'], axis=1)
-    df.index = pd.to_datetime(df['Fecha'])
-    df = df.drop(['Fecha'], axis=1)
-    df.index.freq = 'h'
-
-    # Limpio los datos
-    filt_df = df.loc[:, 'Consumo_kWh']
-    low = .05
-    high = .95
-    quant_df_low = filt_df.quantile(low)
-    quant_df_high = filt_df.quantile(high)
-
-    for index, row in df.iterrows():
-        if row['Consumo_kWh'] < quant_df_low:
-            row['Consumo_kWh'] = quant_df_low
-        elif row['Consumo_kWh'] > quant_df_high:
-            row['Consumo_kWh'] = quant_df_high
-
-    tam_total = len(df)
-    tam_train = int(tam_total/0.8)
-    tam_test = tam_total-tam_train
-
-    train = df.iloc[:tam_train]
-    test = df.iloc[tam_test:]
-
-    model = SARIMAX(train['Consumo_kWh'], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24))
-    results = model.fit()
-    """
+    # """
+    # # Abro y preparo el dataframe
+    # c_o = ModeloPred.objects.get(pk=pk).consumo_origen.fichero_consumo
+    # df = pd.read_csv(c_o, delimiter=';', decimal=',')
+    # ristra = pd.date_range(df['Fecha'][0], periods=len(df), freq='H')
+    # df['Fecha'] = ristra
+    # df = df.drop(['CUPS', 'Hora', 'Metodo_obtencion'], axis=1)
+    # df.index = pd.to_datetime(df['Fecha'])
+    # df = df.drop(['Fecha'], axis=1)
+    # df.index.freq = 'h'
+    #
+    # # Limpio los datos
+    # filt_df = df.loc[:, 'Consumo_kWh']
+    # low = .05
+    # high = .95
+    # quant_df_low = filt_df.quantile(low)
+    # quant_df_high = filt_df.quantile(high)
+    #
+    # for index, row in df.iterrows():
+    #     if row['Consumo_kWh'] < quant_df_low:
+    #         row['Consumo_kWh'] = quant_df_low
+    #     elif row['Consumo_kWh'] > quant_df_high:
+    #         row['Consumo_kWh'] = quant_df_high
+    #
+    # tam_total = len(df)
+    # tam_train = int(tam_total/0.8)
+    # tam_test = tam_total-tam_train
+    #
+    # train = df.iloc[:tam_train]
+    # test = df.iloc[tam_test:]
+    #
+    # model = SARIMAX(train['Consumo_kWh'], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24))
+    # results = model.fit()
+    # """
 
     return True
 
@@ -618,40 +698,44 @@ def crear_fic_mod(request, pk):
 
 
 class PVPCView(TemplateView):
+    """
+    Representación de los precios del mercado regulado.
+    """
+
     template_name = 'forecasting/pvpc_chart.html'
 
-    """
-    def get_queryset(self):
-        recib = self.kwargs['yearS']
-        print('ATENTO AQUI QUE VIENE:')
-        print(recib)
-    """
+    # """
+    # def get_queryset(self):
+    #     recib = self.kwargs['yearS']
+    #     print('ATENTO AQUI QUE VIENE:')
+    #     print(recib)
+    # """
 
-    """
-    def get(self, *args, **kwargs):
-        print('Processing GET request in PVPCView')
-        #resp = super().get(*args, **kwargs)
-        if not self.kwargs['yearS'] or self.kwargs['monthS'] or self.kwargs['dayS'] or self.kwargs['yearF'] or self.kwargs['monthF'] or self.kwargs['dayF']:
-            ahora = datetime.now().__format__('%Y-%m-%d')
-            principio = ahora + 'T02:00:00'
-            finalYear = datetime.now().__format__('%Y')
-            finalMonth = datetime.now().__format__('%m')
-            finalDay = datetime.now().__format__('%d')
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final += timedelta(days=1)
-            final = final.isoformat('T')
-        else:
-            principioYear = self.kwargs['yearS']
-            principioMonth = self.kwargs['monthS']
-            principioDay = self.kwargs['dayS']
-            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
-            principio = principio.isoformat('T')
-            finalYear = self.kwargs['yearF']
-            finalMonth = self.kwargs['monthF']
-            finalDay = self.kwargs['dayF']
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final = final.isoformat('T')
-    """
+    # """
+    # def get(self, *args, **kwargs):
+    #     print('Processing GET request in PVPCView')
+    #     #resp = super().get(*args, **kwargs)
+    #     if not self.kwargs['yearS'] or self.kwargs['monthS'] or self.kwargs['dayS'] or self.kwargs['yearF'] or self.kwargs['monthF'] or self.kwargs['dayF']:
+    #         ahora = datetime.now().__format__('%Y-%m-%d')
+    #         principio = ahora + 'T02:00:00'
+    #         finalYear = datetime.now().__format__('%Y')
+    #         finalMonth = datetime.now().__format__('%m')
+    #         finalDay = datetime.now().__format__('%d')
+    #         final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+    #         final += timedelta(days=1)
+    #         final = final.isoformat('T')
+    #     else:
+    #         principioYear = self.kwargs['yearS']
+    #         principioMonth = self.kwargs['monthS']
+    #         principioDay = self.kwargs['dayS']
+    #         principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+    #         principio = principio.isoformat('T')
+    #         finalYear = self.kwargs['yearF']
+    #         finalMonth = self.kwargs['monthF']
+    #         finalDay = self.kwargs['dayF']
+    #         final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+    #         final = final.isoformat('T')
+    # """
 
 
 
@@ -668,28 +752,28 @@ class PVPCView(TemplateView):
         final = final.isoformat('T')
         """
 
-        """
-        if not (self.kwargs.get('yearS') or self.kwargs.get('monthS') or self.kwargs.get('dayS') or self.kwargs.get('yearF') or self.kwargs.get('monthF') or self.kwargs.get('dayF')):
-            ahora = datetime.now().__format__('%Y-%m-%d')
-            principio = ahora + 'T02:00:00'
-            finalYear = datetime.now().__format__('%Y')
-            finalMonth = datetime.now().__format__('%m')
-            finalDay = datetime.now().__format__('%d')
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final += timedelta(days=1)
-            final = final.isoformat('T')
-        else:
-            principioYear = self.kwargs['yearS']
-            principioMonth = self.kwargs['monthS']
-            principioDay = self.kwargs['dayS']
-            principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
-            principio = principio.isoformat('T')
-            finalYear = self.kwargs['yearF']
-            finalMonth = self.kwargs['monthF']
-            finalDay = self.kwargs['dayF']
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final = final.isoformat('T')
-        """
+        # """
+        # if not (self.kwargs.get('yearS') or self.kwargs.get('monthS') or self.kwargs.get('dayS') or self.kwargs.get('yearF') or self.kwargs.get('monthF') or self.kwargs.get('dayF')):
+        #     ahora = datetime.now().__format__('%Y-%m-%d')
+        #     principio = ahora + 'T02:00:00'
+        #     finalYear = datetime.now().__format__('%Y')
+        #     finalMonth = datetime.now().__format__('%m')
+        #     finalDay = datetime.now().__format__('%d')
+        #     final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+        #     final += timedelta(days=1)
+        #     final = final.isoformat('T')
+        # else:
+        #     principioYear = self.kwargs['yearS']
+        #     principioMonth = self.kwargs['monthS']
+        #     principioDay = self.kwargs['dayS']
+        #     principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)
+        #     principio = principio.isoformat('T')
+        #     finalYear = self.kwargs['yearF']
+        #     finalMonth = self.kwargs['monthF']
+        #     finalDay = self.kwargs['dayF']
+        #     final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+        #     final = final.isoformat('T')
+        # """
 
 
         if (self.kwargs.get('yearS') and self.kwargs.get('monthS') and self.kwargs.get('dayS') and self.kwargs.get('yearF') and self.kwargs.get('monthF') and self.kwargs.get('dayF')):
@@ -716,40 +800,40 @@ class PVPCView(TemplateView):
             final = final.isoformat('T')
         else:
             #No me viene fecha
-            """
+            # """
+            # ahora = datetime.now().__format__('%Y-%m-%d')
+            # principio = ahora + 'T02:00:00'
+            # finalYear = datetime.now().__format__('%Y')
+            # finalMonth = datetime.now().__format__('%m')
+            # finalDay = datetime.now().__format__('%d')
+            # final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
+            # final += timedelta(days=1)
+            # final = final.isoformat('T')
+            # """
+
+
             ahora = datetime.now().__format__('%Y-%m-%d')
             principio = ahora + 'T02:00:00'
+            # """
+            # final = datetime.date.today().__format__('%Y-%m-%d') + datetime.timedelta(days=1)
+            # """
             finalYear = datetime.now().__format__('%Y')
             finalMonth = datetime.now().__format__('%m')
             finalDay = datetime.now().__format__('%d')
             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
             final += timedelta(days=1)
             final = final.isoformat('T')
-            """
+            # """
+            # final = str(ahora)
+            # final += timedelta(days=1)
+            # final = datetime(final, 1, 0, 0)
+            # final = final.isoformat('T')
+            # """
 
-
-            ahora = datetime.now().__format__('%Y-%m-%d')
-            principio = ahora + 'T02:00:00'
-            """
-            final = datetime.date.today().__format__('%Y-%m-%d') + datetime.timedelta(days=1)
-            """
-            finalYear = datetime.now().__format__('%Y')
-            finalMonth = datetime.now().__format__('%m')
-            finalDay = datetime.now().__format__('%d')
-            final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)
-            final += timedelta(days=1)
-            final = final.isoformat('T')
-            """
-            final = str(ahora)
-            final += timedelta(days=1)
-            final = datetime(final, 1, 0, 0)
-            final = final.isoformat('T')
-            """
-
-            """
-            principio = '2019-05-05T02:00:00'
-            final = '2019-05-06T01:00:00'
-            """
+            # """
+            # principio = '2019-05-05T02:00:00'
+            # final = '2019-05-06T01:00:00'
+            # """
 
 
         context = super(PVPCView, self).get_context_data(**kwargs)
@@ -759,6 +843,10 @@ class PVPCView(TemplateView):
 
 # Clase para ver el histórico de precios desde del .csv de histórico
 class HistoricoMRView(TemplateView):
+    """
+    Representación de los precios del mercado regulado, a partir del histórico de precios del sistema.
+    """
+
     template_name='forecasting/mr_chart.html'
 
     def get_context_data(self, **kwargs):
@@ -807,12 +895,22 @@ class HistoricoMRView(TemplateView):
 
 
 class InformacionSmartMeters(TemplateView):
+    """
+    Muestra de información recopilada acerca de los Smart Meters.
+    """
+
     template_name = 'forecasting/info_smartmeters.html'
 
 class InformacionFactura(TemplateView):
+    """
+    Muestra de la información recopilada acerca de la factura de la luz en España.
+    """
     template_name = 'forecasting/info_factura.html'
 
 class InformacionEnergiaSpain(TemplateView):
+    """
+    Muestra de la información recopilada acerca de la generación eléctrica en España.
+    """
     template_name = 'forecasting/info_energia_spain.html'
 
 

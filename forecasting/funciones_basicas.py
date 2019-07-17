@@ -1,12 +1,19 @@
 import pandas as pd
 
 
-"""
-Consideraciones:
-- Si ha habido cambio de hora, me cargo esa hora de más.
-- Si falta algún dato entre las fechas del consumo, me lo invento
-"""
+# """
+# Consideraciones:
+# - Si ha habido cambio de hora, me cargo esa hora de más.
+# - Si falta algún dato entre las fechas del consumo, me lo invento
+# """
 def limpiarCSV(df):
+    """
+    Para el documento .csv de datos de consumo eléctrico facturado para un hogar que se puede descargar desde la página de Iberdrola, la presente función elimina la información innecesaria y deja el resto de los datos preparados para ser usados por el resto de funcionalidad del sistema.
+
+    :param df: dataframe de un consumo eléctrico facturado recién descargado de la fuente oficial.
+    :return: el mismo dataframe sólo con las fechas como índice y el consumo eléctrico.
+    """
+
     df=df[df.Hora != 25]
     df.Fecha=pd.to_datetime(df['Fecha'],format="%d/%m/%Y") + pd.to_timedelta(df.Hora-1, unit='h')
     df.index=pd.to_datetime(df['Fecha'], format="%m/%d/%Y %I:%M:%S")
@@ -15,11 +22,18 @@ def limpiarCSV(df):
     return df
 
 
-"""
-Consideraciones:
-- Los valores que se pasen de los quantiles definidos, se capan.
-"""
+# """
+# Consideraciones:
+# - Los valores que se pasen de los quantiles definidos, se capan.
+# """
 def arreglarDatosCSV(df):
+    """
+    Se ocupa de preparar los datos para su uso eficaz en la creación del modelo.
+
+    :param df: dataframe de un consumo eléctrico.
+    :return: el mismo dataframe tras las correcciones oportunas.
+    """
+
     filt_df = df.loc[:, 'Consumo_kWh']
     low = .05
     high = .95
@@ -71,16 +85,12 @@ import random
 # https://math.stackexchange.com/questions/2232520/what-are-chance-of-two-randomly-generated-4-digit-strings-being-the-same
 # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 def id_random_generator(size=8, chars=string.ascii_uppercase + string.digits):
+    """
+    Creación de una cadena aleatoria de caracteres alfanuméricos.
+
+    :param size: longitud deseada de la cadena. Por defecto serán 8 caracteres.
+    :param chars: caracteres a usar para crear la cadena. Por defecto será la tabla ascii básica en mayúsculas.
+    :return: cadena aleatoria con las caracterísitcas deseadas.
+    """
+
     return ''.join(random.choice(chars) for _ in range(size))
-
-
-
-"""
-import rpy2.robjects as robjects
-def limpiarCSV(ruta):
-    r_source = robjects.r['source']
-    r_source('pruebaScript.R')
-    print('CSV limpio.')
-    
-    return
-"""

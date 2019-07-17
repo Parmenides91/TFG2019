@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.jobs.hourly.unificar_consumos &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.jobs.hourly.unificar_consumos</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django_extensions.management.jobs</span> <span class="k">import</span> <span class="n">BaseJob</span>
+<span class="kn">from</span> <span class="nn">django.core.mail</span> <span class="k">import</span> <span class="n">send_mail</span>
+<span class="kn">from</span> <span class="nn">django.core.files</span> <span class="k">import</span> <span class="n">File</span>
+<span class="kn">from</span> <span class="nn">django.core.files.base</span> <span class="k">import</span> <span class="n">ContentFile</span>
+
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">...funciones_basicas</span> <span class="k">import</span> <span class="n">limpiarCSV</span><span class="p">,</span> <span class="n">id_random_generator</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># &quot;&quot;&quot;</span>
+<span class="c1"># No he probado este Job porque creo que esa forma de sustituir el fichero no es correcta.</span>
+<span class="c1"># Debería surgir el mismo problema que cuando edito los datos del csv en el form y los guardo, que se crea otro fichero y</span>
+<span class="c1">#     no queda asociado al inmueble.</span>
+<span class="c1"># &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../../../modules/forecasting-docs/forecasting.html#forecasting.jobs.hourly.unificar_consumos.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">BaseJob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tarea automática que junta los consumos parciales al consumo del Inmueble al que pertenezcan.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Agrega los consumos parciales al consumo del inmueble al que pertenecen.&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">inmuebles</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">inmueble</span> <span class="ow">in</span> <span class="n">inmuebles</span><span class="p">:</span>
+            <span class="n">parciales</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ConsumoParcial</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">inmueble_asociado_id</span><span class="o">=</span><span class="n">inmueble</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">parcial</span> <span class="ow">in</span> <span class="n">parciales</span><span class="p">:</span>
+                <span class="n">df_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">inmueble</span><span class="o">.</span><span class="n">consumo_inmueble</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fecha&#39;</span><span class="p">],</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">df_1</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span>
+                <span class="n">df_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">parcial</span><span class="o">.</span><span class="n">fichero_consumo_parcial</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fecha&#39;</span><span class="p">],</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">df_2</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span>
+                <span class="c1"># ambos ficheros ya vienen limpios de cuando se subieron al sistema</span>
+                <span class="c1"># df_1 = pd.read_csv(inmueble.consumo_inmueble, delimiter=&#39;;&#39;, decimal=&#39;,&#39;)</span>
+                <span class="c1"># df_1 = limpiarCSV(df_1)</span>
+                <span class="c1"># df_2 = pd.read_csv(parcial.fichero_consumo_parcial, delimiter=&#39;;&#39;, decimal=&#39;,&#39;)</span>
+                <span class="c1"># df_2 = limpiarCSV(df_2)</span>
+
+                <span class="n">ini1</span> <span class="o">=</span> <span class="n">df_1</span><span class="o">.</span><span class="n">first_valid_index</span><span class="p">()</span>
+                <span class="n">fin1</span> <span class="o">=</span> <span class="n">df_1</span><span class="o">.</span><span class="n">last_valid_index</span><span class="p">()</span>
+                <span class="n">ini2</span> <span class="o">=</span> <span class="n">df_2</span><span class="o">.</span><span class="n">first_valid_index</span><span class="p">()</span>
+                <span class="n">fin2</span> <span class="o">=</span> <span class="n">df_2</span><span class="o">.</span><span class="n">last_valid_index</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="p">(((</span><span class="n">ini1</span> <span class="o">&lt;</span> <span class="n">ini2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fin1</span> <span class="o">&lt;</span> <span class="n">ini2</span><span class="p">))</span> <span class="ow">or</span> <span class="p">((</span><span class="n">ini2</span> <span class="o">&lt;</span> <span class="n">ini1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fin2</span> <span class="o">&lt;</span> <span class="n">ini1</span><span class="p">))):</span>
+                    <span class="c1"># Ambos consumos están separados, por delante o por detrás. Aplicando pandas.concat().</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Primer caso&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ini1</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fin1</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ini2</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fin2</span><span class="p">)</span>
+                    <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">df_1</span><span class="p">,</span> <span class="n">df_2</span><span class="p">]</span>
+                    <span class="n">df_combinado</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+                    <span class="c1"># df_combinado = df_combinado.resample(&#39;H&#39;).interpolate(method=&#39;linear&#39;)</span>
+                    <span class="c1"># df_combinado.index.freq = &#39;H&#39;</span>
+                    <span class="c1"># fichero_combinado = df_combinado.to_csv(&#39;consumoCONCATENADO.csv&#39;)</span>
+                    <span class="c1"># inmueble.consumo_inmueble=fichero_combinado</span>
+                    <span class="c1"># inmueble.save()</span>
+                <span class="k">elif</span> <span class="p">((</span><span class="n">fin1</span> <span class="o">&gt;</span> <span class="n">ini2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">fin2</span> <span class="o">&gt;</span> <span class="n">ini1</span><span class="p">)):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Segundo caso&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ini1</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fin1</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ini2</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fin2</span><span class="p">)</span>
+                    <span class="c1"># Los consumos se solapan, parcial o totalmente. Aplicando combine_first()</span>
+                    <span class="n">df_combinado</span> <span class="o">=</span> <span class="n">df_1</span><span class="o">.</span><span class="n">combine_first</span><span class="p">(</span><span class="n">df_2</span><span class="p">)</span>
+                    <span class="c1"># df_combinado.index.freq = &#39;H&#39;</span>
+                    <span class="c1"># fichero_combinado = df_combinado.to_csv(&#39;consumoCONCATENADO.csv&#39;)</span>
+                    <span class="c1"># inmueble.consumo_inmueble = fichero_combinado</span>
+                    <span class="c1"># inmueble.save()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tercer caso&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ini1</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fin1</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">ini2</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">fin2</span><span class="p">)</span>
+                    <span class="c1">#Caso no considerado. Actuar por defecto. pandas.concat().</span>
+                    <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">df_1</span><span class="p">,</span> <span class="n">df_2</span><span class="p">]</span>
+                    <span class="n">df_combinado</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+                    <span class="c1"># df_combinado = df_combinado.resample(&#39;H&#39;).interpolate(method=&#39;linear&#39;)</span>
+                    <span class="c1"># df_combinado.index.freq = &#39;H&#39;</span>
+                    <span class="c1"># fichero_combinado = df_combinado.to_csv(&#39;consumoCONCATENADO.csv&#39;)</span>
+                    <span class="c1"># inmueble.consumo_inmueble = fichero_combinado</span>
+                    <span class="c1"># inmueble.save()</span>
+
+                <span class="n">df_combinado</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_combinado</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">df_combinado</span> <span class="o">=</span> <span class="n">df_combinado</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+                <span class="n">df_combinado</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span>
+
+                <span class="c1">#Método 1</span>
+                <span class="c1"># inmueble.consumo_inmueble.file = ContentFile(df_combinado.to_csv(&#39;consumoINMUEBLE&#39; + str(inmueble.id) + &#39;.csv&#39;))</span>
+                <span class="c1"># inmueble.save()</span>
+
+                <span class="c1">#Método 2</span>
+                <span class="n">ruta_fich</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">consumosInmuebles</span><span class="se">\\</span><span class="s1">&#39;</span>
+                <span class="n">nuevo_con</span><span class="o">=</span><span class="n">df_combinado</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_fich</span><span class="o">+</span><span class="s1">&#39;consumoINMUEBLE&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">inmueble</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+                <span class="n">el_con</span><span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ruta_fich</span><span class="o">+</span><span class="s1">&#39;consumoINMUEBLE&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">inmueble</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+                <span class="n">el_file</span><span class="o">=</span><span class="n">File</span><span class="p">(</span><span class="n">el_con</span><span class="p">)</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">consumo_inmueble</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;consumoInmueble&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">inmueble</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">,</span><span class="n">el_file</span><span class="p">)</span>
+
+                <span class="c1"># Método 3</span>
+                <span class="n">ruta_fich2</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">consumosInmuebles</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;ConInm&#39;</span> <span class="o">+</span> <span class="n">id_random_generator</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+                <span class="n">df_combinado</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_fich2</span><span class="p">)</span> <span class="c1">#el nuevo consumo del inmueble</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">consumo_inmueble_string</span><span class="o">=</span><span class="n">ruta_fich2</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                <span class="n">parcial</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+                <span class="c1">#Aviso de que el Inmueble ha cambiado y de que el modelo debe volver a crearse</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">modelo_actualizado</span><span class="o">=</span><span class="kc">False</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">prediccion_actualizada</span><span class="o">=</span><span class="kc">False</span>
+                <span class="n">inmueble</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+
+
+                <span class="c1"># inmu_id=inmueble.id</span>
+                <span class="c1"># print(inmu_id)</span>
+                <span class="c1"># ruta_fich = settings.MEDIA_ROOT + &#39;\\consumosInmuebles\\&#39;</span>
+                <span class="c1"># meh = df_combinado.to_csv(ruta_fich+&#39;consumoINMUEBLE&#39; + str(inmu_id) + &#39;.csv&#39;)</span>
+                <span class="c1"># inmueble.consumo_inmueble.file = ContentFile(df_combinado.to_csv(&#39;consumoINMUEBLE&#39;+str(inmu_id)+&#39;.csv&#39;))</span>
+                <span class="c1"># inmueble.consumo_inmueble.file = ContentFile(meh)</span>
+                <span class="c1"># inmueble.consumo_inmueble.file = meh</span>
+                <span class="c1"># print(&#39;Antes de guardar&#39;)</span>
+                <span class="c1"># inmueble.save()</span>
+                <span class="c1"># print(&#39;Después de guardar&#39;)</span>
+                <span class="c1"># print(inmueble.consumo_inmueble.name)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

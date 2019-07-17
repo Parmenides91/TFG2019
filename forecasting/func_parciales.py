@@ -9,19 +9,20 @@ from django.core.files import File
 from django.core.mail import send_mail
 from .func_datos_modelo import creacion_modelo
 
+# Sin uso actual.
 def obtener_consumos_asociados(clave_usuario, clave_inmueble):
     inmueble = models.Inmueble.objects.get(user=clave_usuario, pk=clave_inmueble)
     consumos_parciales = models.ConsumoParcial.objects.filter(inmueble_asociado_id=inmueble.id)
 
-    """
-    consumos_parciales.
-    inmueble.consumo_inmueble = None
-    inmueble.delete()
-    """
-    """
-    for consumo_parcial in consumos_parciales:
-        pass
-    """
+    # """
+    # consumos_parciales.
+    # inmueble.consumo_inmueble = None
+    # inmueble.delete()
+    # """
+    # """
+    # for consumo_parcial in consumos_parciales:
+    #     pass
+    # """
 
     csvData = [['Person', 'Age'], ['Peter', '22'], ['Jasmine', '21'], ['Sam', '24']]
     with open('personNN.csv', 'r+') as csvFile:

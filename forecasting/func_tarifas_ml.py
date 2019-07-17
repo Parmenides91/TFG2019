@@ -1,6 +1,12 @@
 
 
 def calcular_costes_ml(df):
+    """
+    Cálculo del coste de un consumo en base a las tarifas predefinidas que tiene el sistema de empresas privadas del mercado libre.
+
+    :param df: consumo.
+    :return: coste en €.
+    """
 
     costes_dict = {'T01':tarifa_ml_01(df),
                    'T02':tarifa_ml_02(df),
@@ -11,6 +17,13 @@ def calcular_costes_ml(df):
 
 
 def tarifa_ml_01(df):
+    """
+    Tarifa predefinida 001: tarifa con discriminación por los fines de semana. Empresa: Iberdrola.
+
+    :param df: consumo.
+    :return: coste en €.
+    """
+
     # Tarifa con discriminación por los fines de semana. Iberdrola
     df['weekday'] = df.index.dayofweek
     PRECIO_LABORAL = 0.19
@@ -29,6 +42,13 @@ def tarifa_ml_01(df):
 
 
 def tarifa_ml_02(df):
+    """
+    Tarifa predefinida 002: tarifa con precio único. Empresa: Iberdrola.
+
+    :param df: consumo.
+    :return: coste en €.
+    """
+
     # Tarifa de un único precio. Iberdrola
     PRECIO_UNICO=0.143889
 
@@ -43,6 +63,13 @@ def tarifa_ml_02(df):
 
 
 def tarifa_ml_03(df):
+    """
+    Tarifa predefinida 003: tarifa con precio único. Empresa: Endesa.
+
+    :param df: consumo.
+    :return: coste en €.
+    """
+
     # Tarifa de un único precio. Endesa
     PRECIO_UNICO = 0.119893
 

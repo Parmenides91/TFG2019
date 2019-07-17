@@ -7,7 +7,11 @@ from ... import models
 
 
 class Job(BaseJob):
-    help = "Creación diaria de las predicciones necesarias de los inmuebles."
+    """
+    Tarea automática que calcula la información adicional que se muestra del Inmueble.
+    """
+
+    help = "Creación de la información adicional del Inmueble."
 
     def execute(self):
         usuarios = models.User.objects.all()

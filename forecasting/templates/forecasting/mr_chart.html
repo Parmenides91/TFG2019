@@ -4,15 +4,15 @@
 {% block pre_historicomr %}
 
 
-    <div class="jumbotron bg-light">
-        <div class="container">
-            <div class="page-header">
-                <h1 class="display-1 ">Mercado Regulado</h1>
-                <hr>
-                <p class="text-muted font-italic lead">Consulta los precios de las tarifas del Mercado Regulado</p>
-            </div>
-        </div>
-    </div>
+    {#    <div class="jumbotron bg-light">#}
+    {#        <div class="container">#}
+    {#            <div class="page-header">#}
+    {#                <h1 class="display-1 ">Mercado Regulado</h1>#}
+    {#                <hr>#}
+    {#                <p class="text-muted font-italic lead">Consulta los precios de las tarifas del Mercado Regulado</p>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
 
 {% endblock %}
 
@@ -21,10 +21,28 @@
     <div class="container">
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
+        <div class="row">
+            <div class="col-8">
+                <p class="lead">Puede consultar el precio de las tarifas del mercado regulado seleccionando una fecha
+                    determinada en el siguiente cuadro.</p>
+                <p class="lead">El precio del día siguiente queda fijado el día anterior a las ocho de la tarde, por lo
+                    que no se pueden solicitar precios futuros antes de dicha hora.</p>
+            </div>
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="date" id="fechaPrecioPVPC" value="${item.value}" class="form-control">
+                    <div class="input-group-append">
+                        <a class="btn btn-info btn-outline-secondary text-white" type="button" href=''
+                           onclick="this.href=document.getElementById('fechaPrecioPVPC').value">Consultar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <p class="lead"><strong>Introduce una fecha para consultar el precio:</strong></p>
-        <input type="date" id="fechaPrecioPVPC" value="${item.value}"/>
-        <a href='' onclick="this.href=document.getElementById('fechaPrecioPVPC').value">Consultar</a>
+
+        {#        <p class="lead"><strong>Introduce una fecha para consultar el precio:</strong></p>#}
+        {#        <input type="date" id="fechaPrecioPVPC" value="${item.value}"/>#}
+        {#        <a class="btn btn-info btn-sm" href='' onclick="this.href=document.getElementById('fechaPrecioPVPC').value">Consultar</a>#}
 
         <div class="col-md-12">{{ grafica_precio|safe }}</div>
 

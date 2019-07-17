@@ -1,0 +1,114 @@
+App Forecasting
+***************
+Descripción de la app *forecasting* del proyecto.
+
+Forecasting - models
+====================
+.. automodule:: forecasting.models
+   :members:
+
+Forecasting - views
+===================
+.. automodule:: forecasting.views
+   :members:
+
+Forecasting - urls
+==================
+.. automodule:: forecasting.urls
+   :members:
+
+Forecasting - forms
+===================
+.. automodule:: forecasting.forms
+   :members:
+
+Forecasting - funciones Inmueble
+================================
+.. automodule:: forecasting.func_inmueble
+   :members:
+
+Forecasting: -funciones Análisis Consumo
+========================================
+.. automodule:: forecasting.func_analisis_consumo
+   :members:
+
+Forecasting - funciones Mercado Regulado
+========================================
+.. automodule:: forecasting.func_mr
+   :members:
+
+Forecasting - funciones Crawler
+===============================
+.. automodule:: forecasting.plots
+   :members:
+
+Forecasting - funciones Mercado Libre
+=====================================
+.. automodule:: forecasting.func_tarifas_ml
+   :members:
+
+Forecasting - funciones sobre Modelos de Consumo
+================================================
+.. automodule:: forecasting.func_datos_modelo
+   :members:
+
+Forecasting - funciones sobre Predicciones de Consumo
+=====================================================
+.. automodule:: forecasting.func_datos_prediccion
+   :members:
+
+Forecasting - funciones básicas
+===============================
+.. automodule:: forecasting.funciones_basicas
+   :members:
+
+Forecasting - daily Jobs
+========================
+.. automodule:: forecasting.jobs.daily.act_hist_mr
+   :members:
+.. automodule:: forecasting.jobs.daily.calcular_datos_inmueble
+   :members:
+.. automodule:: forecasting.jobs.daily.crear_modelo_consumo
+   :members:
+.. automodule:: forecasting.jobs.daily.crear_prediccion_consumo
+   :members:
+
+Forecasting - hourly Jobs
+=========================
+.. automodule:: forecasting.jobs.hourly.unificar_consumos
+   :members:
+.. automodule:: forecasting.jobs.hourly.calcular_coste_tpd_inmueble
+   :members:
+.. automodule:: forecasting.jobs.hourly.calcular_coste_edp_inmueble
+   :members:
+.. automodule:: forecasting.jobs.hourly.calcular_coste_ve_inmueble
+   :members:
+.. automodule:: forecasting.jobs.hourly.calcular_coste_ml_inmueble
+   :members:
+.. automodule:: forecasting.jobs.hourly.calcular_coste_personalizada_inmueble
+   :members:
+
+Forecasting - weekly Jobs
+=========================
+.. automodule:: forecasting.jobs.weekly.calcular_coste_ml_prediccion
+   :members:
+.. automodule:: forecasting.jobs.weekly.calcular_coste_personalizada_prediccion
+   :members:
+.. automodule:: forecasting.jobs.weekly.calcular_coste_tpd_prediccion
+   :members:
+.. automodule:: forecasting.jobs.weekly.calcular_coste_edp_prediccion
+   :members:
+.. automodule:: forecasting.jobs.weekly.calcular_coste_ve_prediccion
+   :members:
+.. automodule:: forecasting.jobs.weekly.crear_modelo_tpd
+   :members:
+.. automodule:: forecasting.jobs.weekly.crear_modelo_edp
+   :members:
+.. automodule:: forecasting.jobs.weekly.crear_modelo_ve
+   :members:
+.. automodule:: forecasting.jobs.weekly.crear_prediccion_tpd
+   :members:
+.. automodule:: forecasting.jobs.weekly.crear_prediccion_edp
+   :members:
+.. automodule:: forecasting.jobs.weekly.crear_prediccion_ve
+   :members:

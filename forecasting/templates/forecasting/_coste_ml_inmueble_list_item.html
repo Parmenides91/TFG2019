@@ -17,7 +17,7 @@
 {#            <div class="col-4 align-items-start">#}
                 <div class="col-5 align-self-center">
                 <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                        data-target="#verCosteTPDInmuebleModal{{ costeinmuebleml.id }}">
+                        data-target="#verCosteMLInmuebleModal{{ costeinmuebleml.id }}">
                     Información
                 </button>
             </div>
@@ -27,13 +27,13 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="verCosteTPDInmuebleModal{{ costeinmuebleml.id }}"
+<div class="modal fade" id="verCosteMLInmuebleModal{{ costeinmuebleml.id }}"
      tabindex="-1" role="dialog"
-     aria-labelledby="verCosteTPDInmuebleLabel"
+     aria-labelledby="verCosteMLInmuebleLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            {% include "forecasting/_coste_tpd_inmueble_item.html" %}
+            {% include "forecasting/_coste_ml_inmueble_item.html" %}
         </div>
     </div>
 </div>

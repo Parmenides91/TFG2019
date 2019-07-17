@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.funciones_basicas &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.funciones_basicas</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="c1"># &quot;&quot;&quot;</span>
+<span class="c1"># Consideraciones:</span>
+<span class="c1"># - Si ha habido cambio de hora, me cargo esa hora de más.</span>
+<span class="c1"># - Si falta algún dato entre las fechas del consumo, me lo invento</span>
+<span class="c1"># &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="limpiarCSV"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.funciones_basicas.limpiarCSV">[docs]</a><span class="k">def</span> <span class="nf">limpiarCSV</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Para el documento .csv de datos de consumo eléctrico facturado para un hogar que se puede descargar desde la página de Iberdrola, la presente función elimina la información innecesaria y deja el resto de los datos preparados para ser usados por el resto de funcionalidad del sistema.</span>
+
+<span class="sd">    :param df: dataframe de un consumo eléctrico facturado recién descargado de la fuente oficial.</span>
+<span class="sd">    :return: el mismo dataframe sólo con las fechas como índice y el consumo eléctrico.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Hora</span> <span class="o">!=</span> <span class="mi">25</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">Fecha</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Fecha&#39;</span><span class="p">],</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Hora</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Fecha&#39;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y %I:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;CUPS&#39;</span><span class="p">,</span> <span class="s1">&#39;Fecha&#39;</span><span class="p">,</span> <span class="s1">&#39;Hora&#39;</span><span class="p">,</span> <span class="s1">&#39;Metodo_obtencion&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="c1"># &quot;&quot;&quot;</span>
+<span class="c1"># Consideraciones:</span>
+<span class="c1"># - Los valores que se pasen de los quantiles definidos, se capan.</span>
+<span class="c1"># &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="arreglarDatosCSV"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.funciones_basicas.arreglarDatosCSV">[docs]</a><span class="k">def</span> <span class="nf">arreglarDatosCSV</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Se ocupa de preparar los datos para su uso eficaz en la creación del modelo.</span>
+
+<span class="sd">    :param df: dataframe de un consumo eléctrico.</span>
+<span class="sd">    :return: el mismo dataframe tras las correcciones oportunas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filt_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span>
+    <span class="n">low</span> <span class="o">=</span> <span class="o">.</span><span class="mi">05</span>
+    <span class="n">high</span> <span class="o">=</span> <span class="o">.</span><span class="mi">95</span>
+    <span class="n">quant_df_low</span> <span class="o">=</span> <span class="n">filt_df</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
+    <span class="n">quant_df_high</span> <span class="o">=</span> <span class="n">filt_df</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">quant_df_low</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_df_low</span>
+        <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">quant_df_high</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quant_df_high</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">¡OJO!: no estoy usando esta función en inguna parte. El Job tiene la lógica implementada allí, no tira de esta función</span>
+<span class="sd">if:</span>
+<span class="sd">- Los ficheros no tienen consumos solapados.</span>
+<span class="sd">- No se garantiza que donde acabe uno justo empiece el otro (por lo que en ese caso puede que algo estalle más adelante).</span>
+<span class="sd">elif:</span>
+<span class="sd">- Los ficheros tienen consumos solapados, parcial o totalmente.</span>
+<span class="sd">else:</span>
+<span class="sd">- </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">unirConsumos</span><span class="p">(</span><span class="n">df_1</span><span class="p">,</span> <span class="n">df_2</span><span class="p">):</span>
+    <span class="n">ini1</span> <span class="o">=</span> <span class="n">df_1</span><span class="o">.</span><span class="n">first_valid_index</span><span class="p">()</span>
+    <span class="n">fin1</span> <span class="o">=</span> <span class="n">df_1</span><span class="o">.</span><span class="n">last_valid_index</span><span class="p">()</span>
+    <span class="n">ini2</span> <span class="o">=</span> <span class="n">df_2</span><span class="o">.</span><span class="n">first_valid_index</span><span class="p">()</span>
+    <span class="n">fin2</span> <span class="o">=</span> <span class="n">df_2</span><span class="o">.</span><span class="n">last_valid_index</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="p">(((</span><span class="n">ini1</span> <span class="o">&lt;</span> <span class="n">ini2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fin1</span> <span class="o">&lt;</span> <span class="n">ini2</span><span class="p">))</span> <span class="ow">or</span> <span class="p">((</span><span class="n">ini2</span> <span class="o">&lt;</span> <span class="n">ini1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fin2</span> <span class="o">&lt;</span> <span class="n">ini1</span><span class="p">))):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ambos consumos están separados, por delante o por detrás. Aplicando pandas.concat().&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="p">((</span><span class="n">fin1</span> <span class="o">&gt;</span> <span class="n">ini2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">fin2</span> <span class="o">&gt;</span> <span class="n">ini1</span><span class="p">)):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Los consumos se solapan, parcial o totalmente. Aplicando combine_first()&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Caso no considerado. Actuar por defecto. pandas.concat().&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="mi">0</span>
+
+
+
+
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c1"># https://math.stackexchange.com/questions/2232520/what-are-chance-of-two-randomly-generated-4-digit-strings-being-the-same</span>
+<span class="c1"># https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits</span>
+<div class="viewcode-block" id="id_random_generator"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.funciones_basicas.id_random_generator">[docs]</a><span class="k">def</span> <span class="nf">id_random_generator</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creación de una cadena aleatoria de caracteres alfanuméricos.</span>
+
+<span class="sd">    :param size: longitud deseada de la cadena. Por defecto serán 8 caracteres.</span>
+<span class="sd">    :param chars: caracteres a usar para crear la cadena. Por defecto será la tabla ascii básica en mayúsculas.</span>
+<span class="sd">    :return: cadena aleatoria con las caracterísitcas deseadas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

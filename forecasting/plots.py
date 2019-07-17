@@ -279,6 +279,14 @@ class ESIOS(object):
 
 # Para conocer el precio entre las fechas que se soliciten
 def precios_pvpc(a, b):
+    """
+    Obtiene los precios directamente de Red Eléctrica de España en el rango de fechas solicitado.
+
+    :param a: fecha de inicio para solicitar precios.
+    :param b: fecha final para solicitar precios.
+    :return: dataframe con las fechas como índice y columnas los precios de cada una de las tarifas del mercado regulado solicitadas.
+    """
+
     #start_ = '2019-05-04T02:00:00'
     #end_ = '2019-05-05T01:00:00'
     start_ = a
@@ -324,6 +332,14 @@ def precios_pvpc(a, b):
 
 # Para pintar los precios de las fechas que se le pasen
 def chart_precios_pvpc(a, b):
+    """
+    Prepara una gráfica lista para representar con los precios de la tarifas del mercado regulado solicitados en el rango temporal deseado.
+
+    :param a: fecha de inicio para solicitar precios.
+    :param b: fecha final para solicitar precios.
+    :return: gráfica lista para representarse con los datos de las tres tarifas del mercado regulado.
+    """
+
     # start_ = '2019-06-13T02:00:00'
     # end_ = '2019-06-14T01:00:00'
     # start_ = '2017-12-31T02:00:00'

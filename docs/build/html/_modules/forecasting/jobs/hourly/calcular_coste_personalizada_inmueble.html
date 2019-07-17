@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.jobs.hourly.calcular_coste_personalizada_inmueble &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.jobs.hourly.calcular_coste_personalizada_inmueble</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django_extensions.management.jobs</span> <span class="k">import</span> <span class="n">BaseJob</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">...func_inmueble</span> <span class="k">import</span> <span class="n">coste_tarifas_usuario</span>
+
+
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../../../modules/forecasting-docs/forecasting.html#forecasting.jobs.hourly.calcular_coste_personalizada_inmueble.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">BaseJob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tarea automática que calcula el coste del consumo de un Inmueble en base a las tarifas eléctricas personalizadas que tenga el usuario.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Obtiene coste del consumo de un Inmueble aplicando una Tarifa Eléctrica del usuario.&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Método 1:</span>
+        <span class="n">usuarios</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tengo los Usuarios&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">usuarios</span><span class="p">:</span>
+            <span class="n">inmuebles</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">usuario</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tengo los Inmuebles del Usuario&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">inmueble</span> <span class="ow">in</span> <span class="n">inmuebles</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">inmueble</span><span class="o">.</span><span class="n">consumo_inmueble</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fecha&#39;</span><span class="p">],</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span>
+                <span class="n">tarifas</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaElectrica</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">usuario</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tengo las Tarifas Eléctricas del usuario&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">tarifa</span> <span class="ow">in</span> <span class="n">tarifas</span><span class="p">:</span>
+
+                    <span class="c1"># Pobre manera de manejar las cosas: me cargo lo anterior y vuelvo a calcular tod.</span>
+                    <span class="n">costesactuales</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CosteInmuebleTE</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">inmueble_asociado</span><span class="o">=</span><span class="n">inmueble</span><span class="p">,</span>
+                                                                           <span class="n">tarifaelectrica_asociada</span><span class="o">=</span><span class="n">tarifa</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">costeactual</span> <span class="ow">in</span> <span class="n">costesactuales</span><span class="p">:</span>
+                        <span class="n">costeactual</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                    <span class="c1"># Fin de la pobre manera de manejar las cosas</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Procedo a crear un Coste&#39;</span><span class="p">)</span>
+                    <span class="n">nuevo_costeInmuebleTE</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CosteInmuebleTE</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">inmueble_asociado</span><span class="o">=</span><span class="n">inmueble</span><span class="p">,</span>
+                                                                                  <span class="n">tarifaelectrica_asociada</span><span class="o">=</span><span class="n">tarifa</span><span class="p">,</span>
+                                                                                  <span class="n">coste</span><span class="o">=</span><span class="n">coste_tarifas_usuario</span><span class="p">(</span>
+                                                                                      <span class="n">df</span><span class="p">,</span>
+                                                                                      <span class="n">tarifa</span><span class="p">))</span>
+                    <span class="n">nuevo_costeInmuebleTE</span><span class="o">.</span><span class="n">modified_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">nuevo_costeInmuebleTE</span><span class="o">.</span><span class="n">actualizado</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Debería haberse creado. Mira:&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">nuevo_costeInmuebleTE</span><span class="p">)</span>
+                    <span class="n">nuevo_costeInmuebleTE</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Se ha guardado.&#39;</span><span class="p">)</span>
+
+
+        <span class="c1"># # Método 2:</span>
+        <span class="c1"># usuarios = models.User.objects.all()</span>
+        <span class="c1"># print(&#39;Tengo los Usuarios&#39;)</span>
+        <span class="c1"># for usuario in usuarios:</span>
+        <span class="c1">#     inmuebles = models.Inmueble.objects.filter(user=usuario)</span>
+        <span class="c1">#     print(&#39;Tengo los Inmuebles del Usuario&#39;)</span>
+        <span class="c1">#     for inmueble in inmuebles:</span>
+        <span class="c1">#         if inmueble.actualizar_costes_TE:</span>
+        <span class="c1">#             # Se han creado tarifas y/o ha habido cambios (en alguna de ellas)</span>
+        <span class="c1">#             df = pd.read_csv(inmueble.consumo_inmueble, index_col=[&#39;Fecha&#39;], parse_dates=True)</span>
+        <span class="c1">#             df.index.freq = &#39;H&#39;</span>
+        <span class="c1">#             tarifas = models.TarifaElectrica.objects.filter(user=usuario)</span>
+        <span class="c1">#             print(&#39;Tengo las Tarifas Eléctricas del usuario&#39;)</span>
+        <span class="c1">#             for tarifa in tarifas:</span>
+        <span class="c1">#</span>
+        <span class="c1">#                 # Pobre manera de manejar las cosas: me cargo lo anterior y vuelvo a calcular tod.</span>
+        <span class="c1">#                 costesactuales = models.CosteInmuebleTE.objects.filter(inmueble_asociado=inmueble,</span>
+        <span class="c1">#                                                                        tarifaelectrica_asociada=tarifa)</span>
+        <span class="c1">#                 for costeactual in costesactuales:</span>
+        <span class="c1">#                     costeactual.delete()</span>
+        <span class="c1">#                 # Fin de la pobre manera de manejar las cosas</span>
+        <span class="c1">#</span>
+        <span class="c1">#                 print(&#39;Procedo a crear un Coste&#39;)</span>
+        <span class="c1">#                 nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble,</span>
+        <span class="c1">#                                                                               tarifaelectrica_asociada=tarifa,</span>
+        <span class="c1">#                                                                               coste=coste_tarifas_usuario(</span>
+        <span class="c1">#                                                                                   df,</span>
+        <span class="c1">#                                                                                   tarifa))</span>
+        <span class="c1">#                 nuevo_costeInmuebleTE.modified_at = datetime.datetime.now()</span>
+        <span class="c1">#                 nuevo_costeInmuebleTE.actualizado = True</span>
+        <span class="c1">#                 print(&#39;Debería haberse creado. Mira:&#39;)</span>
+        <span class="c1">#                 print(nuevo_costeInmuebleTE)</span>
+        <span class="c1">#                 nuevo_costeInmuebleTE.save()</span>
+        <span class="c1">#                 print(&#39;Se ha guardado.&#39;)</span>
+        <span class="c1">#</span>
+        <span class="c1">#                 # No se requiere recalcular los costes de las tarifas</span>
+        <span class="c1">#                 inmueble.actualizar_costes_TE = False</span>
+        <span class="c1">#                 inmueble.save()</span>
+        <span class="c1">#         else:</span>
+        <span class="c1">#             # No se requiere recalcular las tarifas</span>
+        <span class="c1">#             pass</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fin.&#39;</span><span class="p">)</span></div>
+
+    <span class="c1"># inmuebles = models.Inmueble.objects.all()</span>
+    <span class="c1"># for inmueble in inmuebles:</span>
+    <span class="c1">#     tarifaselectricas = models.TarifaElectrica.objects.all()</span>
+    <span class="c1">#     for tarifaelectrica in tarifaselectricas:</span>
+    <span class="c1">#         nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble, tarifaelectrica_asociada=tarifaelectrica, coste=coste_tarifas_usuario(inmueble.consumo_inmueble, tarifaelectrica))</span>
+    <span class="c1">#         # nuevo_costeInmuebleTE.coste = coste_tarifas_usuario(inmueble.consumo_inmueble, tarifaelectrica)</span>
+    <span class="c1">#         nuevo_costeInmuebleTE.modified_at = datetime.datetime.now()</span>
+    <span class="c1">#         nuevo_costeInmuebleTE.actualizado = True</span>
+    <span class="c1">#         print(nuevo_costeInmuebleTE)</span>
+    <span class="c1">#         nuevo_costeInmuebleTE.save()</span>
+    <span class="c1">#         print(&#39;Se ha guardado.&#39;)</span>
+
+    <span class="c1"># inmuebles = models.Inmueble.objects.all()</span>
+    <span class="c1"># for inmueble in inmuebles:</span>
+    <span class="c1">#     costesInm = inmueble.costeinmueblete_set.all()</span>
+    <span class="c1">#     for costeInm in costesInm:</span>
+    <span class="c1">#         if (costeInm.modified_at &lt; inmueble.modefied_at) or (costeInm.modified_at &lt;costeInm.tarifaelectrica_asociada.modified_at):</span>
+    <span class="c1">#             #Se ha modificado el inmueble o la tarifa, hay que recalcular</span>
+    <span class="c1">#             costeInm.coste = coste_tarifas_usuario(inmueble.consumo_inmueble, costeInm.tarifaelectrica_asociada)</span>
+    <span class="c1">#             costeInm.modified_at = datetime.datetime.now()</span>
+    <span class="c1">#             costeInm.save()</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             #No ha habido cambios, no hay nadad que hacer</span>
+    <span class="c1">#             pass</span>
+    <span class="c1">#</span>
+    <span class="c1">#     tarifaselectricas = models.TarifaElectrica.objects.all()</span>
+    <span class="c1">#     for tarifaelectrica in tarifaselectricas:</span>
+    <span class="c1">#         pass</span>
+
+    <span class="c1"># tarifaselectricas = models.TarifaElectrica.objects.all()</span>
+    <span class="c1"># for tarifaelectrica in tarifaselectricas:</span>
+    <span class="c1">#     inmuebles = models.Inmueble.objects.all()</span>
+    <span class="c1">#     for inmueble in inmuebles:</span>
+    <span class="c1">#         if models.CosteInmuebleTE.objects.exists():</span>
+    <span class="c1">#             costesinmueblete = models.CosteInmuebleTE.objects.all()</span>
+    <span class="c1">#             for costeinmueblete in costesinmueblete:</span>
+    <span class="c1">#                 costeinmueblete.coste = coste_tarifas_usuario(inmueble.consumo_inmueble, tarifaelectrica)</span>
+    <span class="c1">#                 costeinmueblete.modified_at = datetime.datetime.now()</span>
+    <span class="c1">#                 costeinmueblete.actualizado = True</span>
+    <span class="c1">#                 costeinmueblete.save()</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble,</span>
+    <span class="c1">#                                                                           tarifaelectrica_asociada=tarifaelectrica)</span>
+    <span class="c1">#             costeTE = coste_tarifas_usuario(inmueble.consumo_inmueble)</span>
+    <span class="c1">#             nuevo_costeInmuebleTE.coste = costeTE</span>
+    <span class="c1">#             nuevo_costeInmuebleTE.modified_at = datetime.datetime.now()</span>
+    <span class="c1">#             nuevo_costeInmuebleTE.actualizado = True</span>
+    <span class="c1">#             nuevo_costeInmuebleTE.save()</span>
+
+    <span class="c1"># nuevo_costeInmuebleTE = models.CosteInmuebleTE.objects.create(inmueble_asociado=inmueble, tarifaelectrica_asociada=tarifaelectrica)</span>
+    <span class="c1"># costeTE = coste_tarifas_usuario(inmueble.consumo_inmueble)</span>
+    <span class="c1"># nuevo_costeInmuebleTE.coste = costeTE</span>
+    <span class="c1"># nuevo_costeInmuebleTE.modified_at=datetime.datetime.now()</span>
+    <span class="c1"># nuevo_costeInmuebleTE.actualizado = True</span>
+    <span class="c1"># nuevo_costeInmuebleTE.save()</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># if models.TarifaElectrica.objects.exists():</span>
+    <span class="c1">#     for inmueble in inmuebles:</span>
+    <span class="c1">#         costeTE = coste_tarifas_usuario(inmueble.consumo_inmueble)</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     # No hay tarifas personalizadas para las que calcular el coste</span>
+    <span class="c1">#     pass</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

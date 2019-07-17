@@ -17,6 +17,13 @@ from statsmodels.tsa.statespace.sarimax import SARIMAXResults
 
 
 def crearPrediccion(fichero):
+    """
+    Creación de la predicción de consumo para un Inmueble.
+
+    :param fichero: ruta del modelo predictivo a emplear.
+    :return: ruta del fichero con la predicción.
+    """
+
     print('Has entrado a la función')
     # print(File(fichero))
     print(fichero)
@@ -60,6 +67,13 @@ def crearPrediccion(fichero):
 
 #Reparte juego para crear las gráficas de predicción en distintas fases temporales
 def crear_graficas_predicción(df):
+    """
+    Creación de las gráficas del consumo de la predicción en distintas franjas temporales.
+
+    :param df: consumo de la predicción.
+    :return: diccionario con las gráficas en distintas franjas temporales listas para representarse.
+    """
+
     grafs_dict = {'horas': crear_grafica_generica(df, 'horario'),
                   'dias': crear_grafica_generica(df.resample('D').sum(), 'diario'),
                   'semanas': crear_grafica_generica(df.resample('W').sum(), 'semanal'),
@@ -68,6 +82,14 @@ def crear_graficas_predicción(df):
 
 #Gráfica genérica
 def crear_grafica_generica(df, tipo):
+    """
+    Creación de una gráfica de predicción de consumo en una franja temporal concreta.
+
+    :param df: consumo de la predicción.
+    :param tipo: tipo de división temporal.
+    :return: gráfica del tipo solicitada lista para representarse.
+    """
+
     n_leyenda = 'Predicción '+tipo
 
     trace1 = go.Scatter(
@@ -139,7 +161,7 @@ def crear_grafica_generica(df, tipo):
 
 
 
-
+# Sin uso actual.
 def predicionconsumo_chart(df):
 
     n_leyenda = 'Predicción'
@@ -212,6 +234,13 @@ def predicionconsumo_chart(df):
 
 # Representar la Predicción de Consumo sobre la Predicción de Precios del Mercado Regulado
 def crear_graficas_superpuestas(df):
+    """
+    Creación de las gráfica del consumo predicho con los precios predichos de las distintas tarifas del mercado regulado.
+
+    :param df: dataframe con los datos de consumo predichos y los precios de las tres tarifas predichos en el mismo rango de fechas
+    :return: gráfica lista para representar del consumo sobre los precios.
+    """
+
     n_leyenda = 'Predicción'
 
     trace1 = go.Scatter(
@@ -302,6 +331,14 @@ def crear_graficas_superpuestas(df):
 
 
 def crear_graficas_superpuestas_predicciones(df, tipo):
+    """
+    Creación de la gráfica con el consumo predicho sobre el precio predicho de una tarifa concreta del mercado regulado.
+
+    :param df: consumo predicho de un Inmueble.
+    :param tipo: tarifa del mercado regulado en concreto.
+    :return: gráfica lista para representar del consumo predicho sobre el precio predicho.
+    """
+
     n_leyenda = 'Predicciones'
 
     trace1 = go.Scatter(
@@ -323,7 +360,8 @@ def crear_graficas_superpuestas_predicciones(df, tipo):
     data = [trace1, trace2]
 
     layout = go.Layout(
-        title='Predicción de Consumo - Predicción del Mercado Regulado',
+        # title='Predicción de Consumo - Predicción del Mercado Regulado',
+        title='',
         showlegend=True,
         # width = 800,
         # height = 700,

@@ -100,16 +100,21 @@
                         <div class="dropdown-menu" aria-labelledby="menu-tarifas">
                             <a href="{% url 'forecasting:for_user_tarifaselectricas' username=user.username %}"
                                class="dropdown-item">Personalizadas</a>
-                            <a href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=user.username %}"
-                               class="dropdown-item">Mercado Regulado</a>
-                            <a href="#" class="dropdown-item">Mercado Libre</a>
+{#                            <a href="{% url 'forecasting:for_user_tarifasmercadoregulado' username=user.username %}"#}
+{#                               class="dropdown-item">Mercado Regulado</a>#}
+{#                            <a href="#" class="dropdown-item">Mercado Libre</a>#}
+                            <a href="{% url 'forecasting:mr_precios' %}" class="dropdown-item">Precios M.R.</a>
                         </div>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{% url 'forecasting:pvpc_precios' %}" class="nav-link text-info"><strong>Precios
-                            MR</strong></a>
-                    </li>
+{#                    <li class="nav-item">#}
+{#                        <a href="{% url 'forecasting:pvpc_precios' %}" class="nav-link text-info"><strong>Precios#}
+{#                            MR</strong></a>#}
+{#                    </li>#}
+
+{#                    <li class="nav-item">#}
+{#                        <a href="{% url 'forecasting:mr_precios' %}" class="nav-link text-info"><strong>Precios M.R.</strong></a>#}
+{#                    </li>#}
 
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle text-info" id="menu-infoad" data-toggle="dropdown"
@@ -158,18 +163,26 @@
             <div class="navbar-collapse collapse dual-nav w-50 order-1 order-md-0">
                 <ul class="navbar-nav">
                     <li class="nav-item cative">
-                        <a href="" class="nav-link pl-0 text-info" text-info><strong>Inicio</strong><span
+                        <a href="{% url 'home' %}" class="nav-link pl-0 text-info" text-info><strong>Inicio</strong><span
                                 class="sr-only">Home</span></a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{% url 'forecasting:pvpc_precios' %}" class="nav-link text-info"><strong>Precios
-                            MR</strong></a>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle text-info" id="menu-tarifas" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false"><strong>Tarifas</strong></a>
+                        <div class="dropdown-menu" aria-labelledby="menu-tarifas">
+                            <a href="{% url 'forecasting:mr_precios' %}" class="dropdown-item">Precios M.R.</a>
+                        </div>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{% url 'forecasting:mr_precios' %}" class="nav-link text-info"><strong>Nuevo MR</strong></a>
-                    </li>
+{#                    <li class="nav-item">#}
+{#                        <a href="{% url 'forecasting:pvpc_precios' %}" class="nav-link text-info"><strong>Precios#}
+{#                            MR</strong></a>#}
+{#                    </li>#}
+{##}
+{#                    <li class="nav-item">#}
+{#                        <a href="{% url 'forecasting:mr_precios' %}" class="nav-link text-info"><strong>Nuevo MR</strong></a>#}
+{#                    </li>#}
 
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle text-info" id="menu-infoad" data-toggle="dropdown"

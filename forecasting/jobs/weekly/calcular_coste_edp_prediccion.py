@@ -8,6 +8,10 @@ from ...funciones_basicas import id_random_generator
 
 
 class Job(BaseJob):
+    """
+    Tarea automática que calcula el coste de la predicción de consumo en base a la predicción de precio de la tarifa EDP.
+    """
+
     help = "Calcula el coste de una predicción de consumo en base a una predicción de EDP"
 
     def execute(self):

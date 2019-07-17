@@ -48,7 +48,8 @@
                         <p class="card-text mb-auto">
                             Consulta el precio de las tarifas del precio voluntario para el pequeño consumidor.
                         </p>
-                        <a href="{% url 'forecasting:pvpc_precios' %}" class="btn btn-info btn-sm">Ver precios</a>
+{#                        <a href="{% url 'forecasting:pvpc_precios' %}" class="btn btn-info btn-sm">Ver precios</a>#}
+                        <a href="{% url 'forecasting:mr_precios' %}" class="btn btn-info btn-sm">Ver precios</a>
                     </div>
                     <img src="" class="card-img-right flex-auto d-none d-md-block" data-src="" alt=""
                          style="width: 200px; height: 250px;" src="">
@@ -63,11 +64,13 @@
                             <p href="" class="m-0 p-0text-dark">Tarifas Mercado Libre</p>
                         </h3>
                         {#                        <div class="mb-1 text-muted">Actualizado a <em>hoy</em></div>#}
-                        <p class="card-text mb-auto">
-                            Consulta algunas de las tarifas que ofertan actualmente las distribuidoras para conocerlas
-                            más en detalle.
-                        </p>
-                        <a href="" class="btn btn-info btn-sm">Ver tarifas</a>
+{#                        <p class="card-text mb-auto">#}
+{#                            Consulta algunas de las tarifas que ofertan actualmente las distribuidoras para conocerlas#}
+{#                            más en detalle.#}
+{#                        </p>#}
+                        <p class="card-text mb-auto mt-4">Conoce el coste de los consumos de tus inmuebles en base a las principales tarifas del mercado regulado.</p>
+{#                        <a href="" class="btn btn-info btn-sm">Ver tarifas</a>#}
+{#                        <a href="{% url 'forecasting:create_inmueble' username=user.username %}" class="btn btn-info btn-sm">Crear Inmueble</a>#}
                     </div>
                     <img src="" class="card-img-right flex-auto d-none d-md-block" data-src="" alt=""
                          style="width: 200px; height: 250px;" src="">

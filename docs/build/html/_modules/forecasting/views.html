@@ -1,0 +1,1023 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>forecasting.views &#8212; ProyectoTFG 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for forecasting.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: view</span>
+<span class="sd">    :synopsis: Contiene todas las vistas de la app forecasting.</span>
+
+<span class="sd">.. moduleauthor:: Roberto Benéitez Vaquero</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">messages</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.mixins</span> <span class="k">import</span> <span class="n">LoginRequiredMixin</span>
+<span class="kn">from</span> <span class="nn">django.core.files.base</span> <span class="k">import</span> <span class="n">ContentFile</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">Http404</span><span class="p">,</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseBadRequest</span>
+<span class="kn">from</span> <span class="nn">django.views</span> <span class="k">import</span> <span class="n">generic</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="k">import</span> <span class="n">DeleteView</span><span class="p">,</span> <span class="n">TemplateView</span><span class="p">,</span> <span class="n">UpdateView</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">django.core.files</span> <span class="k">import</span> <span class="n">File</span>
+
+<span class="c1"># pip install django-braces</span>
+<span class="kn">from</span> <span class="nn">braces.views</span> <span class="k">import</span> <span class="n">SelectRelatedMixin</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="k">import</span> <span class="n">InmuebleForm</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">plots</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">models</span> <span class="kn">import</span> <span class="nn">ModeloPred</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">func_datos_modelo</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">func_parciales</span>
+<span class="kn">from</span> <span class="nn">.funciones_basicas</span> <span class="k">import</span> <span class="n">limpiarCSV</span><span class="p">,</span> <span class="n">id_random_generator</span>
+<span class="kn">from</span> <span class="nn">.func_mr</span> <span class="k">import</span> <span class="n">representar_precios_mr</span>
+
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="k">import</span> <span class="n">get_user_model</span>
+<span class="n">User</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
+
+
+<span class="c1"># Create your views here.</span>
+
+<span class="c1"># INMUEBLES</span>
+<span class="c1">#listado de los inmuebles, en general (probablemente me lo puedo cargar, porque sólo quiero listar por usuario)</span>
+<div class="viewcode-block" id="InmuebleList"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InmuebleList">[docs]</a><span class="k">class</span> <span class="nc">InmuebleList</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listado de los Inmuebles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="p">)</span></div>
+
+<span class="c1">#listado de los inmuebles de un usuario en concreto</span>
+<span class="c1"># (aquí creo que va la comprobación de si el usuario que está en el contexto de la página es el que está tratando de acceder a ver el listado de inmuebles)</span>
+
+<div class="viewcode-block" id="UserInmuebles"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserInmuebles">[docs]</a><span class="k">class</span> <span class="nc">UserInmuebles</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listado de los Inmuebles para un usuario en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;forecasting/user_inmueble_list.html&quot;</span>
+
+<div class="viewcode-block" id="UserInmuebles.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserInmuebles.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inmueble_user</span><span class="o">=</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inmueble_user</span><span class="o">.</span><span class="n">inmuebles</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UserInmuebles.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserInmuebles.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span><span class="o">=</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;inmueble_user&quot;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inmueble_user</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+<span class="c1">#muestra un inmueble individual</span>
+<div class="viewcode-block" id="InmuebleDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InmuebleDetail">[docs]</a><span class="k">class</span> <span class="nc">InmuebleDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra de los datos para un Inmueble en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,)</span>
+
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># def pintarParcial(self):</span>
+    <span class="c1">#     parciales=self.inmueble.consumosparciales.all()</span>
+    <span class="c1">#     for parcial in parciales:</span>
+    <span class="c1">#         df=pd.read_csv(parcial, delimiter=&#39;;&#39;, decimal=&#39;,&#39;)</span>
+    <span class="c1">#     return df</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_ConsumoParcial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">select_related</span><span class="p">):</span>
+        <span class="n">func_parciales</span><span class="o">.</span><span class="n">obtener_consumos_asociados</span><span class="p">(</span><span class="n">select_related</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+<div class="viewcode-block" id="InmuebleDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InmuebleDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user__username__iexact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span></div></div>
+
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># def get(self, request, *args, **kwargs):</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         consumosparciales = models.ConsumoParcial.objects.filter(</span>
+    <span class="c1">#             user=self.request.user,</span>
+    <span class="c1">#             inmueble_asociado=self.inmueble_asociado.pk</span>
+    <span class="c1">#         ).get()</span>
+    <span class="c1">#     except:</span>
+    <span class="c1">#         pass</span>
+    <span class="c1">#</span>
+    <span class="c1">#     return super().get(request, *args, **kwargs)</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+
+<span class="n">FECHA_INICIO_PRECIOS</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span> <span class="c1"># 2019-01-01 00:00:00</span>
+<span class="n">FECHA_FIN_PRECIOS</span><span class="o">=</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;T00:00:00&#39;</span> <span class="c1"># HOY</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">plots</span>
+<span class="k">def</span> <span class="nf">recolectarPrecio</span><span class="p">(</span><span class="n">creador</span><span class="p">):</span>
+    <span class="n">ristra</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">FECHA_INICIO_PRECIOS</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">FECHA_FIN_PRECIOS</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
+    <span class="n">precios</span> <span class="o">=</span> <span class="n">plots</span><span class="o">.</span><span class="n">precios_pvpc</span><span class="p">(</span><span class="n">FECHA_INICIO_PRECIOS</span><span class="p">,</span> <span class="n">FECHA_FIN_PRECIOS</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Fecha&#39;</span><span class="p">:</span><span class="n">ristra</span><span class="p">,</span> <span class="s1">&#39;PPP&#39;</span><span class="p">:</span><span class="n">precios</span><span class="p">[</span><span class="s1">&#39;PPD&#39;</span><span class="p">],</span> <span class="s1">&#39;EDP&#39;</span><span class="p">:</span><span class="n">precios</span><span class="p">[</span><span class="s1">&#39;EDP&#39;</span><span class="p">],</span> <span class="s1">&#39;VE&#39;</span><span class="p">:</span><span class="n">precios</span><span class="p">[</span><span class="s1">&#39;VE&#39;</span><span class="p">]}</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;Fecha&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+    <span class="n">nombre</span><span class="o">=</span><span class="n">creador</span>
+    <span class="n">ficheroMR</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">nombre</span><span class="o">+</span><span class="s1">&#39;datosMR.csv&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ficheroMR</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.files.storage</span> <span class="k">import</span> <span class="n">FileSystemStorage</span>
+<span class="c1">#crear un nuevo inmueble</span>
+<div class="viewcode-block" id="CreateInmueble"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateInmueble">[docs]</a><span class="k">class</span> <span class="nc">CreateInmueble</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creación de un Inmueble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;descripcion&#39;</span><span class="p">,</span> <span class="s1">&#39;consumo_inmueble&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span>
+
+<div class="viewcode-block" id="CreateInmueble.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateInmueble.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="c1">#form.instance.created_by = self.request.user</span>
+
+        <span class="c1">#Haciéndolo de esta manera, la instancia no encuentra su fichero. YA SÍ QUE ESTÁ BIEN HECHO. NO MAMES, WEY</span>
+        <span class="n">df_inmueble</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">consumo_inmueble</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">df_inmueble</span><span class="o">=</span><span class="n">limpiarCSV</span><span class="p">(</span><span class="n">df_inmueble</span><span class="p">)</span>
+        <span class="c1">#TOD GUARDAR EL DATAFRAME EN UN PICKLE EN LUGAR DE EN CSV --&gt; modificar el modelo</span>
+        <span class="c1"># dire=os.path.join(settings.MEDIA_ROOT, &#39;consumosInmuebles&#39;)</span>
+        <span class="c1"># # dire = os.path.join(str(FileSystemStorage.location), &#39;consumosInmuebles&#39;)</span>
+        <span class="c1"># dire=os.path.join(dire, self.object.consumo_inmueble.name)</span>
+        <span class="c1"># fichero_df_inmueble=df_inmueble.to_csv(dire)</span>
+        <span class="c1"># fichero_df_inmueble=df_inmueble.to_csv(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+&#39;\\media\\consumosInmuebles\\&#39;+self.object.consumo_inmueble.name)</span>
+        <span class="n">file_path</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">consumosInmuebles</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">consumo_inmueble</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># self.object.consumo_inmueble.file= ContentFile(df_inmueble.to_csv(columns={&#39;Fecha&#39;,&#39;Consumo_kWh&#39;}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">consumo_inmueble</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">ContentFile</span><span class="p">(</span><span class="n">df_inmueble</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">,}))</span>
+        <span class="n">file_path2</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">consumosInmuebles</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="s1">&#39;ConInm&#39;</span><span class="o">+</span><span class="n">id_random_generator</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span>
+        <span class="n">df_inmueble</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">consumo_inmueble_string</span> <span class="o">=</span><span class="n">file_path2</span>
+
+
+        <span class="c1"># #Cuando se crea un inmueble se crea un histórico de precios de la luz en el Mercado Regulado</span>
+        <span class="c1"># nuevo_historicoMR = models.HistoricoMercadoRegulado.objects.create(user=self.request.user,</span>
+        <span class="c1">#                                                                    precios_luz=recolectarPrecio(</span>
+        <span class="c1">#                                                                        self.request.user),</span>
+        <span class="c1">#                                                                    primera_fecha=FECHA_INICIO_PRECIOS,</span>
+        <span class="c1">#                                                                    ultima_fecha=FECHA_FIN_PRECIOS)</span>
+        <span class="c1"># nuevo_historicoMR.save()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+<span class="c1">#modificar un inmueble ya creado</span>
+<div class="viewcode-block" id="InmuebleUpdateView"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InmuebleUpdateView">[docs]</a><span class="k">class</span> <span class="nc">InmuebleUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modificación de los datos de un Inmueble.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span>
+    <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span><span class="s1">&#39;descripcion&#39;</span><span class="p">]</span>
+    <span class="n">template_name_suffix</span> <span class="o">=</span> <span class="s1">&#39;_form_update&#39;</span></div>
+
+
+<span class="c1">#eliminar un inmueble</span>
+<span class="c1"># &quot;&quot;&quot;</span>
+<span class="c1">#     Esta vista requiere atención:</span>
+<span class="c1">#     - Debería redirigir al listado de los inmuebles que tenga el usuario. Hay que pasarle por argumento el username</span>
+<span class="c1"># &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DeleteInmueble"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeleteInmueble">[docs]</a><span class="k">class</span> <span class="nc">DeleteInmueble</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Eliminación de un Inmueble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Inmueble</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span></div>
+    <span class="c1">#success_url = reverse_lazy(&#39;forecasting:create_inmueble&#39;, kwargs={&quot;username&quot;: self.user.username})</span>
+
+
+<span class="c1"># CONSUMOS PARCIALES</span>
+<span class="c1">#crear un nuevo consumo parcial</span>
+<div class="viewcode-block" id="CreateConsumoParcial"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateConsumoParcial">[docs]</a><span class="k">class</span> <span class="nc">CreateConsumoParcial</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creación de un consumo parcial asociado a un Inmueble en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;inmueble_asociado&#39;</span><span class="p">,</span> <span class="s1">&#39;fichero_consumo_parcial&#39;</span><span class="p">,)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ConsumoParcial</span>
+
+<div class="viewcode-block" id="CreateConsumoParcial.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateConsumoParcial.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+
+        <span class="c1"># fichero_parcial = self.object.fichero_consumo_parcial</span>
+        <span class="c1"># df_parcial=pd.read_csv(fichero_parcial, delimiter=&#39;;&#39;, decimal=&#39;,&#39;)</span>
+        <span class="c1"># ristra = pd.date_range(df_parcial[&#39;Fecha&#39;][0], periods=len(df_parcial), freq=&#39;H&#39;)</span>
+        <span class="c1"># df_parcial[&#39;Fecha&#39;] = ristra</span>
+        <span class="c1"># df_parcial.drop([&quot;Hora&quot;], axis=1, inplace=True)</span>
+        <span class="c1"># df_parcial[&#39;Fecha&#39;] = pd.to_datetime(df_parcial[&#39;Fecha&#39;], format=&#39;%d/%m/%Y %H:%M&#39;)</span>
+        <span class="c1"># #to_csv y guardo</span>
+        <span class="c1"># self.object.fichero_consumo_parcial=fichero_parcial</span>
+
+        <span class="n">df_parcial</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">fichero_consumo_parcial</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">df_parcial</span> <span class="o">=</span> <span class="n">limpiarCSV</span><span class="p">(</span><span class="n">df_parcial</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">consumosParciales</span><span class="se">\\</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">fichero_consumo_parcial</span><span class="o">.</span><span class="n">name</span> <span class="c1">#me sobra???</span>
+        <span class="c1"># self.object.fichero_consumo_parcial.file = ContentFile(df_parcial.to_csv(columns={&#39;Fecha&#39;, &#39;Consumo_kWh&#39;}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">fichero_consumo_parcial</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">ContentFile</span><span class="p">(</span><span class="n">df_parcial</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Consumo_kWh&#39;</span><span class="p">,}))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># PREDICCIONES DE CONSUMO</span>
+<span class="c1">#ver una predicción de consumo concreta</span>
+<div class="viewcode-block" id="PrediccionConsumoDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PrediccionConsumoDetail">[docs]</a><span class="k">class</span> <span class="nc">PrediccionConsumoDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Visualización de los datos de una predicción de consumo en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PrediccionConsumo</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;modelo_consumo_origen&quot;</span><span class="p">,)</span>
+
+    <span class="c1"># def get_queryset(self):</span>
+    <span class="c1">#     queryset = super().get_queryset()</span>
+    <span class="c1">#     return queryset.filter(created_by__username__iexact=self.kwargs.get(&quot;username&quot;))</span>
+
+<div class="viewcode-block" id="PrediccionConsumoDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PrediccionConsumoDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pk&quot;</span><span class="p">))</span></div></div>
+
+<span class="c1">#TOD debería redigirigr al inmueble</span>
+<span class="c1">#Para eliminar manualmente las predicciones de consumo</span>
+<div class="viewcode-block" id="DeletePrediccionConsumo"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeletePrediccionConsumo">[docs]</a><span class="k">class</span> <span class="nc">DeletePrediccionConsumo</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Eliminación de una predicción de consumo en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PrediccionConsumo</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span></div>
+
+    <span class="c1"># #Aviso al Inmueble que la predicción ha dejado de estar actualizada (porque me la he cargado, claramente)</span>
+    <span class="c1"># def delete(self, request, *args, **kwargs):</span>
+    <span class="c1">#     # self.object.modelo_consumo_origen.inmueble_origen.prediccion_actualizada=False</span>
+    <span class="c1">#     return super(DeletePrediccionConsumo, self).delete(*args, **kwargs)</span>
+
+
+<span class="c1"># TARIFA ELÉCTRICA</span>
+<span class="c1">#crear una tarifa eléctrica</span>
+<div class="viewcode-block" id="CreateTarifaElectrica"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateTarifaElectrica">[docs]</a><span class="k">class</span> <span class="nc">CreateTarifaElectrica</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creación de una tarifa eléctrica personalizada para el usuario.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;hora_ini_periodo_gracia&#39;</span><span class="p">,</span> <span class="s1">&#39;hora_fin_periodo_gracia&#39;</span><span class="p">,</span> <span class="s1">&#39;precio_periodo_gracia&#39;</span><span class="p">,</span> <span class="s1">&#39;precio_periodo_general&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaElectrica</span>
+
+<div class="viewcode-block" id="CreateTarifaElectrica.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateTarifaElectrica.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+<span class="c1">#Listar las tarifas eléctricas de un usuario</span>
+<div class="viewcode-block" id="UserTarifasElectricas"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserTarifasElectricas">[docs]</a><span class="k">class</span> <span class="nc">UserTarifasElectricas</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listado de las tarifas eléctricas personalizadas de un usuario en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">TarifaElectrica</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;forecasting/user_tarifaelectrica_list.html&quot;</span>
+
+<div class="viewcode-block" id="UserTarifasElectricas.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserTarifasElectricas.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tarifaelectrica_user</span><span class="o">=</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tarifaelectrica_user</span><span class="o">.</span><span class="n">tarifaselectricas</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UserTarifasElectricas.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserTarifasElectricas.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span><span class="o">=</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+<span class="c1">#listado de los inmuebles, en general (probablemente me lo puedo cargar, porque sólo quiero listar por usuario)</span>
+<span class="c1"># class TarifaElectricaList(SelectRelatedMixin, generic.ListView):</span>
+<span class="c1">#     model=models.TarifaElectrica</span>
+<span class="c1">#     select_related = (&quot;user&quot;, )</span>
+
+<span class="c1">#muestra una tarifa eléctrica</span>
+<div class="viewcode-block" id="TarifaElectricaDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.TarifaElectricaDetail">[docs]</a><span class="k">class</span> <span class="nc">TarifaElectricaDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra de la información de una tarifa eléctrica personalizada  en concreto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaElectrica</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="TarifaElectricaDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.TarifaElectricaDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user__username__iexact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span></div></div>
+
+<span class="c1">#modificar una tarifa eléctrica</span>
+<div class="viewcode-block" id="TarifaElectricaUpdateView"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.TarifaElectricaUpdateView">[docs]</a><span class="k">class</span> <span class="nc">TarifaElectricaUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modificación de una tarifa eléctrica personalizada.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaElectrica</span>
+    <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;hora_ini_uno&#39;</span><span class="p">,</span> <span class="s1">&#39;duracion_uno&#39;</span><span class="p">,</span> <span class="s1">&#39;precio_uno&#39;</span><span class="p">,</span> <span class="s1">&#39;hora_ini_dos&#39;</span><span class="p">,</span> <span class="s1">&#39;duracion_dos&#39;</span><span class="p">,</span> <span class="s1">&#39;precio_dos&#39;</span><span class="p">]</span>
+    <span class="n">template_name_suffix</span> <span class="o">=</span> <span class="s1">&#39;_form_update&#39;</span></div>
+
+<span class="c1">#eliminar una tarifa eléctrica</span>
+<div class="viewcode-block" id="DeleteTarifaElectrica"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeleteTarifaElectrica">[docs]</a><span class="k">class</span> <span class="nc">DeleteTarifaElectrica</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Eliminación de una tarifa eléctrica personalizada.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaElectrica</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span></div>
+
+<span class="c1">#eliminar</span>
+<span class="c1"># TARIFA MERCADO REGULADO - histórico subido por el usuario</span>
+<span class="c1">#Crear/subir un histórico de tarifas del Mercado Regulado</span>
+<div class="viewcode-block" id="CreateTarifaMercadoRegulado"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateTarifaMercadoRegulado">[docs]</a><span class="k">class</span> <span class="nc">CreateTarifaMercadoRegulado</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;fichero_precios&#39;</span><span class="p">,)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaMercadoRegulado</span>
+
+<div class="viewcode-block" id="CreateTarifaMercadoRegulado.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateTarifaMercadoRegulado.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+<span class="c1">#eliminar</span>
+<span class="c1">#Listar las tarifas eléctricas de un usuario</span>
+<div class="viewcode-block" id="UserTarifasMercadoRegulado"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserTarifasMercadoRegulado">[docs]</a><span class="k">class</span> <span class="nc">UserTarifasMercadoRegulado</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">TarifaMercadoRegulado</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;forecasting/user_tarifamercadoregulado_list.html&quot;</span>
+
+<div class="viewcode-block" id="UserTarifasMercadoRegulado.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserTarifasMercadoRegulado.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tarifamercadoregulado_user</span><span class="o">=</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tarifamercadoregulado_user</span><span class="o">.</span><span class="n">tarifasmercadoregulado</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UserTarifasMercadoRegulado.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserTarifasMercadoRegulado.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span><span class="o">=</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+<span class="c1">#eliminar</span>
+<span class="c1">#Muetra una Tarifa del Mercado Regulado</span>
+<div class="viewcode-block" id="TarifaMercadoReguladoDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.TarifaMercadoReguladoDetail">[docs]</a><span class="k">class</span> <span class="nc">TarifaMercadoReguladoDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaMercadoRegulado</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="TarifaMercadoReguladoDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.TarifaMercadoReguladoDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user__username__iexact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span></div></div>
+
+<span class="c1">#modificar una tarifa eléctrica</span>
+<span class="c1"># class TarifaMercadoReguladoUpdateView(LoginRequiredMixin, UpdateView):</span>
+<span class="c1">#     model = models.TarifaElectrica</span>
+<span class="c1">#     fields=[&#39;fichero_precios&#39;]</span>
+<span class="c1">#     template_name_suffix = &#39;_form_update&#39;</span>
+
+<span class="c1">#eliminar</span>
+<span class="c1">#Elimina una tarifa del mercado regulado</span>
+<div class="viewcode-block" id="DeleteTarifaMercadoRegulado"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeleteTarifaMercadoRegulado">[docs]</a><span class="k">class</span> <span class="nc">DeleteTarifaMercadoRegulado</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TarifaMercadoRegulado</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># # HISTÓRICO MERCADO REGULADO</span>
+<span class="c1"># #ver un histórico</span>
+<span class="c1"># class HistoricoMercadoReguladoDetail(SelectRelatedMixin, generic.DetailView):</span>
+<span class="c1">#     model=models.HistoricoMercadoRegulado</span>
+<span class="c1">#     # select_related = (&quot;user&quot;,)</span>
+<span class="c1">#</span>
+<span class="c1">#     def get_queryset(self):</span>
+<span class="c1">#         queryset = super().get_queryset()</span>
+<span class="c1">#         return queryset.filter(id__iexact=self.kwargs.get(&quot;pk&quot;))</span>
+<span class="c1">#</span>
+<span class="c1">#     def get_context_data(self, **kwargs):</span>
+<span class="c1">#         if (self.kwargs.get(&#39;yearS&#39;) and self.kwargs.get(&#39;monthS&#39;) and self.kwargs.get(&#39;dayS&#39;) and self.kwargs.get(&#39;yearF&#39;) and self.kwargs.get(&#39;monthF&#39;) and self.kwargs.get(&#39;dayF&#39;)):</span>
+<span class="c1">#             #Me viene fecha de inicio y de final</span>
+<span class="c1">#             principioYear = self.kwargs[&#39;yearS&#39;]</span>
+<span class="c1">#             principioMonth = self.kwargs[&#39;monthS&#39;]</span>
+<span class="c1">#             principioDay = self.kwargs[&#39;dayS&#39;]</span>
+<span class="c1">#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)</span>
+<span class="c1">#             principio = principio.isoformat(&#39;T&#39;)</span>
+<span class="c1">#             finalYear = self.kwargs[&#39;yearF&#39;]</span>
+<span class="c1">#             finalMonth = self.kwargs[&#39;monthF&#39;]</span>
+<span class="c1">#             finalDay = self.kwargs[&#39;dayF&#39;]</span>
+<span class="c1">#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+<span class="c1">#             final = final.isoformat(&#39;T&#39;)</span>
+<span class="c1">#         elif (self.kwargs.get(&#39;yearS&#39;) and self.kwargs.get(&#39;monthS&#39;) and self.kwargs.get(&#39;dayS&#39;)):</span>
+<span class="c1">#             #Me viene sólo un día</span>
+<span class="c1">#             principioYear = self.kwargs[&#39;yearS&#39;]</span>
+<span class="c1">#             principioMonth = self.kwargs[&#39;monthS&#39;]</span>
+<span class="c1">#             principioDay = self.kwargs[&#39;dayS&#39;]</span>
+<span class="c1">#             principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)</span>
+<span class="c1">#             principio = principio.isoformat(&#39;T&#39;)</span>
+<span class="c1">#             final = datetime(int(principioYear), int(principioMonth), int(principioDay), 1, 0, 0)</span>
+<span class="c1">#             final += timedelta(days=1)</span>
+<span class="c1">#             final = final.isoformat(&#39;T&#39;)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             #No me viene fecha</span>
+<span class="c1">#             ahora = datetime.now().__format__(&#39;%Y-%m-%d&#39;)</span>
+<span class="c1">#             principio = ahora + &#39;T02:00:00&#39;</span>
+<span class="c1">#             finalYear = datetime.now().__format__(&#39;%Y&#39;)</span>
+<span class="c1">#             finalMonth = datetime.now().__format__(&#39;%m&#39;)</span>
+<span class="c1">#             finalDay = datetime.now().__format__(&#39;%d&#39;)</span>
+<span class="c1">#             final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+<span class="c1">#             final += timedelta(days=1)</span>
+<span class="c1">#             final = final.isoformat(&#39;T&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#         context = super(HistoricoMercadoReguladoDetail, self).get_context_data(**kwargs)</span>
+<span class="c1">#</span>
+<span class="c1">#         hMR=models.HistoricoMercadoRegulado.objects.all()</span>
+<span class="c1">#         precios = pd.read_csv(hMR.precios_luz)</span>
+<span class="c1">#</span>
+<span class="c1">#         context[&#39;grafico_precio&#39;] = plots.chart_precios_pvpc(principio, final)</span>
+<span class="c1">#         return context</span>
+
+
+
+
+
+<span class="c1">#eliminar</span>
+<span class="c1"># CONSUMOS</span>
+<div class="viewcode-block" id="ConsumoList"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.ConsumoList">[docs]</a><span class="k">class</span> <span class="nc">ConsumoList</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Consumo</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,)</span></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="UserConsumos"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserConsumos">[docs]</a><span class="k">class</span> <span class="nc">UserConsumos</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Consumo</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;forecasting/user_consumo_list.html&quot;</span>
+
+<div class="viewcode-block" id="UserConsumos.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserConsumos.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#self.consumo_user = User.objects.prefecth_related(&quot;forecasting&quot;).get(username__iexact=self.kwargs.get(&quot;username&quot;))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consumo_user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumo_user</span><span class="o">.</span><span class="n">consumos</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UserConsumos.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserConsumos.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;consumo_user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumo_user</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="ConsumoDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.ConsumoDetail">[docs]</a><span class="k">class</span> <span class="nc">ConsumoDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Consumo</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="ConsumoDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.ConsumoDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user__username__iexact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="CreateConsumo"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateConsumo">[docs]</a><span class="k">class</span> <span class="nc">CreateConsumo</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;titulo&#39;</span><span class="p">,</span> <span class="s1">&#39;fichero_consumo&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Consumo</span>
+
+<div class="viewcode-block" id="CreateConsumo.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateConsumo.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="DeleteConsumo"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeleteConsumo">[docs]</a><span class="k">class</span> <span class="nc">DeleteConsumo</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Consumo</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;forecasting:all&#39;</span><span class="p">)</span></div>
+
+
+
+
+<span class="c1">#eliminar</span>
+<span class="c1"># MODELOS DE PREDICCIÓN</span>
+<div class="viewcode-block" id="ModeloPredList"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.ModeloPredList">[docs]</a><span class="k">class</span> <span class="nc">ModeloPredList</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloPred</span>
+    <span class="c1">#select_related = (&quot;consumo_origen&quot;,)</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="p">)</span></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="UserModelosPred"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserModelosPred">[docs]</a><span class="k">class</span> <span class="nc">UserModelosPred</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloPred</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;forecasting/user_modelopred_list.html&quot;</span>
+
+<div class="viewcode-block" id="UserModelosPred.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserModelosPred.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#self.consumo_user = User.objects.prefecth_related(&quot;forecasting&quot;).get(username__iexact=self.kwargs.get(&quot;username&quot;))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modelopred_user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#return self.modelopred_user.consumos.all()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelopred_user</span><span class="o">.</span><span class="n">modelosPred</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UserModelosPred.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserModelosPred.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;modelopred_user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelopred_user</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="ModeloPredDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.ModeloPredDetail">[docs]</a><span class="k">class</span> <span class="nc">ModeloPredDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloPred</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;created_by&quot;</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">fichero_modeloPred</span><span class="p">:</span>
+        <span class="n">csvData</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;Person&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Peter&#39;</span><span class="p">,</span> <span class="s1">&#39;22&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Jasmine&#39;</span><span class="p">,</span> <span class="s1">&#39;21&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Sam&#39;</span><span class="p">,</span> <span class="s1">&#39;24&#39;</span><span class="p">]]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;person.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvFile</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvFile</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">csvData</span><span class="p">)</span>
+        <span class="n">csvFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ModeloPredDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.ModeloPredDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="c1">#return queryset.filter(user__username__iexact = self.kwargs.get(&quot;username&quot;))</span>
+        <span class="c1">#return queryset.filter(pk__iexact = self.kwargs.get(&quot;pk&quot;))</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created_by__username__iexact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="CreateModeloPred"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateModeloPred">[docs]</a><span class="k">class</span> <span class="nc">CreateModeloPred</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;titulo&#39;</span><span class="p">,</span> <span class="s1">&#39;consumo_origen&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloPred</span>
+
+
+<div class="viewcode-block" id="CreateModeloPred.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreateModeloPred.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="c1">#self.object.consumo_origen = self.request.user</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">created_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="DeleteModeloPred"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeleteModeloPred">[docs]</a><span class="k">class</span> <span class="nc">DeleteModeloPred</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ModeloPred</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;forecasting:all_MP&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1">#eliminar</span>
+<span class="c1"># PREDICCIONES</span>
+<div class="viewcode-block" id="PrediccionList"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PrediccionList">[docs]</a><span class="k">class</span> <span class="nc">PrediccionList</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Prediccion</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="p">)</span></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="UserPredicciones"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserPredicciones">[docs]</a><span class="k">class</span> <span class="nc">UserPredicciones</span><span class="p">(</span><span class="n">generic</span><span class="o">.</span><span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Prediccion</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;forecasting/user_prediccion_list.html&quot;</span>
+
+<div class="viewcode-block" id="UserPredicciones.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserPredicciones.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prediccion_user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prediccion_user</span><span class="o">.</span><span class="n">predicciones</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UserPredicciones.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.UserPredicciones.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;prediccion_user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prediccion_user</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="PrediccionDetail"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PrediccionDetail">[docs]</a><span class="k">class</span> <span class="nc">PrediccionDetail</span><span class="p">(</span><span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Prediccion</span>
+    <span class="n">select_related</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;created_by&quot;</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="PrediccionDetail.get_queryset"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PrediccionDetail.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created_by__username__iexact</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">))</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="CreatePrediccion"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreatePrediccion">[docs]</a><span class="k">class</span> <span class="nc">CreatePrediccion</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">SelectRelatedMixin</span><span class="p">,</span> <span class="n">generic</span><span class="o">.</span><span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;titulo&#39;</span><span class="p">,</span> <span class="s1">&#39;modelopred_origen&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Prediccion</span>
+
+<div class="viewcode-block" id="CreatePrediccion.form_valid"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.CreatePrediccion.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">created_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
+
+<span class="c1">#eliminar</span>
+<div class="viewcode-block" id="DeletePrediccion"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.DeletePrediccion">[docs]</a><span class="k">class</span> <span class="nc">DeletePrediccion</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Prediccion</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;forecasting:all_PP&#39;</span><span class="p">)</span></div>
+
+<span class="c1">#eliminar</span>
+<span class="k">def</span> <span class="nf">crear_fic_mod</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+    <span class="c1">#model = models.ModeloPred</span>
+    <span class="c1">#mo_actual = model.filter(pk = pk)</span>
+
+    <span class="c1">#mo_actual = ModeloPred.objects.filter(pk=pk)</span>
+    <span class="c1">#nombre = mo_actual[&#39;titulo&#39;]</span>
+    <span class="c1">#nombre2 = mo_actual.titulo</span>
+
+    <span class="c1">#tit = ModeloPred.objects.get(pk=pk).titulo</span>
+
+    <span class="c1">#mo_actual.fichero_modeloPred =</span>
+    <span class="n">csvData</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;Person&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Peter&#39;</span><span class="p">,</span> <span class="s1">&#39;22&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Jasmine&#39;</span><span class="p">,</span> <span class="s1">&#39;21&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Sam&#39;</span><span class="p">,</span> <span class="s1">&#39;24&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Manolo&#39;</span><span class="p">,</span> <span class="mi">39</span><span class="p">]]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;person.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvFile</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvFile</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">csvData</span><span class="p">)</span>
+    <span class="n">csvFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1">#miModelo = ModeloPred.objects.get(pk=pk).consumo_origen.fichero_consumo</span>
+    <span class="c1">#modelo_specs = func_datos_modelo.creacion_modelo(miModelo)</span>
+
+    <span class="n">modelo_specs</span> <span class="o">=</span> <span class="n">func_datos_modelo</span><span class="o">.</span><span class="n">creacion_modelo</span><span class="p">(</span><span class="n">ModeloPred</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">consumo_origen</span><span class="o">.</span><span class="n">fichero_consumo</span><span class="p">)</span>
+
+    <span class="n">ModeloPred</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">raizECM</span> <span class="o">=</span> <span class="n">modelo_specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RECM&#39;</span><span class="p">)</span>
+    <span class="c1">#ModeloPred.objects.get(pk=pk).mead = modelo_specs.get(&#39;M&#39;)</span>
+    <span class="n">ModeloPred</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">modelo_specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">)</span>
+
+    <span class="n">csvData</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;Person&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Peter&#39;</span><span class="p">,</span> <span class="s1">&#39;22&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Jasmine&#39;</span><span class="p">,</span> <span class="s1">&#39;21&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Sam&#39;</span><span class="p">,</span> <span class="s1">&#39;24&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">modelo_specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RECM&#39;</span><span class="p">),</span> <span class="s1">&#39;99&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">modelo_specs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">),</span> <span class="s1">&#39;99&#39;</span><span class="p">]]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;person02.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvFile</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvFile</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">csvData</span><span class="p">)</span>
+    <span class="n">csvFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># # Abro y preparo el dataframe</span>
+    <span class="c1"># c_o = ModeloPred.objects.get(pk=pk).consumo_origen.fichero_consumo</span>
+    <span class="c1"># df = pd.read_csv(c_o, delimiter=&#39;;&#39;, decimal=&#39;,&#39;)</span>
+    <span class="c1"># ristra = pd.date_range(df[&#39;Fecha&#39;][0], periods=len(df), freq=&#39;H&#39;)</span>
+    <span class="c1"># df[&#39;Fecha&#39;] = ristra</span>
+    <span class="c1"># df = df.drop([&#39;CUPS&#39;, &#39;Hora&#39;, &#39;Metodo_obtencion&#39;], axis=1)</span>
+    <span class="c1"># df.index = pd.to_datetime(df[&#39;Fecha&#39;])</span>
+    <span class="c1"># df = df.drop([&#39;Fecha&#39;], axis=1)</span>
+    <span class="c1"># df.index.freq = &#39;h&#39;</span>
+    <span class="c1">#</span>
+    <span class="c1"># # Limpio los datos</span>
+    <span class="c1"># filt_df = df.loc[:, &#39;Consumo_kWh&#39;]</span>
+    <span class="c1"># low = .05</span>
+    <span class="c1"># high = .95</span>
+    <span class="c1"># quant_df_low = filt_df.quantile(low)</span>
+    <span class="c1"># quant_df_high = filt_df.quantile(high)</span>
+    <span class="c1">#</span>
+    <span class="c1"># for index, row in df.iterrows():</span>
+    <span class="c1">#     if row[&#39;Consumo_kWh&#39;] &lt; quant_df_low:</span>
+    <span class="c1">#         row[&#39;Consumo_kWh&#39;] = quant_df_low</span>
+    <span class="c1">#     elif row[&#39;Consumo_kWh&#39;] &gt; quant_df_high:</span>
+    <span class="c1">#         row[&#39;Consumo_kWh&#39;] = quant_df_high</span>
+    <span class="c1">#</span>
+    <span class="c1"># tam_total = len(df)</span>
+    <span class="c1"># tam_train = int(tam_total/0.8)</span>
+    <span class="c1"># tam_test = tam_total-tam_train</span>
+    <span class="c1">#</span>
+    <span class="c1"># train = df.iloc[:tam_train]</span>
+    <span class="c1"># test = df.iloc[tam_test:]</span>
+    <span class="c1">#</span>
+    <span class="c1"># model = SARIMAX(train[&#39;Consumo_kWh&#39;], order=(1, 1, 1), seasonal_order=(2, 0, 3, 24))</span>
+    <span class="c1"># results = model.fit()</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1">#User.ModeloPred.fichero_modeloPred = User.ModeloPred.consumo_origen</span>
+    <span class="c1">#User.objects.get()</span>
+
+
+
+<div class="viewcode-block" id="PVPCView"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PVPCView">[docs]</a><span class="k">class</span> <span class="nc">PVPCView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representación de los precios del mercado regulado.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;forecasting/pvpc_chart.html&#39;</span>
+
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># def get_queryset(self):</span>
+    <span class="c1">#     recib = self.kwargs[&#39;yearS&#39;]</span>
+    <span class="c1">#     print(&#39;ATENTO AQUI QUE VIENE:&#39;)</span>
+    <span class="c1">#     print(recib)</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># def get(self, *args, **kwargs):</span>
+    <span class="c1">#     print(&#39;Processing GET request in PVPCView&#39;)</span>
+    <span class="c1">#     #resp = super().get(*args, **kwargs)</span>
+    <span class="c1">#     if not self.kwargs[&#39;yearS&#39;] or self.kwargs[&#39;monthS&#39;] or self.kwargs[&#39;dayS&#39;] or self.kwargs[&#39;yearF&#39;] or self.kwargs[&#39;monthF&#39;] or self.kwargs[&#39;dayF&#39;]:</span>
+    <span class="c1">#         ahora = datetime.now().__format__(&#39;%Y-%m-%d&#39;)</span>
+    <span class="c1">#         principio = ahora + &#39;T02:00:00&#39;</span>
+    <span class="c1">#         finalYear = datetime.now().__format__(&#39;%Y&#39;)</span>
+    <span class="c1">#         finalMonth = datetime.now().__format__(&#39;%m&#39;)</span>
+    <span class="c1">#         finalDay = datetime.now().__format__(&#39;%d&#39;)</span>
+    <span class="c1">#         final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+    <span class="c1">#         final += timedelta(days=1)</span>
+    <span class="c1">#         final = final.isoformat(&#39;T&#39;)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         principioYear = self.kwargs[&#39;yearS&#39;]</span>
+    <span class="c1">#         principioMonth = self.kwargs[&#39;monthS&#39;]</span>
+    <span class="c1">#         principioDay = self.kwargs[&#39;dayS&#39;]</span>
+    <span class="c1">#         principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)</span>
+    <span class="c1">#         principio = principio.isoformat(&#39;T&#39;)</span>
+    <span class="c1">#         finalYear = self.kwargs[&#39;yearF&#39;]</span>
+    <span class="c1">#         finalMonth = self.kwargs[&#39;monthF&#39;]</span>
+    <span class="c1">#         finalDay = self.kwargs[&#39;dayF&#39;]</span>
+    <span class="c1">#         final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+    <span class="c1">#         final = final.isoformat(&#39;T&#39;)</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+
+
+
+<div class="viewcode-block" id="PVPCView.get_context_data"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PVPCView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1">#context = super().get_context_data(**kwargs)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ahora = datetime.now().__format__(&#39;%Y-%m-%d&#39;)</span>
+<span class="sd">        principio = ahora + &#39;T02:00:00&#39;</span>
+<span class="sd">        finalYear = datetime.now().__format__(&#39;%Y&#39;)</span>
+<span class="sd">        finalMonth = datetime.now().__format__(&#39;%m&#39;)</span>
+<span class="sd">        finalDay = datetime.now().__format__(&#39;%d&#39;)</span>
+<span class="sd">        final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+<span class="sd">        final += timedelta(days=1)</span>
+<span class="sd">        final = final.isoformat(&#39;T&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># &quot;&quot;&quot;</span>
+        <span class="c1"># if not (self.kwargs.get(&#39;yearS&#39;) or self.kwargs.get(&#39;monthS&#39;) or self.kwargs.get(&#39;dayS&#39;) or self.kwargs.get(&#39;yearF&#39;) or self.kwargs.get(&#39;monthF&#39;) or self.kwargs.get(&#39;dayF&#39;)):</span>
+        <span class="c1">#     ahora = datetime.now().__format__(&#39;%Y-%m-%d&#39;)</span>
+        <span class="c1">#     principio = ahora + &#39;T02:00:00&#39;</span>
+        <span class="c1">#     finalYear = datetime.now().__format__(&#39;%Y&#39;)</span>
+        <span class="c1">#     finalMonth = datetime.now().__format__(&#39;%m&#39;)</span>
+        <span class="c1">#     finalDay = datetime.now().__format__(&#39;%d&#39;)</span>
+        <span class="c1">#     final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+        <span class="c1">#     final += timedelta(days=1)</span>
+        <span class="c1">#     final = final.isoformat(&#39;T&#39;)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     principioYear = self.kwargs[&#39;yearS&#39;]</span>
+        <span class="c1">#     principioMonth = self.kwargs[&#39;monthS&#39;]</span>
+        <span class="c1">#     principioDay = self.kwargs[&#39;dayS&#39;]</span>
+        <span class="c1">#     principio = datetime(int(principioYear), int(principioMonth), int(principioDay), 2, 0, 0)</span>
+        <span class="c1">#     principio = principio.isoformat(&#39;T&#39;)</span>
+        <span class="c1">#     finalYear = self.kwargs[&#39;yearF&#39;]</span>
+        <span class="c1">#     finalMonth = self.kwargs[&#39;monthF&#39;]</span>
+        <span class="c1">#     finalDay = self.kwargs[&#39;dayF&#39;]</span>
+        <span class="c1">#     final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+        <span class="c1">#     final = final.isoformat(&#39;T&#39;)</span>
+        <span class="c1"># &quot;&quot;&quot;</span>
+
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;yearS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;monthS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dayS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;yearF&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;monthF&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dayF&#39;</span><span class="p">)):</span>
+            <span class="c1">#Me viene fecha de inicio y de final</span>
+            <span class="n">principioYear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yearS&#39;</span><span class="p">]</span>
+            <span class="n">principioMonth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;monthS&#39;</span><span class="p">]</span>
+            <span class="n">principioDay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dayS&#39;</span><span class="p">]</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">principioYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioDay</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">principio</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+            <span class="n">finalYear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yearF&#39;</span><span class="p">]</span>
+            <span class="n">finalMonth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;monthF&#39;</span><span class="p">]</span>
+            <span class="n">finalDay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dayF&#39;</span><span class="p">]</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">finalYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalDay</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">final</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;yearS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;monthS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dayS&#39;</span><span class="p">)):</span>
+            <span class="c1">#Me viene sólo un día</span>
+            <span class="n">principioYear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yearS&#39;</span><span class="p">]</span>
+            <span class="n">principioMonth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;monthS&#39;</span><span class="p">]</span>
+            <span class="n">principioDay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dayS&#39;</span><span class="p">]</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">principioYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioDay</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">principio</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">principioYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioDay</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">final</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#No me viene fecha</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+            <span class="c1"># ahora = datetime.now().__format__(&#39;%Y-%m-%d&#39;)</span>
+            <span class="c1"># principio = ahora + &#39;T02:00:00&#39;</span>
+            <span class="c1"># finalYear = datetime.now().__format__(&#39;%Y&#39;)</span>
+            <span class="c1"># finalMonth = datetime.now().__format__(&#39;%m&#39;)</span>
+            <span class="c1"># finalDay = datetime.now().__format__(&#39;%d&#39;)</span>
+            <span class="c1"># final = datetime(int(finalYear), int(finalMonth), int(finalDay), 1, 0, 0)</span>
+            <span class="c1"># final += timedelta(days=1)</span>
+            <span class="c1"># final = final.isoformat(&#39;T&#39;)</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+
+
+            <span class="n">ahora</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">ahora</span> <span class="o">+</span> <span class="s1">&#39;T02:00:00&#39;</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+            <span class="c1"># final = datetime.date.today().__format__(&#39;%Y-%m-%d&#39;) + datetime.timedelta(days=1)</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+            <span class="n">finalYear</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y&#39;</span><span class="p">)</span>
+            <span class="n">finalMonth</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%m&#39;</span><span class="p">)</span>
+            <span class="n">finalDay</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">finalYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalDay</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">final</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+            <span class="c1"># final = str(ahora)</span>
+            <span class="c1"># final += timedelta(days=1)</span>
+            <span class="c1"># final = datetime(final, 1, 0, 0)</span>
+            <span class="c1"># final = final.isoformat(&#39;T&#39;)</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+
+            <span class="c1"># &quot;&quot;&quot;</span>
+            <span class="c1"># principio = &#39;2019-05-05T02:00:00&#39;</span>
+            <span class="c1"># final = &#39;2019-05-06T01:00:00&#39;</span>
+            <span class="c1"># &quot;&quot;&quot;</span>
+
+
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PVPCView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;grafico_precio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plots</span><span class="o">.</span><span class="n">chart_precios_pvpc</span><span class="p">(</span><span class="n">principio</span><span class="p">,</span> <span class="n">final</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div></div>
+
+
+<span class="c1"># Clase para ver el histórico de precios desde del .csv de histórico</span>
+<div class="viewcode-block" id="HistoricoMRView"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.HistoricoMRView">[docs]</a><span class="k">class</span> <span class="nc">HistoricoMRView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representación de los precios del mercado regulado, a partir del histórico de precios del sistema.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">template_name</span><span class="o">=</span><span class="s1">&#39;forecasting/mr_chart.html&#39;</span>
+
+    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;yearS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;monthS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dayS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;yearF&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;monthF&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dayF&#39;</span><span class="p">)):</span>
+            <span class="c1">#Me viene fecha de inicio y de final</span>
+            <span class="n">principioYear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yearS&#39;</span><span class="p">]</span>
+            <span class="n">principioMonth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;monthS&#39;</span><span class="p">]</span>
+            <span class="n">principioDay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dayS&#39;</span><span class="p">]</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">principioYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioDay</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># principio = principio.isoformat(&#39;T&#39;)</span>
+            <span class="n">finalYear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yearF&#39;</span><span class="p">]</span>
+            <span class="n">finalMonth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;monthF&#39;</span><span class="p">]</span>
+            <span class="n">finalDay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dayF&#39;</span><span class="p">]</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">finalYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalDay</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># final = final.isoformat(&#39;T&#39;)</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;yearS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;monthS&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dayS&#39;</span><span class="p">)):</span>
+            <span class="c1">#Me viene sólo un día</span>
+            <span class="n">principioYear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yearS&#39;</span><span class="p">]</span>
+            <span class="n">principioMonth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;monthS&#39;</span><span class="p">]</span>
+            <span class="n">principioDay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dayS&#39;</span><span class="p">]</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">principioYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioDay</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># principio = principio.isoformat(&#39;T&#39;)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">principioYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">principioDay</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># final = final.isoformat(&#39;T&#39;)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#No me viene fecha</span>
+            <span class="n">ahora</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1"># principio = ahora + &#39;T02:00:00&#39;</span>
+            <span class="n">principio</span> <span class="o">=</span> <span class="n">ahora</span> <span class="o">+</span> <span class="s1">&#39; 02:00:00&#39;</span>
+
+            <span class="n">finalYear</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%Y&#39;</span><span class="p">)</span>
+            <span class="n">finalMonth</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;%m&#39;</span><span class="p">)</span>
+            <span class="n">finalDay</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">finalYear</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalMonth</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">finalDay</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">final</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># final = final.isoformat(&#39;T&#39;)</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">HistoricoMRView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;grafica_precio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">representar_precios_mr</span><span class="p">(</span><span class="n">principio</span><span class="p">,</span> <span class="n">final</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+
+
+
+<div class="viewcode-block" id="InformacionSmartMeters"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InformacionSmartMeters">[docs]</a><span class="k">class</span> <span class="nc">InformacionSmartMeters</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra de información recopilada acerca de los Smart Meters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;forecasting/info_smartmeters.html&#39;</span></div>
+
+<div class="viewcode-block" id="InformacionFactura"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InformacionFactura">[docs]</a><span class="k">class</span> <span class="nc">InformacionFactura</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra de la información recopilada acerca de la factura de la luz en España.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;forecasting/info_factura.html&#39;</span></div>
+
+<div class="viewcode-block" id="InformacionEnergiaSpain"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.InformacionEnergiaSpain">[docs]</a><span class="k">class</span> <span class="nc">InformacionEnergiaSpain</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra de la información recopilada acerca de la generación eléctrica en España.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;forecasting/info_energia_spain.html&#39;</span></div>
+
+
+<div class="viewcode-block" id="PruebaIndex"><a class="viewcode-back" href="../../modules/forecasting-docs/forecasting.html#forecasting.views.PruebaIndex">[docs]</a><span class="k">class</span> <span class="nc">PruebaIndex</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;forecasting/aaaa.html&#39;</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ProyectoTFG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/forecasting-docs/forecasting.html">App Forecasting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/accounts-docs/accounts.html">App Accounts</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/creator.html">Desarrollador</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Roberto Beneitez Vaquero.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

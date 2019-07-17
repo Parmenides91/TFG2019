@@ -12,6 +12,10 @@ from ...funciones_basicas import id_random_generator
 
 
 class Job(BaseJob):
+    """
+    Tarea automática que calcula el coste del consumo de un inmueble en base al precio de la tarifa EDP del mercado regulado.
+    """
+
     help = "Calcula el coste del inmueble para la tarifa EDP del mercado regulado."
 
     def execute(self):

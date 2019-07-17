@@ -7,6 +7,10 @@ from .funciones_basicas import limpiarCSV
 
 #formulario para la creación de un nuevo inmueble
 class InmuebleForm(forms.ModelForm):
+    """
+    Formulario para la creación de un Inmueble.
+    """
+
     class Meta():
         fields=('nombre','descripcion', 'consumo_inmueble')
         model=models.Inmueble
@@ -24,6 +28,10 @@ class InmuebleForm(forms.ModelForm):
 
 #formulario para crear un consumo parcial de un inmueble
 class ConsumoParcialForm(forms.ModelForm):
+    """
+    Formulario para la creación de un Consumo Parcial.
+    """
+
     class Meta():
         fields=('inmueble_asociado','fichero_consumo_parcial')
         model=models.ConsumoParcial
@@ -32,6 +40,7 @@ class ConsumoParcialForm(forms.ModelForm):
         user=kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
+# Probablemente sin unso, actualmente.
 #formulario para crear un modelo a partir del consumo de un inmueble
 class ModeloConsumoForm(forms.ModelForm):
     class Meta():
@@ -45,6 +54,10 @@ class ModeloConsumoForm(forms.ModelForm):
 
 #formulario para la creación de una nueva tarifa eléctrica
 class TarifaElectricaForm(forms.ModelForm):
+    """
+    Formulario para la creación de las tarifas eléctricas personalizadas de los usuarios.
+    """
+
     class Meta():
         fields=('nombre', 'hora_ini_periodo_gracia', 'hora_fin_periodo_gracia', 'precio_periodo_gracia', 'precio_periodo_general')
         model=models.TarifaElectrica
@@ -53,6 +66,7 @@ class TarifaElectricaForm(forms.ModelForm):
         user=kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
+# Sin uso actualmente.
 #formulario para la creación de una nueva tarifa del mercado regulado
 class TarifaMercadoReguladoForm(forms.ModelForm):
     class Meta():
@@ -63,6 +77,7 @@ class TarifaMercadoReguladoForm(forms.ModelForm):
         user=kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
+# Sin uso, actualmente.
 class ConsumoForm(forms.ModelForm):
     class Meta():
         fields = ("titulo", "fichero_consumo")
@@ -72,7 +87,7 @@ class ConsumoForm(forms.ModelForm):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-
+# Sin uso, actualmente.
 class ModeloPredForm(forms.ModelForm):
     class Meta():
         fields = ("titulo", "consumo_origen")
@@ -82,6 +97,7 @@ class ModeloPredForm(forms.ModelForm):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
+# Sin uso, actualmente.
 class PrediccionForm(forms.ModelForm):
     class Meta():
         fields = ("titulo", "modelopred_origen")
@@ -90,8 +106,3 @@ class PrediccionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-
-"""
-class DateForm(forms.Form):
-    date = forms.DateField(input_formats=['%d/%m/%Y'])
-"""
