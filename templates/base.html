@@ -120,13 +120,13 @@
                         <a href="#" class="nav-link dropdown-toggle text-info" id="menu-infoad" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false"><strong>+Info</strong></a>
                         <div class="dropdown-menu" aria-labelledby="menu-infoad">
-                            <a href="" class="dropdown-item">
+                            <a href="{% url 'forecasting:infoS' %}" class="dropdown-item">
                                 Smart Meters
                             </a>
-                            <a href="" class="dropdown-item">
+                            <a href="{% url 'forecasting:infoF' %}" class="dropdown-item">
                                 Factura
                             </a>
-                            <a href="" class="dropdown-item">
+                            <a href="{% url 'forecasting:infoES' %}" class="dropdown-item">
                                 Energía en España
                             </a>
                         </div>
@@ -230,27 +230,37 @@
 
 
 
+
+
+
+
 <footer class="mt-4 pt-4">
     <div class="container-fluid">
-        <div class="row justify-content-center marco-footer py-2 px-2">
-            <div class="col-3 text-center">
-                <img class="img-fluid px-5 pt-3" src="{% static 'img/USALseal.svg' %}"
-                     alt="Universidad De Salamanca Escudo">
-                <p class="lead font-weight-bolder">
-                    <small><strong>Universidad de Salamanca</strong></small>
-                </p>
-            </div>
-        </div>
+
+{#        <div class="row justify-content-center marco-footer py-2 px-2">#}
+{#            <div class="col-3 text-center">#}
+{#                <img class="img-fluid px-5 pt-3" src="{% static 'img/USALseal.svg' %}"#}
+{#                     alt="Universidad De Salamanca Escudo">#}
+{#                <p class="lead font-weight-bolder">#}
+{#                    <small><strong>Universidad de Salamanca</strong></small>#}
+{#                </p>#}
+{#            </div>#}
+{#        </div>#}
 
         <div class="row justify-content-between bg-dark">
             <div class="col-4 text-left">
-                <p class="text-light lead font-weight-light my-0 py-1">
+                <p class="text-light font-weight-light my-0 py-1">
                     <small><em>Ingeniería Informática</em></small>
                 </p>
             </div>
             <div class="col-4 text-right">
-                <p class="text-light lead font-weight-lighter font-weight-light my-0 py-1">
-                    <small><em>Roberto Benéitez Vaquero - 2019</em></small>
+                <p class="text-light text-center font-weight-light my-0 py-1">
+                    <small><em>Julio 2019</em></small>
+                </p>
+            </div>
+            <div class="col-4 text-right">
+                <p class="text-light font-weight-lighter font-weight-light my-0 py-1">
+                    <small><em>Roberto Benéitez Vaquero</em></small>
                 </p>
             </div>
         </div>

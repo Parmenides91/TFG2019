@@ -10,7 +10,7 @@ from .models import HistoricoMercadoRegulado
 app_name='forecasting'
 
 urlpatterns = [
-    path('', views.ConsumoList.as_view(), name="all"),
+    # path('', views.ConsumoList.as_view(), name="all"),
     path("new/", views.CreateConsumo.as_view(), name="create"),
     path("by/<username>/", views.UserConsumos.as_view(), name="for_user"),
     path("by/<username>/<int:pk>/", views.ConsumoDetail.as_view(), name="single"),

@@ -4,49 +4,120 @@
 
 {% block content %}
 
-    <div class="jumbotron bg-light">
-        <div class="container">
-            <div class="page-header">
-                <h1 class="display-1 ">Smart Meters</h1>
-                <hr>
-                <p class="text-muted font-italic lead">Información adicional</p>
+
+    <div class="container">
+        <div class="jumbotron bg-white">
+            <h1 class="display-4"><strong>Smart Meters</strong></h1>
+            <hr class="bg-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="">Información adicional</h5>
+                </div>
             </div>
         </div>
     </div>
 
 
-    <!-- <div class="jumbotron"> -->
-        <div class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <p class="lead mt-4 mb-1">
+                    <strong><em>Qué es:</em></strong>
+                </p>
+                <p class="lead mt-1 mb-4">
+                    Un Smart Meter es un dispositivo electrónico que mide el consumo eléctrico de una vivienda y lo
+                    comunica a la empresa distribuidora a fin de que pueda tanto facturar al usuario como
+                    monitorizar su consumo.
+                </p>
+            </div>
 
-            <div class="card border-success mb-4">
+            <div class="col-6">
+                <p class="lead mt-4 mb-1">
+                    <strong><em>Cómo se usa:</em></strong>
+                </p>
+                <p class="lead mt-1 mb-4">
+                    Para hacer uso de un dispositivo de este tipo se debe situar a la entrada del suministro
+                    eléctrico a la vivienda. No se requieren más acciones.
+                </p>
+            </div>
+
+
+            <div class="col-6">
+                <p class="lead mt-4 mb-1">
+                    <strong><em>Beneficios para el usuario:</em></strong>
+                </p>
+                <p class="lead mt-1 mb-4">
+                    Lo usuarios pueden también conocer la monitorización que se está llevando a cabo de su consumo.
+                    Disponen de esta información libremente.
+                    Si su dispositivo no ofreciera la posibilidad de comunicar los datos directamente con los
+                    inquilinos, se pueden solicitar mediante la distribuidora correspondiente.
+                </p>
+
+                <p class="lead mt-4 mb-1">
+                    <strong><em>Descarga de consumos para la plataforma:</em></strong>
+                </p>
+                <p class="lead mt-1 mb-4">
+                    Los consumos que se emplean en la plataforma son unos documentos que se pueden descargar desde
+                    la distribuidora, previa alta en el sistema, desde el siguiente enlace:
+                </p>
+                <a href="https://www.i-de.es/"><em>Descarga de consumo eléctrico</em></a>
+            </div>
+
+
+            <div class="col-6">
                 <img class="card-img-top img-fluid" src="{% static 'img/smartmeter01.png' %}" alt="pic_smartmeter">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <h4 class="card-title"><strong>Qué es:</strong></h4>
-                            <p class="card-text text-justify">Un smart meter es un dispositivo, que se conecta en la entrada del
-                                suministro eléctrico, capaz de medir el consumo de energía eléctrica horariamente en una
-                                vivienda.</p>
-                        </div>
-                        <div class="col-6">
-                            <h4 class="card-title"><strong>Ventajas:</strong></h4>
-                            <ul class="card-text text-justify">
-                                <li>Permite lecturas remotas por parte de la comercializadora, dando posibilidad a
-                                    facturas más detallas y precisas, y relegando a las estimaciones.
-                                </li>
-                                <li>Los usuarios pueden leer también sus registros directamente y ajustar sus hábitos de
-                                    consumo según les convenga.
-                                </li>
-                                <li>Distintos dispositivos del hogar pueden funcionar de manera coordinada con un smart
-                                    merter, regulando y programando su uso.
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
-    <!-- </div> -->
+    </div>
+
+
+
+
+
+    {#    <div class="jumbotron bg-light">#}
+    {#        <div class="container">#}
+    {#            <div class="page-header">#}
+    {#                <h1 class="display-1 ">Smart Meters</h1>#}
+    {#                <hr>#}
+    {#                <p class="text-muted font-italic lead">Información adicional</p>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+    {##}
+    {##}
+    {#    <!-- <div class="jumbotron"> -->#}
+    {#        <div class="container">#}
+    {##}
+    {#            <div class="card border-success mb-4">#}
+    {#                <img class="card-img-top img-fluid" src="{% static 'img/smartmeter01.png' %}" alt="pic_smartmeter">#}
+    {#                <div class="card-body">#}
+    {#                    <div class="row">#}
+    {#                        <div class="col-6">#}
+    {#                            <h4 class="card-title"><strong>Qué es:</strong></h4>#}
+    {#                            <p class="card-text text-justify">Un smart meter es un dispositivo, que se conecta en la entrada del#}
+    {#                                suministro eléctrico, capaz de medir el consumo de energía eléctrica horariamente en una#}
+    {#                                vivienda.</p>#}
+    {#                        </div>#}
+    {#                        <div class="col-6">#}
+    {#                            <h4 class="card-title"><strong>Ventajas:</strong></h4>#}
+    {#                            <ul class="card-text text-justify">#}
+    {#                                <li>Permite lecturas remotas por parte de la comercializadora, dando posibilidad a#}
+    {#                                    facturas más detallas y precisas, y relegando a las estimaciones.#}
+    {#                                </li>#}
+    {#                                <li>Los usuarios pueden leer también sus registros directamente y ajustar sus hábitos de#}
+    {#                                    consumo según les convenga.#}
+    {#                                </li>#}
+    {#                                <li>Distintos dispositivos del hogar pueden funcionar de manera coordinada con un smart#}
+    {#                                    merter, regulando y programando su uso.#}
+    {#                                </li>#}
+    {#                            </ul>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div>#}
+    {#            </div>#}
+    {##}
+    {#        </div>#}
+    {#    <!-- </div> -->#}
 
 {% endblock %}

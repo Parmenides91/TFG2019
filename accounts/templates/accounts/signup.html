@@ -4,14 +4,39 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<div class="container">
-  <h1>Sign Up</h1>
-  <form method="POST" class="form">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% buttons %}
-      <button type="submit" class="btn btn-primary">Sign Up</button>
-    {% endbuttons %}
-  </form>
-</div>
+    <div class="container">
+
+        <div class="row justify-content-between my-4">
+            <div class="col-6">
+                <h2>Información de nuevo usuario</h2>
+                <form method="POST" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-info btn-block">Registrarse</button>
+                    {% endbuttons %}
+                </form>
+            </div>
+            <div class="col-5">
+                <div class="row justify-content-center">
+                    <div class="col"></div>
+                    <div class="col align-self-center">
+                        <p class="display-4"><em>Regístrate para poder hacer uso de todas las funcionalidades de la
+                            aplicación.</em></p>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+        </div>
+
+
+        {#  <h1>Sign Up</h1>#}
+        {#  <form method="POST" class="form">#}
+        {#    {% csrf_token %}#}
+        {#    {% bootstrap_form form %}#}
+        {#    {% buttons %}#}
+        {#      <button type="submit" class="btn btn-primary">Sign Up</button>#}
+        {#    {% endbuttons %}#}
+        {#  </form>#}
+    </div>
 {% endblock %}
